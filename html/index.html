@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>cs56, S12, Mantis Issue 0000838</title>
+ </head>
+ <body>
+   <h1>cs56, S12, Mantis Issue 0000838</h1>
+   <ul>
+     <li><a href="https://foo.cs.ucsb.edu/56mantis/view.php?id=0000838">mantis ticket</a></li>
+
+     <li><a href="download">download</a></li>
+     <li><a href="browse">browse</a></li>
+     <li><a href="javadoc">javadoc</a></li>
+     <li><a href="jws">jws</a></li>
+     <li>Programmers: Peng Wang, Andro Stotts, Max Hinson, Bryce Filler</li>
+   </ul>
+
+   <p>This is a client-server chat program. The client and server both have a Swing GUI.</p>
+   <p>Note: the JWS seems to have networking problems in CSIL (or maybe Linux in general). Download and run the .jar files to ensure the program functions.</p>
+   <p>Basic Usage: The server needs to be started first (including pressing "Start server" on the server GUI window). After starting the server find the IP address of your machine (this address needs to be accessible to the outside world to use the client on another machine). Start the client and input one of the names and passwords from the server window and the IP address of the server then press "Connect to server." Ensure broadcast is selected and type a message into the lower text input box and press enter to send the message.</p>
+   <p>New Features CP1:</p>
+   <ul>
+     <li>You can now set and change your nickname</li>
+   </ul>
+   <p>New Features CP2:</p>
+   <ul>
+     <li>Mantis Ticket 775 CP2:
+
+Code Review Comments for Max Hinson:
+
+Server.java:
+320 - 332 Only set nickname after no exceptions were thrown by sendMsg(). DONE
+
+173 - 191 Perhaps add comments to this section so readers can understand the code better. DONE
+
+Code Review Comments for Bryce Filler:
+
+ClientWindow.java:
+
+line 250 good use of a trim method and dispose. DONE
+
+line 197 in client fix log in listener when attempt to log in some messages are not accurate DONE
+
+add port feature. NOT DONE (Does not pertain to the part of the project that we were assigned)
+
+Personal Goals Added for CP2:
+
+Press enter feature for nickname change DONE</li>
+   </ul>
+
+   <p>New Features CP3:</p>
+   <ul>
+     <li>Added check box to enable sound effects</li>
+     <li>Added sound effects for message received, contact online, and contact offline</li>
+   </ul>
+
+   <p>Features:</p>
+   <ul>
+     <li>Contact list of people you want to show as online when they are online and be able to talk directly too (not Broadcast).</li>
+     <li>Peer2peer-type chatting.</li>
+     <li>Server can kick users.</li>
+     <li>Server show's who's online</li>
+     <li>Enforced login (user must have correct name and password)</li>
+     <li>Minor visual, scrolling, and under-the-hood enhancements</li>
+   </ul>
+
+ </body>
+</html>
+
