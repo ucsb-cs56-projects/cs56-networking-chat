@@ -19,7 +19,5 @@ The server needs to be started first (including pressing "Start server" on the s
 * Check box to enable sound effects
 
 ## Possible future improvements
-* Font/Color Features
-	* Add new fonts and colors for the text between users. For example different font types such as serif and sans-serif could be added. 
-* Private Chat Rooms
-	* Add functionality to allow users to create private chat rooms and invite multiple contacts to join
+* Font/Color Features - Add new fonts and colors for the text between users. For example different font types such as serif and sans-serif could be added. 
+* Private Chat Rooms - Add functionality to allow users to create private chat rooms and invite multiple contacts to join
