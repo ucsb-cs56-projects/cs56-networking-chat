@@ -1,12 +1,14 @@
 <project default="compile">
 
-  <!-- build.xml for Mantis ticket 0000838, S12, CS56
-       name: Max Hinson with Bryce Filler -->
+  <!-- build.xml for networking-chat, W14, CS56
+       name: Eric Chen -->
+
+
   <property environment="env"/> <!-- load the environment variables -->
-  <property name="quarter" value="S12" />
+  <property name="quarter" value="W14" />
   <property name="webRoot" value="${env.HOME}/public_html/cs56/${quarter}/issues" />
   <property name="webBaseURL" value="http://www.cs.ucsb.edu/~${env.USER}/cs56/${quarter}/issues" />
-  <property name="projectName" value="0000838" /> 
+  <property name="projectName" value="networking-chat" /> 
   <property name="javadocDest" value="${webRoot}/${projectName}/javadoc" /> 
   <property name="javadocURL" value="${webBaseURL}/${projectName}/javadoc" />
   <property name="jwsDest" value="${webRoot}/${projectName}/jws" /> 
@@ -16,11 +18,15 @@
   <property name="server" value="Server" />
   <property name="client" value="Client" />
 
+<path id="project.class.path">
+  <pathelement location="build"/>
+  <pathelement location="lib/junit-4.8.2.jar"/>
+</path>
 
   <target name="compile" description="compile the code">
     <mkdir dir="build" />
-    <javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source" includeantruntime="false" >
-      <classpath>       
+    <javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source" includeantruntime="false" > 
+      <classpath>
 	<pathelement location="build"/>
 	<pathelement location="/cs/faculty/pconrad/public_html/cs56/lib/junit-4.8.2.jar"/>
       </classpath>
@@ -44,9 +50,7 @@
     <delete dir="javadoc" quiet="true" />                                                          
     <javadoc  destdir="javadoc" author="true" version="true" use="true" >                          
       <fileset dir="src" includes="**/*.java"/>                                                     
-      <classpath>                                                                                 
-        <pathelement location="/cs/faculty/pconrad/public_html/cs56/lib/junit-4.8.2.jar"/>      
-      </classpath>                                                                                 
+      <classpath refid="project.class.path" />                                                                                                                
     </javadoc>                                                                                     
     
     <!-- delete the old javadoc -->                                                                
@@ -71,10 +75,8 @@
 
   <target name="test" depends="compile" description="Run JUnit tests">
     <junit haltonerror="no" haltonfailure="no">
-      <classpath>
-        <pathelement location="/cs/faculty/pconrad/public_html/cs56/lib/junit-4.8.2.jar"/>
+      <classpath refid="project.class.path" />
         <pathelement location="build"/>
-      </classpath>
 
       <batchtest fork="yes">
         <fileset dir="src">
@@ -97,6 +99,7 @@
     </copy>
 
     <!-- <jar destfile="dist/${client}.jar" basedir="build" includes="edu/ucsb/cs56/${quarter}/${env.USER}/chatclient/**" excludes="**/chatserver"> -->
+
     <jar destfile="dist/${client}.jar" basedir="build" >
       <manifest>                                                                 
 	<attribute name="Main-Class" value="${mainClassClient}"/>                 
@@ -109,35 +112,6 @@
     </jar>
     <chmod dir="dist" perm="755" type="file" includes="**/*"/>
   </target>  
-
-
-  <target name="publish" depends="dist,javadoc,download,jws,linenumbers" description="publish to web">
-    <mkdir dir="${webRoot}/${projectName}" />                                      
-    
-    <delete dir="${webRoot}/${projectName}/browse" />                              
-    <mkdir dir="${webRoot}/${projectName}/browse" />                               
-    
-    <delete dir="${webRoot}/${projectName}/download" />                            
-    <mkdir dir="${webRoot}/${projectName}/download" />                             
-    
-    <copy file="html/index.html" todir="${webRoot}/${projectName}"/>               
-    <copy todir="${webRoot}/${projectName}/download" >                             
-      <fileset dir="download"/>                                                    
-      <fileset dir="dist" />                                                       
-    </copy>                                                                        
-    
-    <copy file="build.xml" todir="${webRoot}/${projectName}/browse"/>              
-    
-    <copy todir="${webRoot}/${projectName}/browse/src" >                           
-      <fileset dir="src"/>                                                         
-    </copy>                                                                        
-    <copy file="numberedsource.txt" todir="${webRoot}/${projectName}/browse"/>
-    <chmod dir="${webRoot}/${projectName}"                                         
-	   perm="755" type="both" includes="**/*"/>                                
-    
-    <echo>Project published to: ${webBaseURL}/${projectName}</echo>                 
-  </target>   
-
 
   <target name="download" depends="" description="create zip and tgz of project">
 
@@ -215,13 +189,5 @@
     <java classname="${mainClassServer}" fork="true" classpath="build" />
   </target>
 
-  <target name="linenumbers" description="Creates a file containing all source files with line numbers">
-    <exec executable="bash">
-      <arg value="-c"/>
-      <arg value='tree -ifQ src | grep \.java\"$ | xargs pr -n > numberedsource.txt'/>
-    </exec>
-  </target>
-
- 
 </project>
 
