@@ -40,8 +40,7 @@
   <target name="clean" description="delete unnecessary files and directories">
     <delete dir="build" quiet="true" />    
     <delete dir="javadoc" quiet="true" />
-    <delete dir="dist" quiet="true" />
-    <delete dir="download" quiet="true" />                                         
+    <delete dir="dist" quiet="true" />                                  
     <delete dir="temp" quiet="true" />
   </target>
 
@@ -75,8 +74,10 @@
 
   <target name="test" depends="compile" description="Run JUnit tests">
     <junit haltonerror="no" haltonfailure="no">
-      <classpath refid="project.class.path" />
-        <pathelement location="build"/>
+      <classpath>
+      <pathelement location="/cs/faculty/pconrad/public_html/cs56/lib/junit-4.8.2.jar"/>
+      <pathelement location="build"/>
+    </classpath>
 
       <batchtest fork="yes">
         <fileset dir="src">
@@ -112,58 +113,6 @@
     </jar>
     <chmod dir="dist" perm="755" type="file" includes="**/*"/>
   </target>  
-
-  <target name="download" depends="" description="create zip and tgz of project">
-
-    <!-- delete everything under the "temp" and "download" subdirectories 
-	 In Ant, **/* means "all files under any number of directory levels" -->
-    
-    <delete quiet="true">                                                           
-      <fileset dir="temp" includes="**/*" />                                       
-      <fileset dir="download" includes="**/*" />                                    
-    </delete>                                                                       
-    
-    <!-- create the directories we'll need to stage the zip file and tarballs -->
-    
-    <mkdir dir="download" />                                                         
-    <mkdir dir="temp" />                                                            
-    <mkdir dir="temp/${projectName}" />                                             
-    
-    <!-- copy everything from the current directory that we want to put in the zip file/tarball into the
-	 temp subdirectory.   Exclude things we do NOT want to include in the tarball/zip file -->
-
-    <copy todir="temp/${projectName}">                                              
-      <fileset dir="."                                                              
-	       excludes="build/**, javadoc/**, **/*~, temp/**, dist/**, download/**"/>       
-    </copy>                                                                         
-    
-    <!-- create the tar file from the temp directory -->
-
-    <tar destfile="temp/${projectName}.tar"                                         
-	 basedir="temp"                                                             
-	 includes="${projectName}/**"                                               
-	 />                                                                             
-    
-    <!-- compress the tar file into a tarball (using "gzip") -->
-    
-    <gzip zipfile="download/${projectName}.tgz"                                      
-	  src="temp/${projectName}.tar" />                                          
-    
-    <!-- create a zip file -->
-    
-    <zip destfile="download/${projectName}.zip"                                      
-	 basedir="temp"                                                             
-	 includes="${projectName}/**"                                               
-	 />                           
-
-    <!-- Now we have the tarball and zip file in the download 
-	 subdirectory, so we are finished with the temp directory -->                                                   
-    
-    <delete quiet="true">                                                           
-      <fileset dir="temp" includes="**/*"/>                                        
-    </delete>                                                                       
-    
-  </target>
 
 
   <target name="jws" depends="compile,dist" description="create JWS">
