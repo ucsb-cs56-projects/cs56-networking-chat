@@ -1,4 +1,4 @@
-package edu.ucsb.cs56.W14.ericchen.chatserver.junit;
+package edu.ucsb.cs56.projects.networking.chat.chatserver.junit;
 
 import static org.junit.Assert.*;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import edu.ucsb.cs56.W14.ericchen.chatserver.model.User;
+import edu.ucsb.cs56.projects.networking.chat.chatserver.model.User;
 
 public class UserTest {
 

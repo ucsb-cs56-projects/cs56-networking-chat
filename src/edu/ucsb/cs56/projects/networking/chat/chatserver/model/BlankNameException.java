@@ -1,4 +1,4 @@
-package edu.ucsb.cs56.W14.ericchen.chatserver.model;
+package edu.ucsb.cs56.projects.networking.chat.chatserver.model;
 
 public class BlankNameException extends Exception {
 	

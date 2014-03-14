@@ -1,4 +1,4 @@
-package edu.ucsb.cs56.W14.ericchen.chatserver.view;
+package edu.ucsb.cs56.projects.networking.chat.chatserver.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
-import edu.ucsb.cs56.W14.ericchen.chatserver.controller.ServerController;
+import edu.ucsb.cs56.projects.networking.chat.chatserver.controller.ServerController;
 
 /**
  * Represents a JFrame window of a server
