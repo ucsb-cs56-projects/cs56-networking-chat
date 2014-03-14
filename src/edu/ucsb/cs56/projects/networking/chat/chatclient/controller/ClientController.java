@@ -1,8 +1,8 @@
-package edu.ucsb.cs56.W14.ericchen.chatclient.controller;
+package edu.ucsb.cs56.projects.networking.chat.chatclient.controller;
 
-import edu.ucsb.cs56.W14.ericchen.chatclient.model.Client;
-import edu.ucsb.cs56.W14.ericchen.chatclient.model.Contact;
-import edu.ucsb.cs56.W14.ericchen.chatclient.view.ClientWindow;
+import edu.ucsb.cs56.projects.networking.chat.chatclient.model.Client;
+import edu.ucsb.cs56.projects.networking.chat.chatclient.model.Contact;
+import edu.ucsb.cs56.projects.networking.chat.chatclient.view.ClientWindow;
 import java.awt.Color;
 
 /**

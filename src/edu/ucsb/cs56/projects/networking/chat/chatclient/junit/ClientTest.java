@@ -1,8 +1,8 @@
-package edu.ucsb.cs56.W14.ericchen.chatclient.junit;
+package edu.ucsb.cs56.projects.networking.chat.chatclient.junit;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import edu.ucsb.cs56.W14.ericchen.chatclient.model.Client;
+import edu.ucsb.cs56.projects.networking.chat.chatclient.model.Client;
 
 public class ClientTest {
 

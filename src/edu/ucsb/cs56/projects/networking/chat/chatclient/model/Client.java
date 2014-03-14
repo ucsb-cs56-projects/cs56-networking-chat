@@ -1,4 +1,4 @@
-package edu.ucsb.cs56.W14.ericchen.chatclient.model;
+package edu.ucsb.cs56.projects.networking.chat.chatclient.model;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,7 +16,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
 
-import edu.ucsb.cs56.W14.ericchen.chatclient.controller.ClientController;
+import edu.ucsb.cs56.projects.networking.chat.chatclient.controller.ClientController;
 
 /**
  * Represents a client who can connect/disconnect to the server 

@@ -1,4 +1,4 @@
-package edu.ucsb.cs56.W14.ericchen.chatclient.model;
+package edu.ucsb.cs56.projects.networking.chat.chatclient.model;
 
 import java.io.File; 
 import java.io.IOException; 
