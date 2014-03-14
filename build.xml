@@ -5,16 +5,15 @@
 
 
   <property environment="env"/> <!-- load the environment variables -->
-  <property name="quarter" value="W14" />
-  <property name="webRoot" value="${env.HOME}/public_html/cs56/${quarter}/issues" />
+  <property name="webRoot" value="${env.HOME}/public_html/cs56/${projectName}" />
   <property name="webBaseURL" value="http://www.cs.ucsb.edu/~${env.USER}/cs56/${quarter}/issues" />
-  <property name="projectName" value="networking-chat" /> 
+  <property name="projectName" value="cs56_networking_chat" /> 
   <property name="javadocDest" value="${webRoot}/${projectName}/javadoc" /> 
   <property name="javadocURL" value="${webBaseURL}/${projectName}/javadoc" />
-  <property name="jwsDest" value="${webRoot}/${projectName}/jws" /> 
-  <property name="jwsURL" value="${webBaseURL}/${projectName}/jws" />
-  <property name="mainClassClient" value="edu.ucsb.cs56.${quarter}.${env.USER}.chatclient.controller.RunClient" />
-  <property name="mainClassServer" value="edu.ucsb.cs56.${quarter}.${env.USER}.chatserver.controller.RunServer" />
+  <property name="jwsDest" value="${webRoot}/${projectName}" /> 
+  <property name="jwsURL" value="${webBaseURL}/${projectName}" />
+  <property name="mainClassClient" value="edu.ucsb.cs56.projects.networking.chat.chatclient.controller.RunClient" />
+  <property name="mainClassServer" value="edu.ucsb.cs56.projects.networking.chat.chatserver.controller.RunServer" />
   <property name="server" value="Server" />
   <property name="client" value="Client" />
 
@@ -74,11 +73,8 @@
 
   <target name="test" depends="compile" description="Run JUnit tests">
     <junit haltonerror="no" haltonfailure="no">
-      <classpath>
-      <pathelement location="/cs/faculty/pconrad/public_html/cs56/lib/junit-4.8.2.jar"/>
-      <pathelement location="build"/>
-    </classpath>
-
+      <classpath refid="project.class.path" />
+  
       <batchtest fork="yes">
         <fileset dir="src">
           <!-- this will pick up every class with a name ending in Test -->
@@ -106,7 +102,7 @@
 	<attribute name="Main-Class" value="${mainClassClient}"/>                 
       </manifest>                                                                
     </jar>
-    <jar destfile="dist/${server}.jar" basedir="build" includes="edu/ucsb/cs56/${quarter}/${env.USER}/chatserver/**" excludes="**/chatclient" >
+    <jar destfile="dist/${server}.jar" basedir="build" includes="edu/ucsb/cs56/projects/networking/chat/chatserver/**" excludes="**/chatclient" >
       <manifest>                                                                 
 	<attribute name="Main-Class" value="${mainClassServer}"/>                 
       </manifest>                                                                
