@@ -25,10 +25,7 @@
   <target name="compile" description="compile the code">
     <mkdir dir="build" />
     <javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source" includeantruntime="false" > 
-      <classpath>
-	<pathelement location="build"/>
-	<pathelement location="/cs/faculty/pconrad/public_html/cs56/lib/junit-4.8.2.jar"/>
-      </classpath>
+      <classpath refid="project.class.path" />
     </javac>
     <copy todir="build/resources">
       <fileset dir="resources"/>
@@ -88,7 +85,7 @@
   </target>
 
 
-  <target name="dist" depends="compile" description="Make jar files">
+ <target name="dist" depends="compile" description="Make jar files">
     <mkdir dir="dist" />
     <mkdir dir="build/resources"/>
     <copy todir="build/resources">
@@ -111,20 +108,7 @@
   </target>  
 
 
-  <target name="jws" depends="compile,dist" description="create JWS">
-
-    <delete dir="${webRoot}/${projectName}/jws" />
-    <mkdir dir="${webRoot}/${projectName}/jws" />
-
-    <copy todir="${jwsDest}" file="dist/${client}.jar" />
-    <copy todir="${jwsDest}" file="dist/${server}.jar" />
-    <copy todir="${jwsDest}" >
-      <fileset dir="jws" includes="*.html"/>
-      <fileset dir="jws" includes="*.jnlp"/>
-      <fileset dir="jws" includes=".htaccess"/>
-    </copy>
-    <echo>Java web start at: ${jwsURL}</echo>
-  </target>     
+    
 
   <target name="runclient" depends="compile, dist" description="run the client">
     <java jar="dist/Client.jar" fork="true" classpath="build" />
