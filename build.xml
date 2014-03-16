@@ -1,26 +1,31 @@
 <project default="compile">
 
-  <!-- build.xml for Mantis ticket 0000838, S12, CS56
-       name: Max Hinson with Bryce Filler -->
+  <!-- build.xml for networking-chat, W14, CS56
+       name: Eric Chen -->
+
+
   <property environment="env"/> <!-- load the environment variables -->
-  <property name="quarter" value="S12" />
-  <property name="webRoot" value="${env.HOME}/public_html/cs56/${quarter}/issues" />
+  <property name="webRoot" value="${env.HOME}/public_html/cs56/${projectName}" />
   <property name="webBaseURL" value="http://www.cs.ucsb.edu/~${env.USER}/cs56/${quarter}/issues" />
-  <property name="projectName" value="0000838" /> 
+  <property name="projectName" value="cs56_networking_chat" /> 
   <property name="javadocDest" value="${webRoot}/${projectName}/javadoc" /> 
   <property name="javadocURL" value="${webBaseURL}/${projectName}/javadoc" />
-  <property name="jwsDest" value="${webRoot}/${projectName}/jws" /> 
-  <property name="jwsURL" value="${webBaseURL}/${projectName}/jws" />
-  <property name="mainClassClient" value="edu.ucsb.cs56.${quarter}.${env.USER}.chatclient.controller.RunClient" />
-  <property name="mainClassServer" value="edu.ucsb.cs56.${quarter}.${env.USER}.chatserver.controller.RunServer" />
+  <property name="jwsDest" value="${webRoot}/${projectName}" /> 
+  <property name="jwsURL" value="${webBaseURL}/${projectName}" />
+  <property name="mainClassClient" value="edu.ucsb.cs56.projects.networking.chat.chatclient.controller.RunClient" />
+  <property name="mainClassServer" value="edu.ucsb.cs56.projects.networking.chat.chatserver.controller.RunServer" />
   <property name="server" value="Server" />
   <property name="client" value="Client" />
 
+<path id="project.class.path">
+  <pathelement location="build"/>
+  <pathelement location="lib/junit-4.8.2.jar"/>
+</path>
 
   <target name="compile" description="compile the code">
     <mkdir dir="build" />
-    <javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source" includeantruntime="false" >
-      <classpath>       
+    <javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source" includeantruntime="false" > 
+      <classpath>
 	<pathelement location="build"/>
 	<pathelement location="/cs/faculty/pconrad/public_html/cs56/lib/junit-4.8.2.jar"/>
       </classpath>
@@ -34,8 +39,7 @@
   <target name="clean" description="delete unnecessary files and directories">
     <delete dir="build" quiet="true" />    
     <delete dir="javadoc" quiet="true" />
-    <delete dir="dist" quiet="true" />
-    <delete dir="download" quiet="true" />                                         
+    <delete dir="dist" quiet="true" />                                  
     <delete dir="temp" quiet="true" />
   </target>
 
@@ -44,9 +48,7 @@
     <delete dir="javadoc" quiet="true" />                                                          
     <javadoc  destdir="javadoc" author="true" version="true" use="true" >                          
       <fileset dir="src" includes="**/*.java"/>                                                     
-      <classpath>                                                                                 
-        <pathelement location="/cs/faculty/pconrad/public_html/cs56/lib/junit-4.8.2.jar"/>      
-      </classpath>                                                                                 
+      <classpath refid="project.class.path" />                                                                                                                
     </javadoc>                                                                                     
     
     <!-- delete the old javadoc -->                                                                
@@ -71,11 +73,8 @@
 
   <target name="test" depends="compile" description="Run JUnit tests">
     <junit haltonerror="no" haltonfailure="no">
-      <classpath>
-        <pathelement location="/cs/faculty/pconrad/public_html/cs56/lib/junit-4.8.2.jar"/>
-        <pathelement location="build"/>
-      </classpath>
-
+      <classpath refid="project.class.path" />
+  
       <batchtest fork="yes">
         <fileset dir="src">
           <!-- this will pick up every class with a name ending in Test -->
@@ -97,99 +96,19 @@
     </copy>
 
     <!-- <jar destfile="dist/${client}.jar" basedir="build" includes="edu/ucsb/cs56/${quarter}/${env.USER}/chatclient/**" excludes="**/chatserver"> -->
+
     <jar destfile="dist/${client}.jar" basedir="build" >
       <manifest>                                                                 
 	<attribute name="Main-Class" value="${mainClassClient}"/>                 
       </manifest>                                                                
     </jar>
-    <jar destfile="dist/${server}.jar" basedir="build" includes="edu/ucsb/cs56/${quarter}/${env.USER}/chatserver/**" excludes="**/chatclient" >
+    <jar destfile="dist/${server}.jar" basedir="build" includes="edu/ucsb/cs56/projects/networking/chat/chatserver/**" excludes="**/chatclient" >
       <manifest>                                                                 
 	<attribute name="Main-Class" value="${mainClassServer}"/>                 
       </manifest>                                                                
     </jar>
     <chmod dir="dist" perm="755" type="file" includes="**/*"/>
   </target>  
-
-
-  <target name="publish" depends="dist,javadoc,download,jws,linenumbers" description="publish to web">
-    <mkdir dir="${webRoot}/${projectName}" />                                      
-    
-    <delete dir="${webRoot}/${projectName}/browse" />                              
-    <mkdir dir="${webRoot}/${projectName}/browse" />                               
-    
-    <delete dir="${webRoot}/${projectName}/download" />                            
-    <mkdir dir="${webRoot}/${projectName}/download" />                             
-    
-    <copy file="html/index.html" todir="${webRoot}/${projectName}"/>               
-    <copy todir="${webRoot}/${projectName}/download" >                             
-      <fileset dir="download"/>                                                    
-      <fileset dir="dist" />                                                       
-    </copy>                                                                        
-    
-    <copy file="build.xml" todir="${webRoot}/${projectName}/browse"/>              
-    
-    <copy todir="${webRoot}/${projectName}/browse/src" >                           
-      <fileset dir="src"/>                                                         
-    </copy>                                                                        
-    <copy file="numberedsource.txt" todir="${webRoot}/${projectName}/browse"/>
-    <chmod dir="${webRoot}/${projectName}"                                         
-	   perm="755" type="both" includes="**/*"/>                                
-    
-    <echo>Project published to: ${webBaseURL}/${projectName}</echo>                 
-  </target>   
-
-
-  <target name="download" depends="" description="create zip and tgz of project">
-
-    <!-- delete everything under the "temp" and "download" subdirectories 
-	 In Ant, **/* means "all files under any number of directory levels" -->
-    
-    <delete quiet="true">                                                           
-      <fileset dir="temp" includes="**/*" />                                       
-      <fileset dir="download" includes="**/*" />                                    
-    </delete>                                                                       
-    
-    <!-- create the directories we'll need to stage the zip file and tarballs -->
-    
-    <mkdir dir="download" />                                                         
-    <mkdir dir="temp" />                                                            
-    <mkdir dir="temp/${projectName}" />                                             
-    
-    <!-- copy everything from the current directory that we want to put in the zip file/tarball into the
-	 temp subdirectory.   Exclude things we do NOT want to include in the tarball/zip file -->
-
-    <copy todir="temp/${projectName}">                                              
-      <fileset dir="."                                                              
-	       excludes="build/**, javadoc/**, **/*~, temp/**, dist/**, download/**"/>       
-    </copy>                                                                         
-    
-    <!-- create the tar file from the temp directory -->
-
-    <tar destfile="temp/${projectName}.tar"                                         
-	 basedir="temp"                                                             
-	 includes="${projectName}/**"                                               
-	 />                                                                             
-    
-    <!-- compress the tar file into a tarball (using "gzip") -->
-    
-    <gzip zipfile="download/${projectName}.tgz"                                      
-	  src="temp/${projectName}.tar" />                                          
-    
-    <!-- create a zip file -->
-    
-    <zip destfile="download/${projectName}.zip"                                      
-	 basedir="temp"                                                             
-	 includes="${projectName}/**"                                               
-	 />                           
-
-    <!-- Now we have the tarball and zip file in the download 
-	 subdirectory, so we are finished with the temp directory -->                                                   
-    
-    <delete quiet="true">                                                           
-      <fileset dir="temp" includes="**/*"/>                                        
-    </delete>                                                                       
-    
-  </target>
 
 
   <target name="jws" depends="compile,dist" description="create JWS">
@@ -215,13 +134,5 @@
     <java classname="${mainClassServer}" fork="true" classpath="build" />
   </target>
 
-  <target name="linenumbers" description="Creates a file containing all source files with line numbers">
-    <exec executable="bash">
-      <arg value="-c"/>
-      <arg value='tree -ifQ src | grep \.java\"$ | xargs pr -n > numberedsource.txt'/>
-    </exec>
-  </target>
-
- 
 </project>
 
