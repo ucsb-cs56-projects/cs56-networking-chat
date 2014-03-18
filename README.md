@@ -1,5 +1,8 @@
 # cs56-chat-client-server
 
+This is a basic "chatroom" program--a barebones implementation of something similar to IRC, Google Chat, AIM, Yahoo Chat, etc.
+
+The code is divided into MVC (model, view controller) portions. It uses Swing GUIs, Threads, Sockets, and the client has code the illustrates playing sounds.
 
 ## Basic Usage
 
