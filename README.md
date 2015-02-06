@@ -7,6 +7,7 @@ The code is divided into MVC (model, view controller) portions. It uses Swing GU
 project history
 ===============
 ```
+YES | mastergberry | ericchen94 | A chat application that uses a client and a server
  W14 | jcneally 4pm | ericchen94 | A chat application that uses a client and a server
 ```
 
