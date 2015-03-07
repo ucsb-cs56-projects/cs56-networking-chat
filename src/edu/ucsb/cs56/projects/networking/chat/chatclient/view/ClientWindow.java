@@ -52,7 +52,10 @@ public class ClientWindow extends JFrame{
     java.awt.Color redColor = new java.awt.Color(255,000,000);
     java.awt.Color greenColor = new java.awt.Color(000,255,000);
     java.awt.Color blueColor = new java.awt.Color(000,000,255);
-
+    Color[] colors = { Color.red, Color.blue, Color.white, Color.cyan,
+            Color.green, Color.gray, new Color(0xFFAA00) };
+    Random random = new Random();
+    int x = random.nextInt(colors.length);
     //Italic font
     private Font italicFont = new Font("Arial", Font.ITALIC, 14);
 	
@@ -65,7 +68,8 @@ public class ClientWindow extends JFrame{
 	taOutput = new JTextArea();
 	spScrollPane = new JScrollPane(taOutput);
 	taOutput.setLineWrap(true);
-        taOutput.setWrapStyleWord(true);
+    taOutput.setWrapStyleWord(true);
+    taOutput.setForeground(colors[x]);
 	taOutput.setEditable(false);
 	listContacts = new JList(controller.getContacts());
 	lblContact = new JLabel("Contacts");
