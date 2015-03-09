@@ -162,7 +162,9 @@ public class ClientWindow extends JFrame{
 	leftPanel.add(listContacts, BorderLayout.CENTER);
 
 	JButton nickName = new JButton("Change nickname");
+    JButton privateRoom = new JButton("Private Room");
 	leftPanel.add(nickName, BorderLayout.SOUTH);
+    leftPanel.add(privateRoom, BorderLayout.NORTH); 
 		
 	listContacts.setSelectedIndex(0);
 
