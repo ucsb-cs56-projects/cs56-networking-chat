@@ -460,9 +460,23 @@ public class ClientWindow extends JFrame{
 		tfInput.setText("");
 
 		nickname = controller.getNickname();
-		if(!listContacts.getSelectedValue().equals("Broadcast"))
-		    controller.sendMsg2Server(nickname + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
-		else
+
+
+
+		if(!listContacts.getSelectedValue().equals("Broadcast")) {
+            String parts[] = listContacts.getSelectedValue().toString().split("");
+            String receiverName = "";
+            for (int i = 0; i >= 0; i++) {
+                String ch = parts[i];
+                if (!ch.equals("(")) {
+                    receiverName = receiverName + ch;
+                } else
+                    break;
+            }
+
+            controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
+        }
+        else
 		    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
 	    }
 	}	
