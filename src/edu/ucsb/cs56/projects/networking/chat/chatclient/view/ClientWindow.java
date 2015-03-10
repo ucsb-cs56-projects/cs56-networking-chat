@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.util.Random;
 
 import edu.ucsb.cs56.projects.networking.chat.chatclient.controller.ClientController;
+import edu.ucsb.cs56.projects.networking.chat.chatclient.model.Client;
 
 /**
  * Represents a JFrame window which has components that are needed for chatting
@@ -52,7 +53,7 @@ public class ClientWindow extends JFrame{
     java.awt.Color redColor = new java.awt.Color(255,000,000);
     java.awt.Color greenColor = new java.awt.Color(000,255,000);
     java.awt.Color blueColor = new java.awt.Color(000,000,255);
-    Color[] colors = { Color.red, Color.blue, Color.white, Color.cyan,
+    Color[] colors = { Color.red, Color.blue, Color.cyan,
             Color.green, Color.gray, new Color(0xFFAA00) };
     Random random = new Random();
     int x = random.nextInt(colors.length);
@@ -70,6 +71,7 @@ public class ClientWindow extends JFrame{
 	taOutput.setLineWrap(true);
     taOutput.setWrapStyleWord(true);
     taOutput.setForeground(colors[x]);
+    taOutput.setFont(italicFont);
 	taOutput.setEditable(false);
 	listContacts = new JList(controller.getContacts());
 	lblContact = new JLabel("Contacts");
@@ -164,7 +166,7 @@ public class ClientWindow extends JFrame{
 	JButton nickName = new JButton("Change nickname");
     JButton privateRoom = new JButton("Private Room");
 	leftPanel.add(nickName, BorderLayout.SOUTH);
-    leftPanel.add(privateRoom, BorderLayout.NORTH); 
+    leftPanel.add(privateRoom, BorderLayout.NORTH);
 		
 	listContacts.setSelectedIndex(0);
 
@@ -175,6 +177,7 @@ public class ClientWindow extends JFrame{
 	this.repaint();
 	tfInput.addActionListener(new InputListener());
 	nickName.addActionListener(new MyButtonListener2());
+    privateRoom.addActionListener(new MyButtonListener3());
 		
 	soundbox.addItemListener(new CheckListener());
 	soundbox.setSelected(true);
@@ -307,14 +310,21 @@ public class ClientWindow extends JFrame{
      * @version 0.4
      */
     class MyButtonListener2 implements ActionListener{
-	private ClientWindow window2 = ClientWindow.getWindow();
-	public void actionPerformed(ActionEvent e){
+    	private ClientWindow window2 = ClientWindow.getWindow();
+	    public void actionPerformed(ActionEvent e){
 
 	    window2.launchChangeWindow();
 
-	}
+	    }
     }
-			
+
+    class MyButtonListener3 implements ActionListener{
+        public void actionPerformed(ActionEvent e){
+
+
+
+        }
+    }
 /**
      * Handles actions when buttons are clicked
      * @author Peng Wang with Andro Stotts
