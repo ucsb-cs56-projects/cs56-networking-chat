@@ -55,11 +55,16 @@ public class ClientWindow extends JFrame{
     java.awt.Color blueColor = new java.awt.Color(000,000,255);
     Color[] colors = { Color.red, Color.blue, Color.cyan,
             Color.green, Color.gray, new Color(0xFFAA00) };
+    Random Random = new Random();
+    int x = Random.nextInt(colors.length);
+    //Pre-determined font to randomly use
+    private Font font0 = new Font("Arial", Font.ITALIC, 13);
+    private Font font1 = new Font("Arial", Font.BOLD, 14);
+    private Font font2 = new Font("Arial Bold", Font.PLAIN, 15);
+    private Font font3 = new Font("Arial Bold", Font.ROMAN_BASELINE, 20);
+    Font fonts[] = {font0, font1, font2, font3};
     Random random = new Random();
-    int x = random.nextInt(colors.length);
-    //Italic font
-    private Font italicFont = new Font("Arial", Font.ITALIC, 14);
-	
+    int y = random.nextInt(fonts.length);
     /**
      * Default constructor
      */
@@ -71,7 +76,7 @@ public class ClientWindow extends JFrame{
 	taOutput.setLineWrap(true);
     taOutput.setWrapStyleWord(true);
     taOutput.setForeground(colors[x]);
-    taOutput.setFont(italicFont);
+    taOutput.setFont(fonts[y]);
 	taOutput.setEditable(false);
 	listContacts = new JList(controller.getContacts());
 	lblContact = new JLabel("Contacts");
