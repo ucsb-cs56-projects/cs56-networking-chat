@@ -470,7 +470,7 @@ public class Server{
                     updateWhoIsOnline();
 
 
-                    controller.displayMsg("        currently available user accounts :\n");
+                    controller.displayMsg("        current available user accounts :\n");
 
                     if(this.getNickname() == "peng")
                         availableUsers.remove(peng);
