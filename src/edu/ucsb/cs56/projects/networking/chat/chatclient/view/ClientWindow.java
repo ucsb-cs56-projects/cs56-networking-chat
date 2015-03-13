@@ -50,21 +50,15 @@ public class ClientWindow extends JFrame{
     private JFrame nicknameWindow;
 
     //Pre-determined color to randomly use
-    java.awt.Color redColor = new java.awt.Color(255,000,000);
-    java.awt.Color greenColor = new java.awt.Color(000,255,000);
-    java.awt.Color blueColor = new java.awt.Color(000,000,255);
-    Color[] colors = { Color.red, Color.blue, Color.cyan,
-            Color.green, Color.gray, new Color(0xFFAA00) };
+    Color[] colors = { Color.red, Color.blue, Color.cyan, Color.green, Color.gray, new Color(0xFFAA00) };
     Random Random = new Random();
     int x = Random.nextInt(colors.length);
-    //Pre-determined font to randomly use
-    private Font font0 = new Font("Arial", Font.ITALIC, 13);
-    private Font font1 = new Font("Arial", Font.BOLD, 14);
-    private Font font2 = new Font("Arial Bold", Font.PLAIN, 15);
-    private Font font3 = new Font("Arial Bold", Font.ROMAN_BASELINE, 20);
-    Font fonts[] = {font0, font1, font2, font3};
+    //Pre-determined fonts for users to use
     Random random = new Random();
-    int y = random.nextInt(fonts.length);
+    int randomNum = random.nextInt((18 - 12) + 1) + 12;
+    private Font font1 = new Font("Arial", Font.ITALIC, randomNum);
+    private Font font2 = new Font("Arial", Font.BOLD, randomNum);
+
     /**
      * Default constructor
      */
@@ -76,7 +70,7 @@ public class ClientWindow extends JFrame{
 	taOutput.setLineWrap(true);
     taOutput.setWrapStyleWord(true);
     taOutput.setForeground(colors[x]);
-    taOutput.setFont(fonts[y]);
+    taOutput.setFont(font1);
 	taOutput.setEditable(false);
 	listContacts = new JList(controller.getContacts());
 	lblContact = new JLabel("Contacts");
@@ -169,9 +163,9 @@ public class ClientWindow extends JFrame{
 	leftPanel.add(listContacts, BorderLayout.CENTER);
 
 	JButton nickName = new JButton("Change nickname");
-    JButton privateRoom = new JButton("Private Room");
+    JButton switchFont = new JButton("switch font!");
 	leftPanel.add(nickName, BorderLayout.SOUTH);
-    leftPanel.add(privateRoom, BorderLayout.NORTH);
+    leftPanel.add(switchFont, BorderLayout.NORTH);
 		
 	listContacts.setSelectedIndex(0);
 
@@ -182,7 +176,7 @@ public class ClientWindow extends JFrame{
 	this.repaint();
 	tfInput.addActionListener(new InputListener());
 	nickName.addActionListener(new MyButtonListener2());
-    privateRoom.addActionListener(new MyButtonListener3());
+    switchFont.addActionListener(new MyButtonListener3());
 		
 	soundbox.addItemListener(new CheckListener());
 	soundbox.setSelected(true);
@@ -324,10 +318,14 @@ public class ClientWindow extends JFrame{
     }
 
     class MyButtonListener3 implements ActionListener{
-        public void actionPerformed(ActionEvent e){
-
-
-
+        public void actionPerformed(ActionEvent e) {
+            if (taOutput.getFont() == font1) {
+                controller.displayMsg("The font has successfully been changed to BOLD font, size " + randomNum + "\n");
+                taOutput.setFont(font2);
+            } else if (taOutput.getFont() == font2) {
+                controller.displayMsg("The font has successfully been changed to PLAIN font, size " + randomNum + "\n");
+                taOutput.setFont(font1);
+            }
         }
     }
 /**
