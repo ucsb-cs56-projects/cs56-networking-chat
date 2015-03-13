@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.util.Random;
 
 import edu.ucsb.cs56.projects.networking.chat.chatclient.controller.ClientController;
+import edu.ucsb.cs56.projects.networking.chat.chatclient.model.Client;
 
 /**
  * Represents a JFrame window which has components that are needed for chatting
@@ -52,10 +53,18 @@ public class ClientWindow extends JFrame{
     java.awt.Color redColor = new java.awt.Color(255,000,000);
     java.awt.Color greenColor = new java.awt.Color(000,255,000);
     java.awt.Color blueColor = new java.awt.Color(000,000,255);
-
-    //Italic font
-    private Font italicFont = new Font("Arial", Font.ITALIC, 14);
-	
+    Color[] colors = { Color.red, Color.blue, Color.cyan,
+            Color.green, Color.gray, new Color(0xFFAA00) };
+    Random Random = new Random();
+    int x = Random.nextInt(colors.length);
+    //Pre-determined font to randomly use
+    private Font font0 = new Font("Arial", Font.ITALIC, 13);
+    private Font font1 = new Font("Arial", Font.BOLD, 14);
+    private Font font2 = new Font("Arial Bold", Font.PLAIN, 15);
+    private Font font3 = new Font("Arial Bold", Font.ROMAN_BASELINE, 20);
+    Font fonts[] = {font0, font1, font2, font3};
+    Random random = new Random();
+    int y = random.nextInt(fonts.length);
     /**
      * Default constructor
      */
@@ -65,7 +74,9 @@ public class ClientWindow extends JFrame{
 	taOutput = new JTextArea();
 	spScrollPane = new JScrollPane(taOutput);
 	taOutput.setLineWrap(true);
-        taOutput.setWrapStyleWord(true);
+    taOutput.setWrapStyleWord(true);
+    taOutput.setForeground(colors[x]);
+    taOutput.setFont(fonts[y]);
 	taOutput.setEditable(false);
 	listContacts = new JList(controller.getContacts());
 	lblContact = new JLabel("Contacts");
@@ -158,7 +169,9 @@ public class ClientWindow extends JFrame{
 	leftPanel.add(listContacts, BorderLayout.CENTER);
 
 	JButton nickName = new JButton("Change nickname");
+    JButton privateRoom = new JButton("Private Room");
 	leftPanel.add(nickName, BorderLayout.SOUTH);
+    leftPanel.add(privateRoom, BorderLayout.NORTH);
 		
 	listContacts.setSelectedIndex(0);
 
@@ -169,6 +182,7 @@ public class ClientWindow extends JFrame{
 	this.repaint();
 	tfInput.addActionListener(new InputListener());
 	nickName.addActionListener(new MyButtonListener2());
+    privateRoom.addActionListener(new MyButtonListener3());
 		
 	soundbox.addItemListener(new CheckListener());
 	soundbox.setSelected(true);
@@ -301,14 +315,21 @@ public class ClientWindow extends JFrame{
      * @version 0.4
      */
     class MyButtonListener2 implements ActionListener{
-	private ClientWindow window2 = ClientWindow.getWindow();
-	public void actionPerformed(ActionEvent e){
+    	private ClientWindow window2 = ClientWindow.getWindow();
+	    public void actionPerformed(ActionEvent e){
 
 	    window2.launchChangeWindow();
 
-	}
+	    }
     }
-			
+
+    class MyButtonListener3 implements ActionListener{
+        public void actionPerformed(ActionEvent e){
+
+
+
+        }
+    }
 /**
      * Handles actions when buttons are clicked
      * @author Peng Wang with Andro Stotts
@@ -456,9 +477,23 @@ public class ClientWindow extends JFrame{
 		tfInput.setText("");
 
 		nickname = controller.getNickname();
-		if(!listContacts.getSelectedValue().equals("Broadcast"))
-		    controller.sendMsg2Server(nickname + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
-		else
+
+
+
+		if(!listContacts.getSelectedValue().equals("Broadcast")) {
+            String parts[] = listContacts.getSelectedValue().toString().split("");
+            String receiverName = "";
+            for (int i = 0; i >= 0; i++) {
+                String ch = parts[i];
+                if (!ch.equals("(")) {
+                    receiverName = receiverName + ch;
+                } else
+                    break;
+            }
+
+            controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
+        }
+        else
 		    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
 	    }
 	}	

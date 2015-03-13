@@ -176,7 +176,7 @@ public class Client {
 	    int result = checkAuthority(userName + "&" + password);
 	    //check login authority
 	    if(result == 0){
-		controller.displayMsg(userName + " has connected to the server at " + serverIP + '\n');
+		controller.displayMsg(userName + "(you) has connected to the server at " + serverIP + '\n');
 		isConnected = true;
 		new Thread(new RecieveMsg()).start();
 		//if valid useruserName and password, return 1

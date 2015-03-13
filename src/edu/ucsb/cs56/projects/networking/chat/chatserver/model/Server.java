@@ -332,8 +332,8 @@ public class Server{
 			//display messages on the server and client about the nickname change
 			controller.displayMsg(serverMsgPrefix + username + "'s nickname has been changed from " + oldNickname + " to " + newNickname);
 			c.sendMsg("Your nickname has been changed from " + oldNickname + " to " + newNickname + "&1001");
-			}
-			else 
+            }
+			else
 			c.sendMsg("Nickname change failed" + "&1001");
 			break;
 		    }
@@ -440,13 +440,15 @@ public class Server{
 			throw new Exception();
 		    }			
 		}
-				
+
 		///broadcast online notification when a client is online and successfully login
 		if(isAuthorized){
 		    controller.displayMsg(serverMsgPrefix + "User login success, " + this.getName() + " (" + this.getNickname() + ") "  + " is online now!\n");
 		    controller.displayMsg(serverMsgPrefix + "TOTAL # OF CLIENTS: " + clients.size() + '\n');
-					
-		    //update online list (server side)
+            for(Client c : clients) {
+                c.sendMsg("TOTAL # OF CLIENTS: " + clients.size() + "&1001");
+            }
+                //update online list (server side)
 		    updateWhoIsOnline();
 					
 		    //sent online notification to the clients
