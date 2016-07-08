@@ -158,7 +158,7 @@ public class ClientWindow extends JFrame{
 	menuPanel.setLayout(new FlowLayout());
 	menuPanel.add(soundbox, BorderLayout.NORTH);
 	//online count. needs improvement.
-	mentPanel.add("Online Users: #", BorderLayout.WEST);
+	menuPanel.add("Online Users: #", BorderLayout.WEST);
 
 	rightPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	rightPanel.setLayout(new BorderLayout());
