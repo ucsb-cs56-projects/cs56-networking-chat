@@ -1,0 +1,8 @@
+edu.ucsb.cs56.projects.networking.chat.chatclient.controller
+edu.ucsb.cs56.projects.networking.chat.chatclient.junit
+edu.ucsb.cs56.projects.networking.chat.chatclient.model
+edu.ucsb.cs56.projects.networking.chat.chatclient.view
+edu.ucsb.cs56.projects.networking.chat.chatserver.controller
+edu.ucsb.cs56.projects.networking.chat.chatserver.junit
+edu.ucsb.cs56.projects.networking.chat.chatserver.model
+edu.ucsb.cs56.projects.networking.chat.chatserver.view
