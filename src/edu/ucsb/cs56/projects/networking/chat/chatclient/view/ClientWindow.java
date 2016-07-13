@@ -1,3 +1,4 @@
+
 package edu.ucsb.cs56.projects.networking.chat.chatclient.view;
 
 import java.awt.*;
@@ -50,6 +51,7 @@ public class ClientWindow extends JFrame{
     private JFrame nicknameWindow;
 
     //contact count
+    private Client client;
     private JLabel countBox;
  
 
@@ -95,7 +97,8 @@ public class ClientWindow extends JFrame{
 	pfPassword = new JPasswordField(20);
 
 	//contact countBox
-	countBox = new JLabel("Online Users: #");
+	client = Client.getClient();
+	countBox = new JLabel("Online Users: " + client.getOnlineCount());
 
 
 	//default connection
