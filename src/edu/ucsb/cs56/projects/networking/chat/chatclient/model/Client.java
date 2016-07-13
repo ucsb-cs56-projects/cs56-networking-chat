@@ -281,33 +281,20 @@ public class Client {
 
     
     public int getOnlineCount(){
-	int j = 0;
-	//while(isConnected){
-	    // String msg = dis.readUTF();
-	    // String[] strs = parseContactList();
-	    //client go online
-	     // if(strs[1].equals("1002")){
-		for(int i = 0; i < contactList.length; i++){
-		    if(contactList[i].equals("1002")){
-			j++;
-		    }
-		}
-		// }
-	    //client go offline
-	    /*
-	    else if(strs[1].equals("1003")){
-		for(int i = 0; i < contactList.length; i++){
-		    if(contactList[i].equals(strs[0]+"(Online)")){
-			contactList[i] = strs[0];
-			controller.updateContactList(contactList);
-			break;
-		    }
-		}
-	    }
-	    */
 	
-		//}
-	return j;
+	
+	controller = ClientController.getController();
+	String[] c = controller.getContacts();
+	
+	for(int i = 0; i < c.length; i++){
+	    //  if(c[i]=="andro"){
+	    
+		
+	    return i;
+	    //  }
+	}
+	
+	return 1;
 	
 	
     }
