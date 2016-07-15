@@ -44,6 +44,10 @@ public class Client {
 
     private boolean soundOn = true;
 
+    //online count
+    private int onlineCount;
+
+    
     /**
      * Initialize instance variables
      */
@@ -68,7 +72,32 @@ public class Client {
 	    client = new Client();
 	return client;
     }
-	
+
+    
+    //set onlineCount
+    public void setOnlineCount(int onlineCount){
+	this.onlineCount = onlineCount;
+
+	/*
+	if(num == 1){
+	    onlineCount= (this.onlineCount)++;	    
+	}
+	else if(num == 0){
+	    onlineCount= (this.onlineCount)--;
+	}
+
+	controller.updateOnlineCount(onlineCount);
+	*/
+    }
+    
+    
+     //get onlineCount
+    public int getOnlineCount(){
+	return this.onlineCount;
+	//return controller.updateOnlineCount(onlineCount);
+    }
+
+    
     /**
      * setuserName method is used for setting user's userName
      * @param userName the user's userName
@@ -278,8 +307,7 @@ public class Client {
 
     
     //count # of clinets online
-
-    
+    /*    
     public int getOnlineCount(){
 	
 	
@@ -298,7 +326,7 @@ public class Client {
 	
 	
     }
-	
+    */	
 	
 	
 	
@@ -331,6 +359,9 @@ public class Client {
 			    if(contactList[i].equals(strs[0])){
 				contactList[i] += "(Online)";
 				controller.updateContactList(contactList);
+				//setOnlineCount(1);
+				//add online user count
+				controller.updateOnlineCountNewUser();
 				//play a sound
 				if(soundOn)
 				    {
@@ -340,6 +371,7 @@ public class Client {
 				break;
 			    }
 			}
+			
 		    }
 		    //client go offline
 		    else if(strs[1].equals("1003")){
@@ -347,6 +379,9 @@ public class Client {
 			    if(contactList[i].equals(strs[0]+"(Online)")){
 				contactList[i] = strs[0];
 				controller.updateContactList(contactList);
+				//setOnlineCount(0);
+				//decrease online user count
+				controller.updateOnlineCountRemoveUser();
 				//play a sound
 				if(soundOn)
 				    {
@@ -356,6 +391,7 @@ public class Client {
 				break;
 			    }
 			}
+		
 		    }
 		    //update the contact's nickname
 		    else if(strs[1].equals("1006")){

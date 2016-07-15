@@ -3,6 +3,7 @@ package edu.ucsb.cs56.projects.networking.chat.chatclient.view;
 
 import java.awt.*;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -42,6 +43,7 @@ public class ClientWindow extends JFrame{
     private JCheckBox soundbox;
     private JButton btConnect;
     private JButton btNickname;
+    private JButton btChangeFont;
     private static ClientWindow window;
     private ClientController controller;
     private String name;
@@ -51,9 +53,11 @@ public class ClientWindow extends JFrame{
     private JFrame nicknameWindow;
 
     //contact count
-    private Client client;
+    //private Client client;
     private JLabel countBox;
- 
+    private JLabel onlineCountText;
+
+   
 
     //Pre-determined color to randomly use
     java.awt.Color redColor = new java.awt.Color(255,000,000);
@@ -80,9 +84,9 @@ public class ClientWindow extends JFrame{
 	taOutput = new JTextArea();
 	spScrollPane = new JScrollPane(taOutput);
 	taOutput.setLineWrap(true);
-    taOutput.setWrapStyleWord(true);
-    taOutput.setForeground(colors[x]);
-    taOutput.setFont(fonts[y]);
+	taOutput.setWrapStyleWord(true);
+	taOutput.setForeground(colors[x]);
+	taOutput.setFont(fonts[y]);
 	taOutput.setEditable(false);
 	listContacts = new JList(controller.getContacts());
 	lblContact = new JLabel("Contacts");
@@ -95,11 +99,16 @@ public class ClientWindow extends JFrame{
 	tfNickName = new JTextField(20);
 	tfServerIp = new JTextField(20);
 	pfPassword = new JPasswordField(20);
-
+	
 	//contact countBox
-	client = Client.getClient();
-	countBox = new JLabel("Online Users: " + client.getOnlineCount());
+	//client = Client.getClient();
+	//countBox = new JLabel("Online Users: " + client.getOnlineCount());
 
+	//code for online count
+	onlineCountText = new JLabel("Online Count: ");
+	countBox = new JLabel("");
+	//int numOnlineCount = controller.getOnlineCount();
+	countBox.setText(String.valueOf(controller.getOnlineCount()));
 
 	//default connection
 	tfServerIp.setText("127.0.0.1");
@@ -165,15 +174,18 @@ public class ClientWindow extends JFrame{
 	JPanel leftPanel = new JPanel();
 	JPanel rightPanel = new JPanel();
 	JPanel menuPanel = new JPanel();
+
+	//online count. needs improvement.
+	menuPanel.add(onlineCountText, BorderLayout.WEST);
+	menuPanel.add(countBox, BorderLayout.WEST);
 	
 	menuPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	menuPanel.setLayout(new FlowLayout());
 	menuPanel.add(soundbox, BorderLayout.EAST);
-
-
-	//online count. needs improvement.
-	menuPanel.add(countBox, BorderLayout.WEST);
-
+	
+	JButton changeFont = new JButton("Change Font");
+	menuPanel.add(changeFont,BorderLayout.EAST);
+	
 	rightPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	rightPanel.setLayout(new BorderLayout());
 	rightPanel.add(spScrollPane, BorderLayout.CENTER);
@@ -185,12 +197,12 @@ public class ClientWindow extends JFrame{
 	leftPanel.add(listContacts, BorderLayout.CENTER);
 
 	JButton nickName = new JButton("Change nickname");
-    JButton privateRoom = new JButton("Private Room");
+	JButton privateRoom = new JButton("Private Room");
+	
 	leftPanel.add(nickName, BorderLayout.SOUTH);
-    leftPanel.add(privateRoom, BorderLayout.NORTH);
+	leftPanel.add(privateRoom, BorderLayout.NORTH);
 		
 	listContacts.setSelectedIndex(0);
-
 		
 	this.getContentPane().add(leftPanel, BorderLayout.WEST);
 	this.getContentPane().add(rightPanel, BorderLayout.CENTER);
@@ -198,8 +210,8 @@ public class ClientWindow extends JFrame{
 	this.repaint();
 	tfInput.addActionListener(new InputListener());
 	nickName.addActionListener(new MyButtonListener2());
-    privateRoom.addActionListener(new MyButtonListener3());
-		
+	privateRoom.addActionListener(new MyButtonListener3());
+	changeFont.addActionListener(new MyButtonListener4());
 	soundbox.addItemListener(new CheckListener());
 	soundbox.setSelected(true);
     }
@@ -237,8 +249,7 @@ public class ClientWindow extends JFrame{
 	btNickname.addActionListener(new InputListener2());
 	tfNickName.addKeyListener(new InputListener2());
     }
-		
-	
+
     /**
      * Get the message display component
      * @return the text area which displays the message
@@ -324,7 +335,7 @@ public class ClientWindow extends JFrame{
     public JList getContactList(){
 	return listContacts;
     }
-	
+    
     /**
      * Handles actions when buttons are clicked
      * @author Bryce Filler and Max Hinson
@@ -332,20 +343,37 @@ public class ClientWindow extends JFrame{
      */
     class MyButtonListener2 implements ActionListener{
     	private ClientWindow window2 = ClientWindow.getWindow();
-	    public void actionPerformed(ActionEvent e){
-
+	public void actionPerformed(ActionEvent e){
+	    
 	    window2.launchChangeWindow();
 
-	    }
+	}
     }
 
     class MyButtonListener3 implements ActionListener{
         public void actionPerformed(ActionEvent e){
 
-
+	    
 
         }
     }
+
+    /**
+     *Handles actions when Change Font button is clicked
+     *@author Winfred Huang and Arturo Milanes
+     */ 
+    class MyButtonListener4 implements ActionListener{
+	public void actionPerformed(ActionEvent e){
+	    Random random = new Random();
+	    int x = random.nextInt(fonts.length);
+	    taOutput.setFont(fonts[x]);
+	    String fontName = fonts[x].getName();
+	    int size = fonts[x].getSize();
+	    controller.displayMsg("You have changed the font to " + fontName + ", size: " + size + '\n');
+	}
+    }
+    
+    
 /**
      * Handles actions when buttons are clicked
      * @author Peng Wang with Andro Stotts
@@ -384,7 +412,7 @@ public class ClientWindow extends JFrame{
 
 	    else 
 		result = controller.connectServer(ip, name, password);
-
+	    
 	    if(result == 0)
 		window.launchChatWindow();
 			
@@ -431,9 +459,9 @@ public class ClientWindow extends JFrame{
      * @version 0.4
      */
     class CheckListener implements ItemListener {
-
+	
 	public CheckListener(){};
-
+	
 	public void itemStateChanged(ItemEvent e) {
 	    Object source = e.getItemSelectable();
 	    
@@ -472,12 +500,11 @@ public class ClientWindow extends JFrame{
 		    controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
 		    nicknameWindow.dispose();
                 }
-		}
+	    }
 		
 	}
     }
-	
-  
+
     /**
      * Handles the action when user clicks enter on keyboard
      * @author Peng Wang with Andro Stotts
