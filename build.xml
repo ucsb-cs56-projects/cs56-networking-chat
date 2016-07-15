@@ -68,7 +68,7 @@
   </target>  
 
 
-  <target name="test" depends="compile" description="Run JUnit tests">
+  <target name="test" depends="compile" description="run JUnit tests">
     <junit haltonerror="no" haltonfailure="no">
       <classpath refid="project.class.path" />
   
@@ -85,7 +85,7 @@
   </target>
 
 
- <target name="dist" depends="compile" description="Make jar files">
+ <target name="dist" depends="compile" description="make jar files">
     <mkdir dir="dist" />
     <mkdir dir="build/resources"/>
     <copy todir="build/resources">

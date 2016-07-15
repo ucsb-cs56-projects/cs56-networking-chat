@@ -1,3 +1,4 @@
+
 package edu.ucsb.cs56.projects.networking.chat.chatclient.view;
 
 import java.awt.*;
@@ -49,6 +50,11 @@ public class ClientWindow extends JFrame{
     private String password;
     private JFrame nicknameWindow;
 
+    //contact count
+    private Client client;
+    private JLabel countBox;
+ 
+
     //Pre-determined color to randomly use
     java.awt.Color redColor = new java.awt.Color(255,000,000);
     java.awt.Color greenColor = new java.awt.Color(000,255,000);
@@ -89,6 +95,12 @@ public class ClientWindow extends JFrame{
 	tfNickName = new JTextField(20);
 	tfServerIp = new JTextField(20);
 	pfPassword = new JPasswordField(20);
+
+	//contact countBox
+	client = Client.getClient();
+	countBox = new JLabel("Online Users: " + client.getOnlineCount());
+
+
 	//default connection
 	tfServerIp.setText("127.0.0.1");
 	soundbox = new JCheckBox("Play Sounds");
@@ -156,7 +168,11 @@ public class ClientWindow extends JFrame{
 	
 	menuPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	menuPanel.setLayout(new FlowLayout());
-	menuPanel.add(soundbox, BorderLayout.NORTH);
+	menuPanel.add(soundbox, BorderLayout.EAST);
+
+
+	//online count. needs improvement.
+	menuPanel.add(countBox, BorderLayout.WEST);
 
 	rightPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	rightPanel.setLayout(new BorderLayout());

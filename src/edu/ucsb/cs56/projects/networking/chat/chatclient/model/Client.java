@@ -151,7 +151,7 @@ public class Client {
     public void setSound(boolean soundOn){
 	this.soundOn = soundOn;
     }
-	
+    
     /**
      * ConnectServer method takes server IP address parameter to connect the specific
      * server and takes client userName and password in order to check login authority 
@@ -274,6 +274,33 @@ public class Client {
 	}
 	return temp;
     }
+
+
+    
+    //count # of clinets online
+
+    
+    public int getOnlineCount(){
+	
+	
+	controller = ClientController.getController();
+	String[] c = controller.getContacts();
+	
+	for(int i = 0; i < c.length; i++){
+	    //  if(c[i]=="andro"){
+	    
+		
+	    return i;
+	    //  }
+	}
+	
+	return 1;
+	
+	
+    }
+	
+	
+	
 	
     /**
      * sendMsg is the method that used for send a text message to the server

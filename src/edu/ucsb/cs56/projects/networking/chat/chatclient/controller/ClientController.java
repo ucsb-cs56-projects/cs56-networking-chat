@@ -94,9 +94,9 @@ public class ClientController {
      * @return contact names
      */
     public String[] getContacts(){
-	Contact[] contacts = new Contact[5];
-	String[] names = new String[5];
-	for(int i = 0; i < 5; i++){
+	Contact[] contacts = new Contact[10];
+	String[] names = new String[10];
+	for(int i = 0; i < 10; i++){
 	    contacts[i] = new Contact("contact" + i);
 	    names[i] = contacts[i].getName();
 	}
