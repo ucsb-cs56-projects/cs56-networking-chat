@@ -31,6 +31,17 @@ public class ClientController {
 	return controller;
     }
 
+    //getOnlineCount from client
+    public int getOnlineCount(){
+    	return client.getOnlineCount();
+    }
+
+    //setOnlineCount of client from controller
+    public void setOnlineCount(int onlineCount){
+	client.setOnlineCount(onlineCount);
+    }
+    
+
     /**
      * sets the nickname of the client from the controller
      */
@@ -110,4 +121,50 @@ public class ClientController {
     public void updateContactList(String[] contact){
 	ClientWindow.getWindow().getContactList().setListData(contact);
     }
+
+    //update online user count
+    
+    public void updateOnlineCountNewUser(){
+	/*	//return online;
+
+	if(online == 1){
+	    
+	    //int add=0;
+	    //add = add++;
+	    //int onlineNum = 10;
+	    //client.getOnlineCount();
+	    //onlineNum++;
+	    client.setOnlineCount(50);
+	    
+	}
+	else if(online == 2){
+	    // int sub=-1;
+	    // int onlineNum = 5;
+	    //client.getOnlineCount();
+	    //onlineNum--;
+	    client.setOnlineCount(49);
+	    
+	}
+	else{
+	    client.setOnlineCount(48);
+	}
+
+	//return client.getOnlineCount();
+    	*/
+	int num = client.getOnlineCount();
+	num++;
+	client.setOnlineCount(num);
+	
+    }
+
+    public void updateOnlineCountRemoveUser(){
+	int num = client.getOnlineCount();
+	num--;
+	client.setOnlineCount(num);
+    }
+
+    public int onlineCounter(){
+	return client.getOnlineCount();
+    }
+    
 }

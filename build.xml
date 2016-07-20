@@ -110,11 +110,11 @@
 
     
 
-  <target name="runclient" depends="compile, dist" description="run the client">
+  <target name="client" depends="compile, dist" description="run the client">
     <java jar="dist/Client.jar" fork="true" classpath="build" />
   </target>   
 
-  <target name="runserver" depends="compile" description="run the server">
+  <target name="server" depends="compile" description="run the server">
     <java classname="${mainClassServer}" fork="true" classpath="build" />
   </target>
 

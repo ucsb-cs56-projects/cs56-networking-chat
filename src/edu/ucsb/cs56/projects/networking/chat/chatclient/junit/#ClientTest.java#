@@ -46,8 +46,9 @@ public class ClientTest {
 	}
 
 	@Test
-	public void testConnectServer() {		Client client = Client.getClient();
-		assertEquals(8, client.connectServer("127.0.0.1", "Peng Wang", "abc123"));
+	public void testConnectServer() {
+	       Client client = Client.getClient();
+	       assertEquals(8, client.connectServer("127.0.0.1", "Peng Wang", "abc123"));
 	}
 	
 	@Test

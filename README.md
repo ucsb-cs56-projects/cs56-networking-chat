@@ -16,13 +16,13 @@ YES | mastergberry | ericchen94 | A chat application that uses a client and a se
 The server needs to be started first (including pressing "Start server" on the server GUI window).   The following ant target will accomplish that:
 
 ```
-$ ant runserver
+$ ant server
 ```
 
 To start a client use: 
 
 ```
-$ ant runclient
+$ ant client
 ```
 
 If the client is running on the same machine as the server, you can just use 127.0.0.1 (the standard IP address that means "this same machine", sometimes also called the 'loopback' address) as the IP address.
