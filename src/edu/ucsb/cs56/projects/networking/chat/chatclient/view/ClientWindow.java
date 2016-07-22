@@ -33,7 +33,7 @@ public class ClientWindow extends JFrame{
     private JTextField tfServerIp;
     private JPasswordField pfPassword;
     private JScrollPane spScrollPane;
-    private JList listContacts;
+    private JList<String> listContacts;
     private JLabel lblContact;
     private JLabel lblUserName;
     private JLabel lblNickName;
@@ -53,9 +53,13 @@ public class ClientWindow extends JFrame{
     private JFrame nicknameWindow;
 
     //contact count
-    //private Client client;
-    private JLabel countBox;
+    private Client client;
+    private JLabel onlineCountNum;
     private JLabel onlineCountText;
+    private JButton onlineCountUpdate;
+
+    //delete user
+    private JButton btDeleteUser;
 
    
 
@@ -88,7 +92,7 @@ public class ClientWindow extends JFrame{
 	taOutput.setForeground(colors[x]);
 	taOutput.setFont(fonts[y]);
 	taOutput.setEditable(false);
-	listContacts = new JList(controller.getContacts());
+	listContacts = new JList<String>(controller.getContacts());
 	lblContact = new JLabel("Contacts");
 	lblUserName = new JLabel("Username: ");
 	lblNickName = new JLabel("New Nickname:");
@@ -106,9 +110,10 @@ public class ClientWindow extends JFrame{
 
 	//code for online count
 	onlineCountText = new JLabel("Online Count: ");
-	countBox = new JLabel("");
+	onlineCountNum = new JLabel("ERROR");
+	onlineCountUpdate = new JButton("Refresh");
 	//int numOnlineCount = controller.getOnlineCount();
-	countBox.setText(String.valueOf(controller.getOnlineCount()));
+	onlineCountNum.setText("");
 
 	//default connection
 	tfServerIp.setText("127.0.0.1");
@@ -176,8 +181,10 @@ public class ClientWindow extends JFrame{
 	JPanel menuPanel = new JPanel();
 
 	//online count. needs improvement.
+	menuPanel.add(onlineCountUpdate, BorderLayout.WEST);
 	menuPanel.add(onlineCountText, BorderLayout.WEST);
-	menuPanel.add(countBox, BorderLayout.WEST);
+	menuPanel.add(onlineCountNum, BorderLayout.WEST);
+	onlineCountUpdate.addActionListener(new MyButtonListener6());
 	
 	menuPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	menuPanel.setLayout(new FlowLayout());
@@ -185,6 +192,11 @@ public class ClientWindow extends JFrame{
 	
 	JButton changeFont = new JButton("Change Font");
 	menuPanel.add(changeFont,BorderLayout.EAST);
+
+	//delete user
+	JButton deleteUser = new JButton("Delete User");
+	menuPanel.add(deleteUser,BorderLayout.EAST);
+	deleteUser.addActionListener(new MyButtonListener5());
 	
 	rightPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	rightPanel.setLayout(new BorderLayout());
@@ -372,7 +384,37 @@ public class ClientWindow extends JFrame{
 	    controller.displayMsg("You have changed the font to " + fontName + ", size: " + size + '\n');
 	}
     }
-    
+
+    //delete contact in client's contact list
+    class MyButtonListener5 implements ActionListener{
+	public void actionPerformed(ActionEvent e){
+	    ListModel<String> list = listContacts.getModel();
+	    String contact = listContacts.getSelectedValue();
+	    for(int i = list.getSize()-1; i >= 0; i--){
+		if(list.getElementAt(i).equals("Broadcast")){
+		    controller.displayMsg("[ERROR] You cannot delete broadcast\n");
+		}
+		else if(list.getElementAt(i).equals(contact)){
+		    listContacts.remove(i);
+		}
+	    }
+	}
+    }
+
+    //online count
+    class MyButtonListener6 implements ActionListener{
+	public void actionPerformed(ActionEvent e){
+	    int count = 1;
+	    ListModel<String> list = listContacts.getModel();
+	    for(int i = 0; i < list.getSize(); i++){
+		if(list.getElementAt(i).endsWith("(Online)")){
+		    count++;
+		}
+	    }
+	    onlineCountNum.setText(String.valueOf(count));
+	}
+    }
+
     
 /**
      * Handles actions when buttons are clicked
