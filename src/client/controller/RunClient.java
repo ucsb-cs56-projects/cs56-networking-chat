@@ -1,6 +1,6 @@
-package edu.ucsb.cs56.projects.networking.chat.chatclient.controller;
+package client.controller;
 
-import edu.ucsb.cs56.projects.networking.chat.chatclient.view.ClientWindow;
+import client.view.ClientWindow;
 
 /**
  * Application class represent the entrance of the program

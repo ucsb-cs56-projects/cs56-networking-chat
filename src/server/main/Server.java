@@ -1,5 +1,5 @@
-package edu.ucsb.cs56.projects.networking.chat.chatserver.model;
-import edu.ucsb.cs56.projects.networking.chat.chatserver.controller.ServerController;
+package server.model;
+import server.controller.ServerController;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

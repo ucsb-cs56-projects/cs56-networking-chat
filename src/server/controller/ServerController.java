@@ -1,7 +1,7 @@
-package edu.ucsb.cs56.projects.networking.chat.chatserver.controller;
+package server.controller;
 
-import edu.ucsb.cs56.projects.networking.chat.chatserver.model.Server;
-import edu.ucsb.cs56.projects.networking.chat.chatserver.view.ServerWindow;
+import server.model.Server;
+import server.view.ServerWindow;
 
 /**
  * Represent the controller which handles the communication between server view and server model

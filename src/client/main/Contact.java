@@ -1,4 +1,4 @@
-package edu.ucsb.cs56.projects.networking.chat.chatclient.model;
+package client.model;
 
 /**
 * Represents a contact in the client's contact list

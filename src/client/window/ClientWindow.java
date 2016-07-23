@@ -1,5 +1,5 @@
 
-package edu.ucsb.cs56.projects.networking.chat.chatclient.view;
+package client.view;
 
 import java.awt.*;
 import java.awt.Color;
@@ -15,7 +15,7 @@ import javax.swing.*;
 //Import random library
 import java.util.Random;
 
-import edu.ucsb.cs56.projects.networking.chat.chatclient.controller.ClientController;
+import client.controller.ClientController;
 
 /**
  * Represents a JFrame window which has components that are needed for chatting

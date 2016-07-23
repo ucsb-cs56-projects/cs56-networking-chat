@@ -1,10 +1,10 @@
-package edu.ucsb.cs56.projects.networking.chat.chatserver.junit;
+package server.junit;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import edu.ucsb.cs56.projects.networking.chat.chatserver.model.Server;
+import server.model.Server;
 
 public class ServerTest {
 
