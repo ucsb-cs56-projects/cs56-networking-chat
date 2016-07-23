@@ -16,7 +16,6 @@ import javax.swing.*;
 import java.util.Random;
 
 import edu.ucsb.cs56.projects.networking.chat.chatclient.controller.ClientController;
-import edu.ucsb.cs56.projects.networking.chat.chatclient.model.Client;
 
 /**
  * Represents a JFrame window which has components that are needed for chatting
@@ -34,16 +33,20 @@ public class ClientWindow extends JFrame{
     private JPasswordField pfPassword;
     private JScrollPane spScrollPane;
     private JList<String> listContacts;
+    //private DefaultListModel<String> model; //NEW
     private JLabel lblContact;
     private JLabel lblUserName;
     private JLabel lblNickName;
     private JLabel lblPassword;
     private JLabel lblServerIp;
     private JLabel lblLoginError;
+    private JLabel onlineCountNum;
+    private JLabel onlineCountText;
     private JCheckBox soundbox;
     private JButton btConnect;
     private JButton btNickname;
     private JButton btChangeFont;
+    private JButton onlineCountUpdate;
     private static ClientWindow window;
     private ClientController controller;
     private String name;
@@ -51,12 +54,6 @@ public class ClientWindow extends JFrame{
     private String ip;
     private String password;
     private JFrame nicknameWindow;
-
-    //contact count
-    private Client client;
-    private JLabel onlineCountNum;
-    private JLabel onlineCountText;
-    private JButton onlineCountUpdate;
 
     //delete user
     private JButton btDeleteUser;
@@ -92,29 +89,24 @@ public class ClientWindow extends JFrame{
 	taOutput.setForeground(colors[x]);
 	taOutput.setFont(fonts[y]);
 	taOutput.setEditable(false);
+	//model = new DefaultListModel<String>(controller.getContacts()); //NEW
 	listContacts = new JList<String>(controller.getContacts());
+	//listContacts = new JList<String>(model); //NEW 
 	lblContact = new JLabel("Contacts");
 	lblUserName = new JLabel("Username: ");
 	lblNickName = new JLabel("New Nickname:");
 	lblServerIp = new JLabel("Server IP: ");
 	lblPassword = new JLabel("Password: ");
+	onlineCountText = new JLabel("Online Count: ");
+	onlineCountNum = new JLabel("ERROR");
+	onlineCountUpdate = new JButton("Refresh");
+	onlineCountNum.setText("");
 	lblLoginError = new JLabel("");
 	tfUsername = new JTextField(20);
 	tfNickName = new JTextField(20);
 	tfServerIp = new JTextField(20);
 	pfPassword = new JPasswordField(20);
 	
-	//contact countBox
-	//client = Client.getClient();
-	//countBox = new JLabel("Online Users: " + client.getOnlineCount());
-
-	//code for online count
-	onlineCountText = new JLabel("Online Count: ");
-	onlineCountNum = new JLabel("ERROR");
-	onlineCountUpdate = new JButton("Refresh");
-	//int numOnlineCount = controller.getOnlineCount();
-	onlineCountNum.setText("");
-
 	//default connection
 	tfServerIp.setText("127.0.0.1");
 	soundbox = new JCheckBox("Play Sounds");
@@ -180,7 +172,6 @@ public class ClientWindow extends JFrame{
 	JPanel rightPanel = new JPanel();
 	JPanel menuPanel = new JPanel();
 
-	//online count. needs improvement.
 	menuPanel.add(onlineCountUpdate, BorderLayout.WEST);
 	menuPanel.add(onlineCountText, BorderLayout.WEST);
 	menuPanel.add(onlineCountNum, BorderLayout.WEST);
@@ -388,20 +379,65 @@ public class ClientWindow extends JFrame{
     //delete contact in client's contact list
     class MyButtonListener5 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
+	    /*
+	    final DefaultListModel<String> model = new DefaultListModel<String>();
+	    for(int i = 0; i < listContacts.getSize(); i++){
+		model.addElement(
+
+	    int index = listContacts.getSelectedIndex();
+	    if(index == 0)
+		controller.displayMsg("You can't delete broadcast");
+	    else{
+		model.remove(index);
+	    }
+	    if(index == model.getSize())
+		index--;
+	    listContacts.setSelectedIndex(index);
+	    listContacts.ensureIndexIsVisible(index);
+	    */
+
+	    //int index = listContacts.getSelectedIndex();
+	    //if(index != -1)
+	    //((DefaultListModel)listContacts.getModel).remove(listContacts.getSelectedIndex());
+
+	    /*
+	    DefaultListModel<String> list = new DefaultListModel<>();
+	    for (String val : controller.getContacts())
+		list.addElement(val);
+	    if (list.getSize()>0)
+		list.removeElementAt(0);
+	    */
+	    
+	    //DefaultListModel<String> list = (DefaultListModel<String>)listContacts.getModel();
 	    ListModel<String> list = listContacts.getModel();
+
+	    //int contact = listContacts.getSelectedIndex();
+	    
+	    //if(contact != -1)
+	    //list.removeElementAt(contact);
+
+	    
 	    String contact = listContacts.getSelectedValue();
+	    int j = -1;
 	    for(int i = list.getSize()-1; i >= 0; i--){
 		if(list.getElementAt(i).equals("Broadcast")){
 		    controller.displayMsg("[ERROR] You cannot delete broadcast\n");
 		}
 		else if(list.getElementAt(i).equals(contact)){
-		    listContacts.remove(i);
+		    j = i;
 		}
 	    }
+	    if(j != -1){
+		//list.remove(j);
+	    }
+	    
 	}
     }
 
-    //online count
+    /**
+     * Handles actions when Refresh button is pressed
+     * @author Winfred Huang and Arturo Milanes
+     */
     class MyButtonListener6 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 	    int count = 1;
@@ -416,7 +452,7 @@ public class ClientWindow extends JFrame{
     }
 
     
-/**
+    /**
      * Handles actions when buttons are clicked
      * @author Peng Wang with Andro Stotts
      * @version 0.4
@@ -566,19 +602,20 @@ public class ClientWindow extends JFrame{
 
 
 		if(!listContacts.getSelectedValue().equals("Broadcast")) {
-            String parts[] = listContacts.getSelectedValue().toString().split("");
-            String receiverName = "";
-            for (int i = 0; i >= 0; i++) {
-                String ch = parts[i];
-                if (!ch.equals("(")) {
-                    receiverName = receiverName + ch;
-                } else
-                    break;
-            }
-
-            controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
-        }
-        else
+		    String parts[] = listContacts.getSelectedValue().toString().split("");
+		    String receiverName = "";
+		    ListModel<String> list  = listContacts.getModel();
+		    for (int i = 0; i < listContacts.getSelectedValue().length(); i++) {
+			    String ch = parts[i];
+			    if (!ch.equals("(")) {
+				receiverName = receiverName + ch;
+			    } else
+				break;
+			}
+		    
+		    controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
+		}
+		else
 		    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
 	    }
 	}	

@@ -44,9 +44,6 @@ public class Client {
 
     private boolean soundOn = true;
 
-    //online count
-    private int onlineCount;
-
     
     /**
      * Initialize instance variables
@@ -73,31 +70,6 @@ public class Client {
 	return client;
     }
 
-    
-    //set onlineCount
-    public void setOnlineCount(int onlineCount){
-	this.onlineCount = onlineCount;
-
-	/*
-	if(num == 1){
-	    onlineCount= (this.onlineCount)++;	    
-	}
-	else if(num == 0){
-	    onlineCount= (this.onlineCount)--;
-	}
-
-	controller.updateOnlineCount(onlineCount);
-	*/
-    }
-    
-    
-     //get onlineCount
-    public int getOnlineCount(){
-	return this.onlineCount;
-	//return controller.updateOnlineCount(onlineCount);
-    }
-
-    
     /**
      * setuserName method is used for setting user's userName
      * @param userName the user's userName
@@ -304,32 +276,6 @@ public class Client {
 	return temp;
     }
 
-
-    
-    //count # of clinets online
-    /*    
-    public int getOnlineCount(){
-	
-	
-	controller = ClientController.getController();
-	String[] c = controller.getContacts();
-	
-	for(int i = 0; i < c.length; i++){
-	    //  if(c[i]=="andro"){
-	    
-		
-	    return i;
-	    //  }
-	}
-	
-	return 1;
-	
-	
-    }
-    */	
-	
-	
-	
     /**
      * sendMsg is the method that used for send a text message to the server
      * @param s text message
@@ -353,15 +299,11 @@ public class Client {
 		while(isConnected){
 		    String msg = dis.readUTF();
 		    String[] strs = parseReceivingMsg(msg);
-		    //client go online
 		    if(strs[1].equals("1002")){
 			for(int i = 0; i < contactList.length; i++){
 			    if(contactList[i].equals(strs[0])){
 				contactList[i] += "(Online)";
 				controller.updateContactList(contactList);
-				//setOnlineCount(1);
-				//add online user count
-				controller.updateOnlineCountNewUser();
 				//play a sound
 				if(soundOn)
 				    {
@@ -373,15 +315,11 @@ public class Client {
 			}
 			
 		    }
-		    //client go offline
 		    else if(strs[1].equals("1003")){
 			for(int i = 0; i < contactList.length; i++){
 			    if(contactList[i].equals(strs[0]+"(Online)")){
 				contactList[i] = strs[0];
 				controller.updateContactList(contactList);
-				//setOnlineCount(0);
-				//decrease online user count
-				controller.updateOnlineCountRemoveUser();
 				//play a sound
 				if(soundOn)
 				    {

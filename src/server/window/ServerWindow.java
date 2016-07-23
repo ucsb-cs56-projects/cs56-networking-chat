@@ -9,9 +9,6 @@ import javax.swing.*;
 
 import edu.ucsb.cs56.projects.networking.chat.chatserver.controller.ServerController;
 
-//import server
-import edu.ucsb.cs56.projects.networking.chat.chatserver.model.Server;
-
 /**
  * Represents a JFrame window of a server
  * @author Peng Wang, Andro Stotts, Max Hinson, and Bryce Filler
@@ -20,6 +17,8 @@ import edu.ucsb.cs56.projects.networking.chat.chatserver.model.Server;
 public class ServerWindow extends JFrame{
 
     private static final long serialVersionUID = 1L;
+    private JLabel onlineCountText;
+    private JButton onlineCountUpdate;
     private JButton btStart;
     private JButton btClose;
     private JButton btKick;
@@ -27,20 +26,11 @@ public class ServerWindow extends JFrame{
     private static ServerWindow window;
     private ServerController controller;
     private JList<String> userList;
-    private Server server;
     
-    //contact count
-    private JLabel onlineCountText;
-    // private JLabel onlineCountNum;
-    private JButton onlineCountUpdate;
-    
-
     /**
      * Default constructor
      */
     private ServerWindow(){
-	// instance of server
-	//server = Server.getServer();
 
 	btStart = new JButton("Start Server");
 	btClose = new JButton("Close Server");
@@ -48,14 +38,11 @@ public class ServerWindow extends JFrame{
 	userList = new JList<String>();
 	taConsole = new TextArea();
 	
-	//online count
 	onlineCountText = new JLabel("Users Online: ");
 	onlineCountUpdate = new JButton ("Refresh");
 
-
 	//get an instance of controller
 	controller = ServerController.getController();
-
     }
 	
     /**
@@ -85,14 +72,8 @@ public class ServerWindow extends JFrame{
 	buttonPanel.add(btStart);
 	buttonPanel.add(btClose);
 	buttonPanel.add(btKick);
-
-
-	// online count button
 	buttonPanel.add(onlineCountUpdate);
 
-
-
-	//might need a .setEnabled for onlineCountUpdate
 	btStart.setEnabled(true);
 	btClose.setEnabled(false);
 	btKick.setEnabled(false);
@@ -112,9 +93,6 @@ public class ServerWindow extends JFrame{
 	btStart.addActionListener(new myButtonListener());
 	btClose.addActionListener(new myButtonListener());
 	btKick.addActionListener(new myButtonListener());
-	//call actionListener for update
-
-
 	onlineCountUpdate.addActionListener(new myButtonListener2());
 
 	this.setVisible(true);
@@ -135,8 +113,6 @@ public class ServerWindow extends JFrame{
     public JList getUserList(){
 	return userList;
     }
-
-
    
     /**
      * Handles the actions when buttons have been clicked on the server window
@@ -167,8 +143,10 @@ public class ServerWindow extends JFrame{
 	}		
     }
 
-
- //action for onlineUpdateCount button has been clicked
+    /**
+     * Handles action when Refresh button is pressed
+     * @author Arturo Milanes and Winfred Huang
+     */
     class myButtonListener2 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 	    int count = 0;
@@ -176,11 +154,5 @@ public class ServerWindow extends JFrame{
 	    count = list.getSize();
 	    onlineCountText.setText("Users Online: " + String.valueOf(count));
 	}
-
-
-
-
-
-
     }
 }
