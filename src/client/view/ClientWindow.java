@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.util.Random;
 
 import client.controller.ClientController;
+import client.model.Client;
 
 /**
  * Represents a JFrame window which has components that are needed for chatting
@@ -32,7 +33,8 @@ public class ClientWindow extends JFrame{
     private JTextField tfServerIp;
     private JPasswordField pfPassword;
     private JScrollPane spScrollPane;
-    private JList<String> listContacts;
+    //private JList<String> listContacts;
+    private JList listContacts;
     //private DefaultListModel<String> model; //NEW
     private JLabel lblContact;
     private JLabel lblUserName;
@@ -90,7 +92,8 @@ public class ClientWindow extends JFrame{
 	taOutput.setFont(fonts[y]);
 	taOutput.setEditable(false);
 	//model = new DefaultListModel<String>(controller.getContacts()); //NEW
-	listContacts = new JList<String>(controller.getContacts());
+	//listContacts = new JList<String>(controller.getContacts());
+	listContacts = new JList(controller.getContacts());
 	//listContacts = new JList<String>(model); //NEW 
 	lblContact = new JLabel("Contacts");
 	lblUserName = new JLabel("Username: ");
@@ -205,7 +208,7 @@ public class ClientWindow extends JFrame{
 	leftPanel.add(nickName, BorderLayout.SOUTH);
 	leftPanel.add(privateRoom, BorderLayout.NORTH);
 		
-	listContacts.setSelectedIndex(0);
+	//listContacts.setSelectedIndex(0);
 		
 	this.getContentPane().add(leftPanel, BorderLayout.WEST);
 	this.getContentPane().add(rightPanel, BorderLayout.CENTER);
@@ -376,9 +379,20 @@ public class ClientWindow extends JFrame{
 	}
     }
 
-    //delete contact in client's contact list
+    //delete contact in client's contact list NEW
     class MyButtonListener5 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
+	    /*
+	    DefaultListModel list = (DefaultListModel)listContacts.getModel();
+	    int index = listContacts.getSelectedIndex();
+	    if(!listContacts.getSelectedValue().equals("Broadcast")){
+		list.remove(index);
+	    }
+	    else{
+		controller.displayMsg("[ERROR] You cannot delete broadcast\n" + listContacts.getSelectedValue());
+	    }
+	    */
+	    
 	    /*
 	    final DefaultListModel<String> model = new DefaultListModel<String>();
 	    for(int i = 0; i < listContacts.getSize(); i++){
@@ -399,24 +413,15 @@ public class ClientWindow extends JFrame{
 	    //int index = listContacts.getSelectedIndex();
 	    //if(index != -1)
 	    //((DefaultListModel)listContacts.getModel).remove(listContacts.getSelectedIndex());
-
-	    /*
-	    DefaultListModel<String> list = new DefaultListModel<>();
-	    for (String val : controller.getContacts())
-		list.addElement(val);
-	    if (list.getSize()>0)
-		list.removeElementAt(0);
-	    */
-	    
+	    	    
 	    //DefaultListModel<String> list = (DefaultListModel<String>)listContacts.getModel();
-	    ListModel<String> list = listContacts.getModel();
+	    //ListModel<String> list = listContacts.getModel();
 
 	    //int contact = listContacts.getSelectedIndex();
 	    
 	    //if(contact != -1)
 	    //list.removeElementAt(contact);
-
-	    
+	    /*
 	    String contact = listContacts.getSelectedValue();
 	    int j = -1;
 	    for(int i = list.getSize()-1; i >= 0; i--){
@@ -430,7 +435,7 @@ public class ClientWindow extends JFrame{
 	    if(j != -1){
 		//list.remove(j);
 	    }
-	    
+	    */
 	}
     }
 
@@ -591,7 +596,7 @@ public class ClientWindow extends JFrame{
     class InputListener implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 	    if(listContacts.isSelectionEmpty()){
-		taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SENT YOUR MESSAGE***\n");
+		taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
 	    }
 	    else{
 		String text = tfInput.getText().trim();
@@ -604,8 +609,8 @@ public class ClientWindow extends JFrame{
 		if(!listContacts.getSelectedValue().equals("Broadcast")) {
 		    String parts[] = listContacts.getSelectedValue().toString().split("");
 		    String receiverName = "";
-		    ListModel<String> list  = listContacts.getModel();
-		    for (int i = 0; i < listContacts.getSelectedValue().length(); i++) {
+		    //ListModel<String> list  = listContacts.getModel();
+		    for (int i = 0; i < 0; i++) { //listContacts.getSelectedValue().length()
 			    String ch = parts[i];
 			    if (!ch.equals("(")) {
 				receiverName = receiverName + ch;

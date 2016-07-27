@@ -301,7 +301,7 @@ public class Server{
 		}
 	    }
 	    if(!isOnline){
-		this.sendMsg("***THE USER YOU ARE TRYING TO SENT MESSAGE TO IS NOT ONLINE***&" + strs[2]);
+		this.sendMsg("***THE USER YOU ARE TRYING TO SEND MESSAGE TO IS NOT ONLINE***&" + strs[2]);
 	    }	
 	}
 
