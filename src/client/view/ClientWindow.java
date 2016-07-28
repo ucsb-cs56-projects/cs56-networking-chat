@@ -34,9 +34,8 @@ public class ClientWindow extends JFrame{
     private JPasswordField pfPassword;
     private JScrollPane spScrollPane;
     private JList<String> listContacts;
-    //private JList listContacts;
-    private DefaultListModel<String> model;
-    private String[] contactList;
+    private DefaultListModel model;
+    private Contact[] contactList;
     private JLabel lblContact;
     private JLabel lblUserName;
     private JLabel lblNickName;
@@ -60,8 +59,6 @@ public class ClientWindow extends JFrame{
 
     //delete user
     private JButton btDeleteUser;
-
-   
 
     //Pre-determined color to randomly use
     java.awt.Color redColor = new java.awt.Color(255,000,000);
@@ -92,10 +89,13 @@ public class ClientWindow extends JFrame{
 	taOutput.setForeground(colors[x]);
 	taOutput.setFont(fonts[y]);
 	taOutput.setEditable(false);
-	model = new DefaultListModel<String>(); //NEW
+	model = new DefaultListModel();
 	contactList = controller.getContacts();
-	for(int i = 0; i < contactList.length; i++){ //NEW
-	    model.addElement(contactList[i]);
+	//for(int i = 0; i < contactList.length; i++){ //NEW
+	    //model.addElement(contactList[i]);
+	//}
+	for(Contact contact : contactList){
+	    model.addElement(contact);
 	}
 	//listContacts = new JList<String>(controller.getContacts());
 	//listContacts = new JList(controller.getContacts());
@@ -193,7 +193,6 @@ public class ClientWindow extends JFrame{
 	JButton changeFont = new JButton("Change Font");
 	menuPanel.add(changeFont,BorderLayout.EAST);
 
-	//delete user
 	JButton deleteUser = new JButton("Delete User");
 	menuPanel.add(deleteUser,BorderLayout.EAST);
 	deleteUser.addActionListener(new MyButtonListener5());
@@ -214,7 +213,7 @@ public class ClientWindow extends JFrame{
 	leftPanel.add(nickName, BorderLayout.SOUTH);
 	leftPanel.add(privateRoom, BorderLayout.NORTH);
 		
-	//listContacts.setSelectedIndex(0);
+	listContacts.setSelectedIndex(0);
 		
 	this.getContentPane().add(leftPanel, BorderLayout.WEST);
 	this.getContentPane().add(rightPanel, BorderLayout.CENTER);
@@ -371,8 +370,8 @@ public class ClientWindow extends JFrame{
     }
 
     /**
-     *Handles actions when Change Font button is clicked
-     *@author Winfred Huang and Arturo Milanes
+     * Handles actions when Change Font button is clicked
+     * @author Winfred Huang and Arturo Milanes
      */ 
     class MyButtonListener4 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
@@ -385,21 +384,19 @@ public class ClientWindow extends JFrame{
 	}
     }
 
-    //delete contact in client's contact list NEW
+    /**
+     * Handles actions when Delete user button is clicked
+     * @author Winfred Huang and Arturo Milanes
+     */
     class MyButtonListener5 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 	    System.out.println("You selected " + listContacts.getSelectedIndex());
 	    System.out.println("You selected " + listContacts.getSelectedValue());
-	    
-	    //ListModel contacts = listContacts.getModel();
-	    //System.out.println(contacts);
-	    //DefaultListModel<String> list = (DefaultListModel<String>)(contacts);
-	    //int index = listContacts.getSelectedIndex();
+	    	    
 	    if(listContacts.getSelectedIndex() == 0){
 		controller.displayMsg("Can't delete broadcast.\n");
 	    }
 	    else if(listContacts.getSelectedIndex() > 0){
-		//list.remove(index);
 		controller.displayMsg("You tried to delete " + listContacts.getSelectedValue() +".\n");
 		System.out.println("listContacts size = " + listContacts.getModel().getSize() + "\n");
 		System.out.println("model size = " + model.getSize() + "\n");
@@ -411,27 +408,6 @@ public class ClientWindow extends JFrame{
 	    else{
 		controller.displayMsg("No contact to delete. Please select one.\n");
 	    }
-	    
-	    
-	    //int index = listContacts.getSelectedIndex();
-	    //if(index != -1)
-	    //((DefaultListModel)listContacts.getModel).remove(listContacts.getSelectedIndex());
-	    /*	    
-	    DefaultListModel<String> list = (DefaultListModel<String>)listContacts.getModel();
-	    String contact = listContacts.getSelectedValue();
-	    int j = -1;
-	    for(int i = list.getSize()-1; i >= 0; i--){
-		if(list.getElementAt(i).equals("Broadcast")){
-		    controller.displayMsg("[ERROR] You cannot delete broadcast\n");
-		}
-		else if(list.getElementAt(i).equals(contact)){
-		    j = i;
-		}
-	    }
-	    if(j != -1){
-		//list.remove(j);
-	    }
-	    */
 	}
     }
 

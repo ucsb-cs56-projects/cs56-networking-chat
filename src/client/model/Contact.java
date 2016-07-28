@@ -6,41 +6,49 @@ package client.model;
 * @version 0.4
 */
 public class Contact {
-	private String name;
-	private String nickname;
+    private String name;
+    private String nickname;
+    
+    /**
+     * Default constructor
+     */
+    public Contact(){
+	name = "";
+	nickname = "";
+    }
+    
+    /**
+     * Overloaded constructor that takes the user's name
+     * @param name
+     */
+    public Contact(String name){
+	this.name = name;
 	
-	/**
-	 * Default constructor
-	 */
-	public Contact(){
-		name = "";
-		nickname = "";
-	}
-	
-	/**
-	 * Overloaded constructor that takes the user's name
-	 * @param name
-	 */
-	public Contact(String name){
-		this.name = name;
-	
-	}
-	
-	/**
-	 * Set user's name
-	 * @param name the user's name
-	 */
-	public void setName(String name){
-		this.name = name;
-	}
+    }
+    
+    /**
+     * Set user's name
+     * @param name the user's name
+     */
+    public void setName(String name){
+	this.name = name;
+    }
+    
+    
+    /**
+     * Get user's name
+     * @return user's name
+     */
+    public String getName(){
+	return name;
+    }
 
-
-	/**
-	 * Get user's name
-	 * @return user's name
-	 */
-	public String getName(){
-		return name;
-	}
-
+    /**
+     * Overriden toString()
+     * @return this name
+     */
+    @Override
+    public String toString(){
+	return this.getName();
+    }
 }
