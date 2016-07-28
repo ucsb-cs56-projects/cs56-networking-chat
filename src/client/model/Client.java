@@ -299,6 +299,7 @@ public class Client {
 		while(isConnected){
 		    String msg = dis.readUTF();
 		    String[] strs = parseReceivingMsg(msg);
+		    //client go online
 		    if(strs[1].equals("1002")){
 			for(int i = 0; i < contactList.length; i++){
 			    if(contactList[i].equals(strs[0])){
@@ -315,6 +316,7 @@ public class Client {
 			}
 			
 		    }
+		    //client go offline
 		    else if(strs[1].equals("1003")){
 			for(int i = 0; i < contactList.length; i++){
 			    if(contactList[i].equals(strs[0]+"(Online)")){

@@ -1,4 +1,3 @@
-
 package client.view;
 
 import java.awt.*;
@@ -17,6 +16,7 @@ import java.util.Random;
 
 import client.controller.ClientController;
 import client.model.Client;
+import client.model.Contact;
 
 /**
  * Represents a JFrame window which has components that are needed for chatting
@@ -34,8 +34,8 @@ public class ClientWindow extends JFrame{
     private JPasswordField pfPassword;
     private JScrollPane spScrollPane;
     private JList<String> listContacts;
-    private DefaultListModel model;
-    private Contact[] contactList;
+    private DefaultListModel<String> model;
+    private String[] contactList;
     private JLabel lblContact;
     private JLabel lblUserName;
     private JLabel lblNickName;
@@ -56,9 +56,6 @@ public class ClientWindow extends JFrame{
     private String ip;
     private String password;
     private JFrame nicknameWindow;
-
-    //delete user
-    private JButton btDeleteUser;
 
     //Pre-determined color to randomly use
     java.awt.Color redColor = new java.awt.Color(255,000,000);
@@ -89,17 +86,17 @@ public class ClientWindow extends JFrame{
 	taOutput.setForeground(colors[x]);
 	taOutput.setFont(fonts[y]);
 	taOutput.setEditable(false);
-	model = new DefaultListModel();
+	model = new DefaultListModel<String>();
 	contactList = controller.getContacts();
 	//for(int i = 0; i < contactList.length; i++){ //NEW
 	    //model.addElement(contactList[i]);
 	//}
-	for(Contact contact : contactList){
+	for(String contact : contactList){
 	    model.addElement(contact);
 	}
 	//listContacts = new JList<String>(controller.getContacts());
 	//listContacts = new JList(controller.getContacts());
-	listContacts = new JList<String>();//NEW
+	listContacts = new JList<String>();
 	listContacts.setModel(model);
 	lblContact = new JLabel("Contacts");
 	lblUserName = new JLabel("Username: ");
@@ -390,20 +387,14 @@ public class ClientWindow extends JFrame{
      */
     class MyButtonListener5 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
-	    System.out.println("You selected " + listContacts.getSelectedIndex());
-	    System.out.println("You selected " + listContacts.getSelectedValue());
-	    	    
 	    if(listContacts.getSelectedIndex() == 0){
 		controller.displayMsg("Can't delete broadcast.\n");
 	    }
 	    else if(listContacts.getSelectedIndex() > 0){
 		controller.displayMsg("You tried to delete " + listContacts.getSelectedValue() +".\n");
-		System.out.println("listContacts size = " + listContacts.getModel().getSize() + "\n");
-		System.out.println("model size = " + model.getSize() + "\n");
 		model.remove(listContacts.getSelectedIndex());
 		listContacts.setModel(model);
-		System.out.println("listContacts size = " + listContacts.getModel().getSize() + "\n");
-		System.out.println("model size = " + model.getSize() + "\n");
+		controller.displayMsg("Successful");
 	    }
 	    else{
 		controller.displayMsg("No contact to delete. Please select one.\n");
@@ -427,7 +418,6 @@ public class ClientWindow extends JFrame{
 	    onlineCountNum.setText(String.valueOf(count));
 	}
     }
-
     
     /**
      * Handles actions when buttons are clicked
