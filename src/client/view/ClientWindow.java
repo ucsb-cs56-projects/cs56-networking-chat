@@ -33,9 +33,10 @@ public class ClientWindow extends JFrame{
     private JTextField tfServerIp;
     private JPasswordField pfPassword;
     private JScrollPane spScrollPane;
-    //private JList<String> listContacts;
-    private JList listContacts;
-    //private DefaultListModel<String> model; //NEW
+    private JList<String> listContacts;
+    //private JList listContacts;
+    private DefaultListModel<String> model;
+    private String[] contactList;
     private JLabel lblContact;
     private JLabel lblUserName;
     private JLabel lblNickName;
@@ -91,10 +92,15 @@ public class ClientWindow extends JFrame{
 	taOutput.setForeground(colors[x]);
 	taOutput.setFont(fonts[y]);
 	taOutput.setEditable(false);
-	//model = new DefaultListModel<String>(controller.getContacts()); //NEW
+	model = new DefaultListModel<String>(); //NEW
+	contactList = controller.getContacts();
+	for(int i = 0; i < contactList.length; i++){ //NEW
+	    model.addElement(contactList[i]);
+	}
 	//listContacts = new JList<String>(controller.getContacts());
-	listContacts = new JList(controller.getContacts());
-	//listContacts = new JList<String>(model); //NEW 
+	//listContacts = new JList(controller.getContacts());
+	listContacts = new JList<String>();//NEW
+	listContacts.setModel(model);
 	lblContact = new JLabel("Contacts");
 	lblUserName = new JLabel("Username: ");
 	lblNickName = new JLabel("New Nickname:");
@@ -382,46 +388,36 @@ public class ClientWindow extends JFrame{
     //delete contact in client's contact list NEW
     class MyButtonListener5 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
-	    /*
-	    DefaultListModel list = (DefaultListModel)listContacts.getModel();
-	    int index = listContacts.getSelectedIndex();
-	    if(!listContacts.getSelectedValue().equals("Broadcast")){
-		list.remove(index);
-	    }
-	    else{
-		controller.displayMsg("[ERROR] You cannot delete broadcast\n" + listContacts.getSelectedValue());
-	    }
-	    */
+	    System.out.println("You selected " + listContacts.getSelectedIndex());
+	    System.out.println("You selected " + listContacts.getSelectedValue());
 	    
-	    /*
-	    final DefaultListModel<String> model = new DefaultListModel<String>();
-	    for(int i = 0; i < listContacts.getSize(); i++){
-		model.addElement(
-
-	    int index = listContacts.getSelectedIndex();
-	    if(index == 0)
-		controller.displayMsg("You can't delete broadcast");
-	    else{
-		model.remove(index);
+	    //ListModel contacts = listContacts.getModel();
+	    //System.out.println(contacts);
+	    //DefaultListModel<String> list = (DefaultListModel<String>)(contacts);
+	    //int index = listContacts.getSelectedIndex();
+	    if(listContacts.getSelectedIndex() == 0){
+		controller.displayMsg("Can't delete broadcast.\n");
 	    }
-	    if(index == model.getSize())
-		index--;
-	    listContacts.setSelectedIndex(index);
-	    listContacts.ensureIndexIsVisible(index);
-	    */
-
+	    else if(listContacts.getSelectedIndex() > 0){
+		//list.remove(index);
+		controller.displayMsg("You tried to delete " + listContacts.getSelectedValue() +".\n");
+		System.out.println("listContacts size = " + listContacts.getModel().getSize() + "\n");
+		System.out.println("model size = " + model.getSize() + "\n");
+		model.remove(listContacts.getSelectedIndex());
+		listContacts.setModel(model);
+		System.out.println("listContacts size = " + listContacts.getModel().getSize() + "\n");
+		System.out.println("model size = " + model.getSize() + "\n");
+	    }
+	    else{
+		controller.displayMsg("No contact to delete. Please select one.\n");
+	    }
+	    
+	    
 	    //int index = listContacts.getSelectedIndex();
 	    //if(index != -1)
 	    //((DefaultListModel)listContacts.getModel).remove(listContacts.getSelectedIndex());
-	    	    
-	    //DefaultListModel<String> list = (DefaultListModel<String>)listContacts.getModel();
-	    //ListModel<String> list = listContacts.getModel();
-
-	    //int contact = listContacts.getSelectedIndex();
-	    
-	    //if(contact != -1)
-	    //list.removeElementAt(contact);
-	    /*
+	    /*	    
+	    DefaultListModel<String> list = (DefaultListModel<String>)listContacts.getModel();
 	    String contact = listContacts.getSelectedValue();
 	    int j = -1;
 	    for(int i = list.getSize()-1; i >= 0; i--){

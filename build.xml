@@ -12,8 +12,8 @@
   <property name="javadocURL" value="${webBaseURL}/${projectName}/javadoc" />
   <property name="jwsDest" value="${webRoot}/${projectName}" /> 
   <property name="jwsURL" value="${webBaseURL}/${projectName}" />
-  <property name="mainClassClient" value="edu.ucsb.cs56.projects.networking.chat.chatclient.controller.RunClient" />
-  <property name="mainClassServer" value="edu.ucsb.cs56.projects.networking.chat.chatserver.controller.RunServer" />
+  <property name="mainClassClient" value="client.controller.RunClient" />
+  <property name="mainClassServer" value="server.controller.RunServer" />
   <property name="server" value="Server" />
   <property name="client" value="Client" />
 
@@ -99,7 +99,7 @@
 	<attribute name="Main-Class" value="${mainClassClient}"/>                 
       </manifest>                                                                
     </jar>
-    <jar destfile="dist/${server}.jar" basedir="build" includes="edu/ucsb/cs56/projects/networking/chat/chatserver/**" excludes="**/chatclient" >
+    <jar destfile="dist/${server}.jar" basedir="build" includes="server/**" excludes="**/client" >
       <manifest>                                                                 
 	<attribute name="Main-Class" value="${mainClassServer}"/>                 
       </manifest>                                                                
