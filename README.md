@@ -54,3 +54,32 @@ The first version of this code pre-dates the use of github for CS56 projects.   
 * [Archive link](https://foo.cs.ucsb.edu/cs56/issues/0000838/)
 * [Mantis link](https://foo.cs.ucsb.edu/56mantis/view.php?id=838)
 * Note: the JWS in the older verisons may not work properly. Download and run the .jar files to ensure the program functions.
+
+##M16 final remarks / future improvements
+
+### Update on what the program does (as of this writing):
+*refresh online count using a button
+*random font switching with display output
+*send a message to non-online person returns a failure to send message error output
+
+###Bug
+*As of now, the client can delete the user off the list but the list doesn't update correctly- instead of printing out the names of the updated list, it prints out "contact indexNumber" ex) contact02
+
+###The Big Three
+
+####Refactor code
+
+*For example, go to server.java at line 85 to 122 and refactor the list of contacts provided. Create a new separate contact list for the client also. Check other places that definetely could be refactored.
+
+####Implement Observer Pattern
+
+*Once you refactored code, the observer pattern should be implemented to allow easier code implementation such as adding/deleting contact from a contact list. Use controller class to pass code from model class to view class and back.
+
+####Implement code that can cover future issues
+
+*For example, work on the online user count. The label should be updated, not a the press of the button, but when the user gets online and the label should be refreshed as a result.
+
+###Advice
+*Definetely refactor the code before doing anything else.
+*Refactor the database in server first.
+*Follow the pattern especially the observer pattern.
