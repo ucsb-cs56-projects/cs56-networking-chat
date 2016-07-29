@@ -1,5 +1,4 @@
-
-package edu.ucsb.cs56.projects.networking.chat.chatclient.view;
+package client.view;
 
 import java.awt.*;
 import java.awt.Color;
@@ -15,8 +14,9 @@ import javax.swing.*;
 //Import random library
 import java.util.Random;
 
-import edu.ucsb.cs56.projects.networking.chat.chatclient.controller.ClientController;
-import edu.ucsb.cs56.projects.networking.chat.chatclient.model.Client;
+import client.controller.ClientController;
+import client.model.Client;
+import client.model.Contact;
 
 /**
  * Represents a JFrame window which has components that are needed for chatting
@@ -33,17 +33,22 @@ public class ClientWindow extends JFrame{
     private JTextField tfServerIp;
     private JPasswordField pfPassword;
     private JScrollPane spScrollPane;
-    private JList listContacts;
+    private JList<String> listContacts;
+    private DefaultListModel<String> model;
+    private String[] contactList;
     private JLabel lblContact;
     private JLabel lblUserName;
     private JLabel lblNickName;
     private JLabel lblPassword;
     private JLabel lblServerIp;
     private JLabel lblLoginError;
+    private JLabel onlineCountNum;
+    private JLabel onlineCountText;
     private JCheckBox soundbox;
     private JButton btConnect;
     private JButton btNickname;
     private JButton btChangeFont;
+    private JButton onlineCountUpdate;
     private static ClientWindow window;
     private ClientController controller;
     private String name;
@@ -51,13 +56,6 @@ public class ClientWindow extends JFrame{
     private String ip;
     private String password;
     private JFrame nicknameWindow;
-
-    //contact count
-    //private Client client;
-    private JLabel countBox;
-    private JLabel onlineCountText;
-
-   
 
     //Pre-determined color to randomly use
     java.awt.Color redColor = new java.awt.Color(255,000,000);
@@ -88,28 +86,33 @@ public class ClientWindow extends JFrame{
 	taOutput.setForeground(colors[x]);
 	taOutput.setFont(fonts[y]);
 	taOutput.setEditable(false);
-	listContacts = new JList(controller.getContacts());
+	model = new DefaultListModel<String>();
+	contactList = controller.getContacts();
+	//for(int i = 0; i < contactList.length; i++){ //NEW
+	    //model.addElement(contactList[i]);
+	//}
+	for(String contact : contactList){
+	    model.addElement(contact);
+	}
+	//listContacts = new JList<String>(controller.getContacts());
+	//listContacts = new JList(controller.getContacts());
+	listContacts = new JList<String>();
+	listContacts.setModel(model);
 	lblContact = new JLabel("Contacts");
 	lblUserName = new JLabel("Username: ");
 	lblNickName = new JLabel("New Nickname:");
 	lblServerIp = new JLabel("Server IP: ");
 	lblPassword = new JLabel("Password: ");
+	onlineCountText = new JLabel("Online Count: ");
+	onlineCountNum = new JLabel("ERROR");
+	onlineCountUpdate = new JButton("Refresh");
+	onlineCountNum.setText("");
 	lblLoginError = new JLabel("");
 	tfUsername = new JTextField(20);
 	tfNickName = new JTextField(20);
 	tfServerIp = new JTextField(20);
 	pfPassword = new JPasswordField(20);
 	
-	//contact countBox
-	//client = Client.getClient();
-	//countBox = new JLabel("Online Users: " + client.getOnlineCount());
-
-	//code for online count
-	onlineCountText = new JLabel("Online Count: ");
-	countBox = new JLabel("");
-	//int numOnlineCount = controller.getOnlineCount();
-	countBox.setText(String.valueOf(controller.getOnlineCount()));
-
 	//default connection
 	tfServerIp.setText("127.0.0.1");
 	soundbox = new JCheckBox("Play Sounds");
@@ -175,9 +178,10 @@ public class ClientWindow extends JFrame{
 	JPanel rightPanel = new JPanel();
 	JPanel menuPanel = new JPanel();
 
-	//online count. needs improvement.
+	menuPanel.add(onlineCountUpdate, BorderLayout.WEST);
 	menuPanel.add(onlineCountText, BorderLayout.WEST);
-	menuPanel.add(countBox, BorderLayout.WEST);
+	menuPanel.add(onlineCountNum, BorderLayout.WEST);
+	onlineCountUpdate.addActionListener(new MyButtonListener6());
 	
 	menuPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	menuPanel.setLayout(new FlowLayout());
@@ -185,6 +189,10 @@ public class ClientWindow extends JFrame{
 	
 	JButton changeFont = new JButton("Change Font");
 	menuPanel.add(changeFont,BorderLayout.EAST);
+
+	JButton deleteUser = new JButton("Delete User");
+	menuPanel.add(deleteUser,BorderLayout.EAST);
+	deleteUser.addActionListener(new MyButtonListener5());
 	
 	rightPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	rightPanel.setLayout(new BorderLayout());
@@ -359,8 +367,8 @@ public class ClientWindow extends JFrame{
     }
 
     /**
-     *Handles actions when Change Font button is clicked
-     *@author Winfred Huang and Arturo Milanes
+     * Handles actions when Change Font button is clicked
+     * @author Winfred Huang and Arturo Milanes
      */ 
     class MyButtonListener4 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
@@ -372,9 +380,46 @@ public class ClientWindow extends JFrame{
 	    controller.displayMsg("You have changed the font to " + fontName + ", size: " + size + '\n');
 	}
     }
+
+    /**
+     * Handles actions when Delete user button is clicked
+     * @author Winfred Huang and Arturo Milanes
+     */
+    class MyButtonListener5 implements ActionListener{
+	public void actionPerformed(ActionEvent e){
+	    if(listContacts.getSelectedIndex() == 0){
+		controller.displayMsg("Can't delete broadcast.\n");
+	    }
+	    else if(listContacts.getSelectedIndex() > 0){
+		controller.displayMsg("You tried to delete " + listContacts.getSelectedValue() +".\n");
+		model.remove(listContacts.getSelectedIndex());
+		listContacts.setModel(model);
+		controller.displayMsg("Successful");
+	    }
+	    else{
+		controller.displayMsg("No contact to delete. Please select one.\n");
+	    }
+	}
+    }
+
+    /**
+     * Handles actions when Refresh button is pressed
+     * @author Winfred Huang and Arturo Milanes
+     */
+    class MyButtonListener6 implements ActionListener{
+	public void actionPerformed(ActionEvent e){
+	    int count = 1;
+	    ListModel<String> list = listContacts.getModel();
+	    for(int i = 0; i < list.getSize(); i++){
+		if(list.getElementAt(i).endsWith("(Online)")){
+		    count++;
+		}
+	    }
+	    onlineCountNum.setText(String.valueOf(count));
+	}
+    }
     
-    
-/**
+    /**
      * Handles actions when buttons are clicked
      * @author Peng Wang with Andro Stotts
      * @version 0.4
@@ -513,7 +558,7 @@ public class ClientWindow extends JFrame{
     class InputListener implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 	    if(listContacts.isSelectionEmpty()){
-		taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SENT YOUR MESSAGE***\n");
+		taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
 	    }
 	    else{
 		String text = tfInput.getText().trim();
@@ -521,22 +566,21 @@ public class ClientWindow extends JFrame{
 
 		nickname = controller.getNickname();
 
-
-
 		if(!listContacts.getSelectedValue().equals("Broadcast")) {
-            String parts[] = listContacts.getSelectedValue().toString().split("");
-            String receiverName = "";
-            for (int i = 0; i >= 0; i++) {
-                String ch = parts[i];
-                if (!ch.equals("(")) {
-                    receiverName = receiverName + ch;
-                } else
-                    break;
-            }
-
-            controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
-        }
-        else
+		    String parts[] = listContacts.getSelectedValue().toString().split("");
+		    String receiverName = "";
+		    ListModel<String> list = listContacts.getModel();
+		    for (int i = 0; i < listContacts.getSelectedValue().length(); i++) {
+			String ch = parts[i];
+			if (!ch.equals("(")) {
+			    receiverName = receiverName + ch;
+			} else
+			    break;
+		    }
+		    
+		    controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
+		}
+		else
 		    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
 	    }
 	}	

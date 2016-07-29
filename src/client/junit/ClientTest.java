@@ -1,8 +1,8 @@
-package edu.ucsb.cs56.projects.networking.chat.chatclient.junit;
+package client.junit;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import edu.ucsb.cs56.projects.networking.chat.chatclient.model.Client;
+import client.model.Client;
 
 public class ClientTest {
 
@@ -47,8 +47,8 @@ public class ClientTest {
 
 	@Test
 	public void testConnectServer() {
-	       Client client = Client.getClient();
-	       assertEquals(8, client.connectServer("127.0.0.1", "Peng Wang", "abc123"));
+		Client client = Client.getClient();
+		assertEquals(8, client.connectServer("127.0.0.1", "Peng Wang", "abc123"));
 	}
 	
 	@Test

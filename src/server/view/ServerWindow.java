@@ -1,4 +1,4 @@
-package edu.ucsb.cs56.projects.networking.chat.chatserver.view;
+package server.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
-import edu.ucsb.cs56.projects.networking.chat.chatserver.controller.ServerController;
+import server.controller.ServerController;
 
 /**
  * Represents a JFrame window of a server
@@ -17,25 +17,30 @@ import edu.ucsb.cs56.projects.networking.chat.chatserver.controller.ServerContro
 public class ServerWindow extends JFrame{
 
     private static final long serialVersionUID = 1L;
+    private JLabel onlineCountText;
+    private JButton onlineCountUpdate;
     private JButton btStart;
     private JButton btClose;
     private JButton btKick;
     private TextArea taConsole;
     private static ServerWindow window;
     private ServerController controller;
-    private JList userList;
-    private JLabel lblContact;
-
+    private JList<String> userList;
+    
     /**
      * Default constructor
      */
     private ServerWindow(){
+
 	btStart = new JButton("Start Server");
 	btClose = new JButton("Close Server");
 	btKick = new JButton("Kick User");
-	userList = new JList();
+	userList = new JList<String>();
 	taConsole = new TextArea();
-	lblContact = new JLabel("Users Online");
+	
+	onlineCountText = new JLabel("Users Online: ");
+	onlineCountUpdate = new JButton ("Refresh");
+
 	//get an instance of controller
 	controller = ServerController.getController();
     }
@@ -67,6 +72,8 @@ public class ServerWindow extends JFrame{
 	buttonPanel.add(btStart);
 	buttonPanel.add(btClose);
 	buttonPanel.add(btKick);
+	buttonPanel.add(onlineCountUpdate);
+
 	btStart.setEnabled(true);
 	btClose.setEnabled(false);
 	btKick.setEnabled(false);
@@ -77,7 +84,7 @@ public class ServerWindow extends JFrame{
 		
 	leftPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	leftPanel.setLayout(new BorderLayout());
-	leftPanel.add(lblContact,BorderLayout.NORTH);
+	leftPanel.add(onlineCountText,BorderLayout.NORTH);
 	leftPanel.add(userList,BorderLayout.CENTER);
 		
 	this.getContentPane().add(rightPanel, BorderLayout.CENTER);
@@ -86,6 +93,8 @@ public class ServerWindow extends JFrame{
 	btStart.addActionListener(new myButtonListener());
 	btClose.addActionListener(new myButtonListener());
 	btKick.addActionListener(new myButtonListener());
+	onlineCountUpdate.addActionListener(new myButtonListener2());
+
 	this.setVisible(true);
     }
 	
@@ -104,7 +113,7 @@ public class ServerWindow extends JFrame{
     public JList getUserList(){
 	return userList;
     }
-		
+   
     /**
      * Handles the actions when buttons have been clicked on the server window
      * @author Peng Wang, Andro Stotts, Max Hinson, and Bryce Filler
@@ -132,5 +141,18 @@ public class ServerWindow extends JFrame{
 		btKick.setEnabled(false);
 	    }
 	}		
+    }
+
+    /**
+     * Handles action when Refresh button is pressed
+     * @author Arturo Milanes and Winfred Huang
+     */
+    class myButtonListener2 implements ActionListener{
+	public void actionPerformed(ActionEvent e){
+	    int count = 0;
+	    ListModel<String> list= userList.getModel();
+	    count = list.getSize();
+	    onlineCountText.setText("Users Online: " + String.valueOf(count));
+	}
     }
 }

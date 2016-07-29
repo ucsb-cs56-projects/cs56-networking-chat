@@ -1,8 +1,8 @@
-package edu.ucsb.cs56.projects.networking.chat.chatclient.controller;
+package client.controller;
 
-import edu.ucsb.cs56.projects.networking.chat.chatclient.model.Client;
-import edu.ucsb.cs56.projects.networking.chat.chatclient.model.Contact;
-import edu.ucsb.cs56.projects.networking.chat.chatclient.view.ClientWindow;
+import client.model.Client;
+import client.model.Contact;
+import client.view.ClientWindow;
 import java.awt.Color;
 
 /**
@@ -30,17 +30,6 @@ public class ClientController {
 	    controller = new ClientController();
 	return controller;
     }
-
-    //getOnlineCount from client
-    public int getOnlineCount(){
-    	return client.getOnlineCount();
-    }
-
-    //setOnlineCount of client from controller
-    public void setOnlineCount(int onlineCount){
-	client.setOnlineCount(onlineCount);
-    }
-    
 
     /**
      * sets the nickname of the client from the controller
@@ -105,9 +94,9 @@ public class ClientController {
      * @return contact names
      */
     public String[] getContacts(){
-	Contact[] contacts = new Contact[10];
-	String[] names = new String[10];
-	for(int i = 0; i < 10; i++){
+	Contact[] contacts = new Contact[5];
+	String[] names = new String[5];
+	for(int i = 0; i < 5; i++){
 	    contacts[i] = new Contact("contact" + i);
 	    names[i] = contacts[i].getName();
 	}
@@ -122,49 +111,4 @@ public class ClientController {
 	ClientWindow.getWindow().getContactList().setListData(contact);
     }
 
-    //update online user count
-    
-    public void updateOnlineCountNewUser(){
-	/*	//return online;
-
-	if(online == 1){
-	    
-	    //int add=0;
-	    //add = add++;
-	    //int onlineNum = 10;
-	    //client.getOnlineCount();
-	    //onlineNum++;
-	    client.setOnlineCount(50);
-	    
-	}
-	else if(online == 2){
-	    // int sub=-1;
-	    // int onlineNum = 5;
-	    //client.getOnlineCount();
-	    //onlineNum--;
-	    client.setOnlineCount(49);
-	    
-	}
-	else{
-	    client.setOnlineCount(48);
-	}
-
-	//return client.getOnlineCount();
-    	*/
-	int num = client.getOnlineCount();
-	num++;
-	client.setOnlineCount(num);
-	
-    }
-
-    public void updateOnlineCountRemoveUser(){
-	int num = client.getOnlineCount();
-	num--;
-	client.setOnlineCount(num);
-    }
-
-    public int onlineCounter(){
-	return client.getOnlineCount();
-    }
-    
 }

@@ -1,4 +1,4 @@
-package edu.ucsb.cs56.projects.networking.chat.chatserver.model;
+package server.model;
 
 import java.util.ArrayList;
 

@@ -1,6 +1,6 @@
-package edu.ucsb.cs56.projects.networking.chat.chatserver.controller;
+package server.controller;
 
-import edu.ucsb.cs56.projects.networking.chat.chatserver.view.ServerWindow;
+import server.view.ServerWindow;
 
 /**
  * Application class represent the entrance of the program
