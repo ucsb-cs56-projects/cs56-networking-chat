@@ -566,19 +566,17 @@ public class ClientWindow extends JFrame{
 
 		nickname = controller.getNickname();
 
-
-
 		if(!listContacts.getSelectedValue().equals("Broadcast")) {
 		    String parts[] = listContacts.getSelectedValue().toString().split("");
 		    String receiverName = "";
-		    //ListModel<String> list  = listContacts.getModel();
-		    for (int i = 0; i < 0; i++) { //listContacts.getSelectedValue().length()
-			    String ch = parts[i];
-			    if (!ch.equals("(")) {
-				receiverName = receiverName + ch;
-			    } else
-				break;
-			}
+		    ListModel<String> list = listContacts.getModel();
+		    for (int i = 0; i < listContacts.getSelectedValue().length(); i++) {
+			String ch = parts[i];
+			if (!ch.equals("(")) {
+			    receiverName = receiverName + ch;
+			} else
+			    break;
+		    }
 		    
 		    controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
 		}
