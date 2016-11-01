@@ -74,8 +74,6 @@ public class ClientWindow extends JFrame{
     int y = random.nextInt(fonts.length);
 
     /**
-     */
-    /**
      * Default constructor
      */
     private ClientWindow(){
@@ -195,7 +193,7 @@ public class ClientWindow extends JFrame{
 	MyCellRenderer aCellRender = new MyCellRenderer();
 	JComboBox fontList = new JComboBox(fonts);
 	fontList.setRenderer(aCellRender);
-	fontList.setMaximumSize(new Dimension(6,1));
+	fontList.setPreferredSize(new Dimension(150,25));
 	menuPanel.add(fontList,BorderLayout.EAST);
 	
 
@@ -429,7 +427,8 @@ public class ClientWindow extends JFrame{
     class FontListener implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 	    JComboBox ex = (JComboBox)e.getSource();
-	    Font newFont = (Font)ex.getSelectedItem();
+	    Font getFont = (Font)ex.getSelectedItem();
+	    Font newFont = getFont.deriveFont(12F);
 	    //newFont.setForeground(Color.Grey);
 	    taOutput.setFont(newFont);
 	}
