@@ -8,8 +8,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.*;
-
+import javax.swing.JComboBox;
+import java.awt.GraphicsEnvironment;
 import javax.swing.*;
+import java.awt.Dimension;
 
 //Import random library
 import java.util.Random;
@@ -66,13 +68,11 @@ public class ClientWindow extends JFrame{
     Random Random = new Random();
     int x = Random.nextInt(colors.length);
     //Pre-determined font to randomly use
-    private Font font0 = new Font("Arial", Font.ITALIC, 13);
-    private Font font1 = new Font("Arial", Font.BOLD, 14);
-    private Font font2 = new Font("Arial Bold", Font.PLAIN, 15);
-    private Font font3 = new Font("Arial Bold", Font.ROMAN_BASELINE, 20);
-    Font fonts[] = {font0, font1, font2, font3};
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    Font fonts[] = ge.getAllFonts();
     Random random = new Random();
     int y = random.nextInt(fonts.length);
+
     /**
      * Default constructor
      */
@@ -83,8 +83,8 @@ public class ClientWindow extends JFrame{
 	spScrollPane = new JScrollPane(taOutput);
 	taOutput.setLineWrap(true);
 	taOutput.setWrapStyleWord(true);
-	taOutput.setForeground(colors[x]);
-	taOutput.setFont(fonts[y]);
+	taOutput.setForeground(Color.BLACK);
+	taOutput.setFont(new Font("default", Font.PLAIN, 12));
 	taOutput.setEditable(false);
 	model = new DefaultListModel<String>();
 	contactList = controller.getContacts();
@@ -187,8 +187,15 @@ public class ClientWindow extends JFrame{
 	menuPanel.setLayout(new FlowLayout());
 	menuPanel.add(soundbox, BorderLayout.EAST);
 	
-	JButton changeFont = new JButton("Change Font");
-	menuPanel.add(changeFont,BorderLayout.EAST);
+	
+	//change botton to box
+	//assume the font list has already exist
+	MyCellRenderer aCellRender = new MyCellRenderer();
+	JComboBox fontList = new JComboBox(fonts);
+	fontList.setRenderer(aCellRender);
+	fontList.setPreferredSize(new Dimension(150,25));
+	menuPanel.add(fontList,BorderLayout.EAST);
+	
 
 	JButton deleteUser = new JButton("Delete User");
 	menuPanel.add(deleteUser,BorderLayout.EAST);
@@ -219,7 +226,7 @@ public class ClientWindow extends JFrame{
 	tfInput.addActionListener(new InputListener());
 	nickName.addActionListener(new MyButtonListener2());
 	privateRoom.addActionListener(new MyButtonListener3());
-	changeFont.addActionListener(new MyButtonListener4());
+	fontList.addActionListener(new FontListener());
 	soundbox.addItemListener(new CheckListener());
 	soundbox.setSelected(true);
     }
@@ -369,15 +376,61 @@ public class ClientWindow extends JFrame{
     /**
      * Handles actions when Change Font button is clicked
      * @author Winfred Huang and Arturo Milanes
-     */ 
-    class MyButtonListener4 implements ActionListener{
+     */
+
+    //helper for Fontlistener
+   class MyCellRenderer extends JLabel implements ListCellRenderer<Object> {
+     public MyCellRenderer() {
+         setOpaque(true);
+     }
+
+     public Component getListCellRendererComponent(JList<?> list,
+                                                   Object value,
+                                                   int index,
+                                                   boolean isSelected,
+                                                   boolean cellHasFocus) {
+	 Font thisfont = (Font) value;
+         setText(thisfont.getName());
+
+         Color background;
+         Color foreground;
+
+         // check if this cell represents the current DnD drop location
+         JList.DropLocation dropLocation = list.getDropLocation();
+         if (dropLocation != null
+                 && !dropLocation.isInsert()
+                 && dropLocation.getIndex() == index) {
+
+             background = Color.BLUE;
+             foreground = Color.WHITE;
+
+         // check if this cell is selected
+         } else if (isSelected) {
+             background = Color.RED;
+             foreground = Color.WHITE;
+
+         // unselected, and not the DnD drop location
+         } else {
+             background = Color.WHITE;
+             foreground = Color.BLACK;
+         };
+
+         setBackground(background);
+         setForeground(foreground);
+
+         return this;
+     }
+ } 
+    
+
+    
+    class FontListener implements ActionListener{
 	public void actionPerformed(ActionEvent e){
-	    Random random = new Random();
-	    int x = random.nextInt(fonts.length);
-	    taOutput.setFont(fonts[x]);
-	    String fontName = fonts[x].getName();
-	    int size = fonts[x].getSize();
-	    controller.displayMsg("You have changed the font to " + fontName + ", size: " + size + '\n');
+	    JComboBox ex = (JComboBox)e.getSource();
+	    Font getFont = (Font)ex.getSelectedItem();
+	    Font newFont = getFont.deriveFont(12F);
+	    //newFont.setForeground(Color.Grey);
+	    taOutput.setFont(newFont);
 	}
     }
 
