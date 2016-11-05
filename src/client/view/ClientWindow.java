@@ -88,14 +88,9 @@ public class ClientWindow extends JFrame{
 	taOutput.setEditable(false);
 	model = new DefaultListModel<String>();
 	contactList = controller.getContacts();
-	//for(int i = 0; i < contactList.length; i++){ //NEW
-	    //model.addElement(contactList[i]);
-	//}
 	for(String contact : contactList){
 	    model.addElement(contact);
 	}
-	//listContacts = new JList<String>(controller.getContacts());
-	//listContacts = new JList(controller.getContacts());
 	listContacts = new JList<String>();
 	listContacts.setModel(model);
 	lblContact = new JLabel("Contacts");
@@ -152,7 +147,10 @@ public class ClientWindow extends JFrame{
 	this.getContentPane().add(tfServerIp);
 	this.getContentPane().add(lblLoginError);
 	this.getContentPane().add(btConnect);
-	btConnect.addActionListener(new MyButtonListener());
+	btConnect.addActionListener(new LoginListener());
+	tfUsername.addActionListener(new LoginListener());
+	pfPassword.addActionListener(new LoginListener());
+	tfServerIp.addActionListener(new LoginListener());
 	btConnect.setSelected(true);
 	this.setVisible(true);
     }
@@ -172,7 +170,7 @@ public class ClientWindow extends JFrame{
 	    });
 	this.getContentPane().removeAll();
 	this.setLayout(new BorderLayout());
-	this.setSize(600, 400);
+	this.setSize(800, 400);
 	this.setTitle("Chatting Client-" + name);
 	JPanel leftPanel = new JPanel();
 	JPanel rightPanel = new JPanel();
@@ -188,7 +186,8 @@ public class ClientWindow extends JFrame{
 	menuPanel.add(soundbox, BorderLayout.EAST);
 	
 	
-	//change botton to box
+	//change botton to boxefer to issue #15.
+	//As of now, the client can delete the user off the list but the list doesn't update correctly- instead of printing out the names of the updated list, it prints out "contact indexNumber" ex) contact02. This method uses the defaultListModel to use remove and will update the contact list. Make sure that the updated contacts list display names not "contact#"
 	//assume the font list has already exist
 	MyCellRenderer aCellRender = new MyCellRenderer();
 	JComboBox fontList = new JComboBox(fonts);
@@ -273,75 +272,6 @@ public class ClientWindow extends JFrame{
 	return taOutput;
     }      
 
-    /*
-     * append method for JTextPane, includes font and color
-
-    public void appendToPane(JTextPane tp, String msg, Color c)
-    {
-        StyleContext sc = StyleContext.getDefaultStyleContext();
-        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
-
-        aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Arial");
-        aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-
-        int len = tp.getDocument().getLength();
-        tp.setCaretPosition(len);
-        tp.setCharacterAttributes(aset, false);
-        tp.replaceSelection(msg);
-    }
-*/
-
-
-    /*
-    this.text_panel = taOutput;
-    this.text_panel.setContentType("text/html");
-    this.text_panel.setEditable(false);
-    this.text_panel.setBackground(this.text_background_color);
-    this.text_panel_html_kit = new HTMLEditorKit();
-    this.text_panel.setEditorKit(text_panel_html_kit);
-    this.text_panel.setDocument(new HTMLDocument());
-
-
-    // Appending a string using HTML
-    public void append(String line){
-	SimpleDateFormat date_format = new SimpleDateFormat("HH:mm:ss");
-	Date date = new Date();
-	
-	line = "<div><font size=3 color=GRAY>[" + date_format.format(date) + "]</font><font size=3 color=BLACK>"+ line + "</font></div>";
-	
-	try {
-	    this.text_panel_html_kit.insertHTML((HTMLDocument) this.text_panel.getDocument(), this.text_panel.getDocument().getLength(), line, 0, 0, null);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-    }
-    */
-    
-
-    /*
-     * adding a style for JTextPane
-     
-    public void {
-
-	StyledContext doc = textPane.getStyledDocument();
-
-        Style style = textPane.addStyle("I'm a Style", null);
-        StyleConstants.setForeground(style, Color.red);
-
-        try { 
-	    doc.insertString(doc.getLength(), "BLAH ",style);
-	}
-        catch (BadLocationException e){}
-	
-        StyleConstants.setForeground(style, Color.blue);
-	
-        try {
-	    doc.insertString(doc.getLength(), "BLEH",style);
-	}
-        catch (BadLocationException e){}
-    }
-    */
-
 
     /**
      * Get the contact list
@@ -374,8 +304,8 @@ public class ClientWindow extends JFrame{
     }
 
     /**
-     * Handles actions when Change Font button is clicked
-     * @author Winfred Huang and Arturo Milanes
+     * Inner class that formats the list output by JComboBox
+     * Only prints name of font that exists in the list instead of entire Font object	
      */
 
     //helper for Fontlistener
@@ -421,8 +351,11 @@ public class ClientWindow extends JFrame{
          return this;
      }
  } 
-    
-
+   /**
+    * Listener class that registers when the changeFont JComboBox is pressed
+    * @author Xinyuan Zhang and Jared Leeong
+   */
+   
     
     class FontListener implements ActionListener{
 	public void actionPerformed(ActionEvent e){
@@ -473,82 +406,54 @@ public class ClientWindow extends JFrame{
     }
     
     /**
-     * Handles actions when buttons are clicked
+     * Handles actions when login button is pressed or when enter is pressed on LoginWindow
      * @author Peng Wang with Andro Stotts
      * @version 0.4
      */		
-    class MyButtonListener implements ActionListener{
+    class LoginListener implements ActionListener, KeyListener{
 	private ClientWindow window = ClientWindow.getWindow();
-	public void actionPerformed(ActionEvent e) {			
-	    name = tfUsername.getText();
-	    password = pfPassword.getText();
-	    boolean tester = false;
-	    if (name.isEmpty()) 
-		tester = true;
-	    else 
-		tester = false;
-	    boolean tester2 = false;
-	    if (password.isEmpty()) 
-		tester2 = true;
-	    else 
-		tester2 = false;
-	
-	    
-	
-	    password = new String(pfPassword.getPassword());
-	    ip = tfServerIp.getText();
-			
-	    int result; 
-	    if (tester && !tester2) 
-		result = 3;
-
-	    else if (!tester && tester2)
-		result = 4;
-
-	    else if (tester && tester2)
-		result = 5;
-
-	    else 
-		result = controller.connectServer(ip, name, password);
-	    
-	    if(result == 0)
-		window.launchChatWindow();
-			
-	    else{
-		
-		pfPassword.setText("");
-		lblLoginError.setForeground(Color.RED);
-		if(result == 1){
-		    tfUsername.setText("");	
-		    lblLoginError.setText("Wrong username or password");
-		}
-		else if(result == 2){
-		    tfUsername.setText("");	
-		    lblLoginError.setText("This user has logged in already");
-		}
-	        else if(result == 3){
-		    tfUsername.setText("");
-		    lblLoginError.setText("No name was entered");
-		}
-		else if(result == 4){
-		    tfUsername.setText("");
-		    lblLoginError.setText("No password entered");
-		}
-		else if(result == 5){
-		    tfUsername.setText("");
-		    lblLoginError.setText("Please enter login information");
-		}
-		else if(result == 9){
-		    tfUsername.setText("");	
-		    lblLoginError.setText("Server is not available");
+	private void attemptLogin(){
+		name = tfUsername.getText();
+		password = new String(pfPassword.getPassword());
+		if(name.isEmpty()||password.isEmpty()){
+			tfUsername.setText("");
+			lblLoginError.setText("Incorrect Login Credentials");
 		}
 		else{
-		    tfServerIp.setText("");
-		    lblLoginError.setText("Server unavailable on this IP address");
+			ip = tfServerIp.getText();
+			int connected = controller.connectServer(ip,name,password);
+			if(connected==0){
+				window.launchChatWindow();
+			}
+			else if(connected==1){
+				tfUsername.setText("");
+				lblLoginError.setText("Wrong username or password");
+			}
+			else if(connected==2){
+				tfUsername.setText("");
+				lblLoginError.setText("This user has logged in already");
+			}
+			else{
+				tfServerIp.setText("");
+				lblLoginError.setText("Server unavailable on this IP address");
+			}
 		}
-	      }
+	}
+	public void actionPerformed(ActionEvent e) {			
+		attemptLogin();
 		window.getContentPane().repaint();
-	    }
+	}
+	
+	public void keyTyped(KeyEvent e) {}
+        public void keyReleased(KeyEvent e) {}
+	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			attemptLogin();
+		}
+		else{
+			lblLoginError.setText("incorrect keypress");
+		}
+	}
     }	
     
     /**
