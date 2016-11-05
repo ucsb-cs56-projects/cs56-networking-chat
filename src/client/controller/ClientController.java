@@ -75,11 +75,19 @@ public class ClientController {
      * @param msg message to display on client window
      */
     public void displayMsg(String msg){
+
+	//	JTextComponent jtc= ClientWindow.getWindow().getTaOutput();
+	//JTextPane tpane = jtc;
+
 	ClientWindow.getWindow().getTaOutput().append(msg);
-	//ClientWindow.getWindow().getTaOutput().append(msg);
-	//appendToPane(ClientWindow.getWindow().getTaOutput(), msg, Color.BLACK);
-        ClientWindow.getWindow().getTaOutput().setCaretPosition(ClientWindow.getWindow().getTaOutput().getDocument().getLength());
+	//appendToPane(ClientWindow.getWindow().getTaOutput(), msg, Color.ORANGE);
+	//    ClientWindow.getWindow().getTaOutput().setCaretPosition(ClientWindow.getWindow().getTaOutput().getDocument().getLength());
+
+	//	ClientWindow.getWindow().getTaOutput().setCarteColor(Color.ORANGE);
     }
+    
+
+        
 	
     /**
      * Sends a message to the server
