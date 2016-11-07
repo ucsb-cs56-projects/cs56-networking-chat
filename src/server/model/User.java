@@ -97,7 +97,11 @@ public class User {
     public void setPassword(String password) {
 	this.password = password;
     }
-
+	/**
+ 	* method to delete contact based on nickname
+ 	* @param nickname the nickname to be deleted
+ 	*/
+ 
 	public void deleteContact(String nickname){
 		for(int i=0; i<contactList.size(); i++){
 			if(contactList.get(i).getNickname().equals(nickname))
