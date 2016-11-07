@@ -87,10 +87,6 @@ public class ClientWindow extends JFrame{
 	taOutput.setFont(new Font("default", Font.PLAIN, 12));
 	taOutput.setEditable(false);
 	model = new DefaultListModel<String>();
-	contactList = controller.getContacts();
-	for(String contact : contactList){
-	    model.addElement(contact);
-	}
 	listContacts = new JList<String>();
 	listContacts.setModel(model);
 	lblContact = new JLabel("Contacts");
@@ -147,10 +143,11 @@ public class ClientWindow extends JFrame{
 	this.getContentPane().add(tfServerIp);
 	this.getContentPane().add(lblLoginError);
 	this.getContentPane().add(btConnect);
-	btConnect.addActionListener(new LoginListener());
-	tfUsername.addActionListener(new LoginListener());
-	pfPassword.addActionListener(new LoginListener());
-	tfServerIp.addActionListener(new LoginListener());
+	LoginListener loginListener = new LoginListener();
+	btConnect.addActionListener(loginListener);
+	tfUsername.addActionListener(loginListener);
+	pfPassword.addActionListener(loginListener);
+	tfServerIp.addActionListener(loginListener);
 	btConnect.setSelected(true);
 	this.setVisible(true);
     }
@@ -277,8 +274,8 @@ public class ClientWindow extends JFrame{
      * Get the contact list
      * @return the list component of the client window
      */
-    public JList getContactList(){
-	return listContacts;
+    public DefaultListModel getContactList(){
+    	return model;
     }
     
     /**
@@ -373,13 +370,14 @@ public class ClientWindow extends JFrame{
      */
     class MyButtonListener5 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
-	    if(listContacts.getSelectedIndex() == 0){
+		int index = listContacts.getSelectedIndex();
+	    if(index == 0){
 		controller.displayMsg("Can't delete broadcast.\n");
 	    }
-	    else if(listContacts.getSelectedIndex() > 0){
+	    else if(index > 0){
 		controller.displayMsg("You tried to delete " + listContacts.getSelectedValue() +".\n");
-		model.remove(listContacts.getSelectedIndex());
-		listContacts.setModel(model);
+		model.remove(index);
+		//model.fireIntervalRemoved(model, index, index);
 		controller.displayMsg("Successful");
 	    }
 	    else{
