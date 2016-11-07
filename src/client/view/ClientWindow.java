@@ -366,7 +366,8 @@ public class ClientWindow extends JFrame{
 
     /**
      * Handles actions when Delete user button is clicked
-     * @author Winfred Huang and Arturo Milanes
+     * @author Winfred Huang, Arturo Milanes, and Jared Leeong
+     * @version F16
      */
     class MyButtonListener5 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
@@ -376,8 +377,8 @@ public class ClientWindow extends JFrame{
 	    }
 	    else if(index > 0){
 		controller.displayMsg("You tried to delete " + listContacts.getSelectedValue() +".\n");
+		controller.sendMsg2Server("&DELETE:"+listContacts.getSelectedValue());
 		model.remove(index);
-		//model.fireIntervalRemoved(model, index, index);
 		controller.displayMsg("Successful");
 	    }
 	    else{

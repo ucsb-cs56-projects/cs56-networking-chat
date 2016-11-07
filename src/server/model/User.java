@@ -97,6 +97,12 @@ public class User {
     public void setPassword(String password) {
 	this.password = password;
     }
-	
+
+	public void deleteContact(String nickname){
+		for(int i=0; i<contactList.size(); i++){
+			if(contactList.get(i).getNickname().equals(nickname))
+				contactList.remove(i);
+		}
+	}	
 	
 }

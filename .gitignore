@@ -1,5 +1,6 @@
 *.class
 *#
+*.swp
 # Package Files #
 *.war
 *.ear

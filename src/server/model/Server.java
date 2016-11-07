@@ -53,10 +53,10 @@ public class Server{
     private String clientMsgPrefix;
     private String [] clientsOnline;
     private ArrayList<Client> clients;
-    private ArrayList<User> database;
+    private ArrayList<User> users;
 
     private String usage = "------------------------------------------SERVER USAGE-----------------------------------------------\n" +
-	"             We currently have a FAKE database with only the users listed below:         \n" +
+	"             We currently have a FAKE users with only the users listed below:         \n" +
 	"                     Username: Peng Wang        Nickname: peng     Password: 123abc      \n" +
 	"                     Username: Andro Stotts     Nickname: andro    Password: abc123      \n" +
 	"                     Username: Phillip Conrad   Nickname: phill    Password: 9876543     \n" +
@@ -81,8 +81,8 @@ public class Server{
 	clientMsgPrefix = "[Client Message] ";
 	clients = new ArrayList<Client>();
 		
-	//make our own fake database
-	database = new ArrayList<User>();
+	//make our own fake users
+	users = new ArrayList<User>();
 	User peng = new User("Peng Wang", "peng", "123abc");		
 	User andro = new User("Andro Stotts", "andro", "abc123");
 	User philp = new User("Phillip Conrad", "phill", "9876543");
@@ -112,14 +112,14 @@ public class Server{
 	max.addToContactList(orange);
 	max.addToContactList(bryce);
 	bryce.addToContactList(max);
-	database.add(peng);
-	database.add(andro);
-	database.add(philp);
-	database.add(bill);
-	database.add(steve);
-	database.add(orange);
-	database.add(max);
-	database.add(bryce);	
+	users.add(peng);
+	users.add(andro);
+	users.add(philp);
+	users.add(bill);
+	users.add(steve);
+	users.add(orange);
+	users.add(max);
+	users.add(bryce);	
     }
 	
     /**
@@ -212,8 +212,8 @@ public class Server{
 
     /**
      * inner class Client only provide service to the outer class
-     * @author Peng Wang, Andro Stotts, Max Hinson, and Bryce Filler
-     * @version 0.5
+     * @author Peng Wang, Andro Stotts, Max Hinson, Bryce Filler, Jared Leeong
+     * @version F16
      */
     class Client extends User implements Runnable{
 	private Socket s;
@@ -223,6 +223,7 @@ public class Server{
 	private DataInputStream dis = null;
 	private DataOutputStream dos = null;
 	private ServerController controller = ServerController.getController();
+	private User currentUser;
 	/**
 	 * Constructor initialize data for a client
 	 * @param s client's socket
@@ -326,7 +327,7 @@ public class Server{
 		    {
 			oldNickname = c.getNickname();
 
-			//update server's database and send message to client to change its nickname 
+			//update server's users and send message to client to change its nickname 
 			if (c.sendMsg(newNickname + "&1007") == 0){
 			c.setNickname(newNickname);
 			//display messages on the server and client about the nickname change
@@ -344,8 +345,8 @@ public class Server{
 		if(!c.getName().equals(username))
 		    c.sendMsg(oldNickname + ":" + newNickname + "&1006");
 
-	    //update the user's new nickname in the database
-	    for(User u : database)
+	    //update the user's new nickname in the users
+	    for(User u : users)
 		if(u.getName().equals(username))
 		    u.setNickname(newNickname);
 	}
@@ -416,7 +417,7 @@ public class Server{
 			
  
 		    } 
-		    for(User u : database){
+		    for(User u : users){
 			if(u.getName().equals(identities[0])){
 			    this.setName(u.getName());
 			    this.setNickname(u.getNickname());
@@ -482,6 +483,10 @@ public class Server{
 			//the user is requesting a nickname change
 			else if(strs[1].equals("NAME_CHANGE")){
 			    changeNickname(strs);
+			}
+			//the user has deleted someone from their contact list
+			else if(strs[1].equals("DELETE")){
+				deleteContact(strs[2]);
 			}
 			//sent to a certain person in the contact list
 			else{
