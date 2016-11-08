@@ -371,7 +371,7 @@ public class ClientWindow extends JFrame{
 	}
     }
 
-<<<<<<< HEAD
+
 
 
     //******************here I start colorlistener*****************************
@@ -380,7 +380,8 @@ public class ClientWindow extends JFrame{
 	    JComboBox ex = (JComboBox)e.getSource();
 	    Color newColor = (Color)ex.getSelectedItem();
 	    taOutput.setForeground(newColor);
-=======
+	}
+  }
     /**
      * Handles actions when Delete user button is clicked
      * @author Winfred Huang, Arturo Milanes, and Jared Leeong
@@ -401,7 +402,6 @@ public class ClientWindow extends JFrame{
 	    else{
 		controller.displayMsg("No contact to delete. Please select one.\n");
 	    }
->>>>>>> 43f59077ceb95952ef9ad14a07b33457abe694a8
 	}
     }
     
@@ -458,7 +458,7 @@ public class ClientWindow extends JFrame{
 	 * Handles actions when Delete user button is clicked
 	 * @author Winfred Huang and Arturo Milanes
 	 */
-	class MyButtonListener5 implements ActionListener{
+    /**	class MyButtonListener5 implements ActionListener{
 	    public void actionPerformed(ActionEvent e){
 		if(listContacts.getSelectedIndex() == 0){
 		    controller.displayMsg("Can't delete broadcast.\n");
@@ -473,8 +473,9 @@ public class ClientWindow extends JFrame{
 		    controller.displayMsg("No contact to delete. Please select one.\n");
 		}
 	    }
-	   } 
-	    
+	}
+	
+    */	    
 	    /**
 	     * Handles actions when Refresh button is pressed
 	     * @author Winfred Huang and Arturo Milanes
