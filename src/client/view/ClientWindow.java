@@ -87,10 +87,6 @@ public class ClientWindow extends JFrame{
 	taOutput.setFont(new Font("default", Font.PLAIN, 12));
 	taOutput.setEditable(false);
 	model = new DefaultListModel<String>();
-	contactList = controller.getContacts();
-	for(String contact : contactList){
-	    model.addElement(contact);
-	}
 	listContacts = new JList<String>();
 	listContacts.setModel(model);
 	lblContact = new JLabel("Contacts");
@@ -147,10 +143,11 @@ public class ClientWindow extends JFrame{
 	this.getContentPane().add(tfServerIp);
 	this.getContentPane().add(lblLoginError);
 	this.getContentPane().add(btConnect);
-	btConnect.addActionListener(new LoginListener());
-	tfUsername.addActionListener(new LoginListener());
-	pfPassword.addActionListener(new LoginListener());
-	tfServerIp.addActionListener(new LoginListener());
+	LoginListener loginListener = new LoginListener();
+	btConnect.addActionListener(loginListener);
+	tfUsername.addActionListener(loginListener);
+	pfPassword.addActionListener(loginListener);
+	tfServerIp.addActionListener(loginListener);
 	btConnect.setSelected(true);
 	this.setVisible(true);
     }
@@ -284,8 +281,8 @@ public class ClientWindow extends JFrame{
      * Get the contact list
      * @return the list component of the client window
      */
-    public JList getContactList(){
-	return listContacts;
+    public DefaultListModel getContactList(){
+    	return model;
     }
     
     /**
@@ -374,6 +371,7 @@ public class ClientWindow extends JFrame{
 	}
     }
 
+<<<<<<< HEAD
 
 
     //******************here I start colorlistener*****************************
@@ -382,6 +380,28 @@ public class ClientWindow extends JFrame{
 	    JComboBox ex = (JComboBox)e.getSource();
 	    Color newColor = (Color)ex.getSelectedItem();
 	    taOutput.setForeground(newColor);
+=======
+    /**
+     * Handles actions when Delete user button is clicked
+     * @author Winfred Huang, Arturo Milanes, and Jared Leeong
+     * @version F16
+     */
+    class MyButtonListener5 implements ActionListener{
+	public void actionPerformed(ActionEvent e){
+		int index = listContacts.getSelectedIndex();
+	    if(index == 0){
+		controller.displayMsg("Can't delete broadcast.\n");
+	    }
+	    else if(index > 0){
+		controller.displayMsg("You tried to delete " + listContacts.getSelectedValue() +".\n");
+		controller.sendMsg2Server("&DELETE:"+listContacts.getSelectedValue());
+		model.remove(index);
+		controller.displayMsg("Successful");
+	    }
+	    else{
+		controller.displayMsg("No contact to delete. Please select one.\n");
+	    }
+>>>>>>> 43f59077ceb95952ef9ad14a07b33457abe694a8
 	}
     }
     

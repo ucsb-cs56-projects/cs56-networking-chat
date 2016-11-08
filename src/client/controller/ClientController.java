@@ -116,7 +116,9 @@ public class ClientController {
      * @param contact an array of strings represents a contact list
      */
     public void updateContactList(String[] contact){
-	ClientWindow.getWindow().getContactList().setListData(contact);
+    	for(String c : contact){
+		ClientWindow.getWindow().getContactList().addElement(c);
+	}
     }
 
 }
