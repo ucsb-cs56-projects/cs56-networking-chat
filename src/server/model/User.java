@@ -12,7 +12,7 @@ public class User {
     private String nickname;
     private String password;
     private ArrayList<User> contactList;
-	
+	private boolean isOnline;	
     /**
      * Constructor that takes username and password
      * @param name
@@ -20,6 +20,7 @@ public class User {
      * @param password
      */
     public User(String name, String nickname, String password){
+	isOnline=false;
 	setName(name);
 	setNickname(nickname);
 	setPassword(password);
@@ -107,6 +108,23 @@ public class User {
 			if(contactList.get(i).getNickname().equals(nickname))
 				contactList.remove(i);
 		}
+	}
+	
+	/**
+	 * returns online status of the User
+	 * @author Jared Leeong
+	 */
+	public boolean isOnline(){
+		return isOnline;
+	}
+
+	/**
+ 	* sets online status
+ 	* @param status the new online status of current user
+ 	* @author Jared Leeong
+ 	*/
+	public void setOnline(boolean status){
+		isOnline=status;
 	}	
 	
 }

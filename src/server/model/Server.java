@@ -174,8 +174,8 @@ public class Server{
 	String nickname = "";
 	//find the client that you want to kick
 	for(int i = 0; i < clients.size(); i++){
-	    if(clients.get(i).getName().equals(userName)){
-		nickname = clients.get(i).getNickname();
+	    if(clients.get(i).getUser().getName().equals(userName)){
+		nickname = clients.get(i).getUser().getNickname();
 		//Removes client login privileges
 		clients.get(i).setIsAuthorized(false);
 		try {
@@ -189,7 +189,7 @@ public class Server{
 	}
 	//goes through each contact and removes deauthorized account from their contact lists
 	for(Client c : clients){
-	    if(!c.getNickname().equals(nickname))
+	    if(!c.getUser().getNickname().equals(nickname))
 		c.sendMsg(nickname + "&1003");
 	}
     }
@@ -215,7 +215,7 @@ public class Server{
      * @author Peng Wang, Andro Stotts, Max Hinson, Bryce Filler, Jared Leeong
      * @version F16
      */
-    class Client extends User implements Runnable{
+    class Client implements Runnable{
 	private Socket s;
 	private SocketAddress ip;
 	private boolean isClientConnect;
@@ -229,7 +229,6 @@ public class Server{
 	 * @param s client's socket
 	 */
 	public Client(Socket s){
-	    super("", "", "");
 	    //save the client socket
 	    this.s = s;
 			
@@ -272,7 +271,7 @@ public class Server{
 	    //update who's online (server side)
 	    clientsOnline = new String[clients.size()];
 	    for(int i=0; i < clients.size();i++){
-		clientsOnline[i] = clients.get(i).getName();
+		clientsOnline[i] = clients.get(i).getUser().getName();
 	    }
 	    controller.updateList(clientsOnline);
 	}
@@ -295,7 +294,7 @@ public class Server{
 	    boolean isOnline = false;
 	    this.sendMsg(strs[0] + "&" + strs[2]);
 	    for(Client c : clients){
-		if(strs[1].equals(c.getNickname()+"(Online)")){
+		if(strs[1].equals(c.getUser().getNickname()+"(Online)")){
 		    c.sendMsg(strs[0] + "&" + strs[2]);
 		    isOnline = true;
 		    break;
@@ -323,13 +322,13 @@ public class Server{
 
 	    //search the server's client list for the one that is changing its nickname
 	    for(Client c : clients){
-		if(c.getName().equals(username))
+		if(c.getUser().getName().equals(username))
 		    {
-			oldNickname = c.getNickname();
+			oldNickname = c.getUser().getNickname();
 
 			//update server's users and send message to client to change its nickname 
 			if (c.sendMsg(newNickname + "&1007") == 0){
-			c.setNickname(newNickname);
+			c.getUser().setNickname(newNickname);
 			//display messages on the server and client about the nickname change
 			controller.displayMsg(serverMsgPrefix + username + "'s nickname has been changed from " + oldNickname + " to " + newNickname);
 			c.sendMsg("Your nickname has been changed from " + oldNickname + " to " + newNickname + "&1001");
@@ -342,7 +341,7 @@ public class Server{
 
 	    //notify all other contacts that the user has changed their nickname
 	    for(Client c : clients)
-		if(!c.getName().equals(username))
+		if(!c.getUser().getName().equals(username))
 		    c.sendMsg(oldNickname + ":" + newNickname + "&1006");
 
 	    //update the user's new nickname in the users
@@ -367,26 +366,29 @@ public class Server{
 	}
 		
 	/**
-	 * Gets the contact list for the current client
-	 * @return contact list (eg. Peng Wang:Andro Stotts:Phillp Conrad)
+	 * Gets the contact list for the current client and appends "(Online)" to those users
+	 * that are online
+	 * @author Jared Leeong
+	 * @version F16
 	 */
-	public String getContacts(){
-	    String list = "";
-	    for(int i = 0; i < this.getContactList().size(); i++){
-		list = list + this.getContactList().get(i).getNickname();
-		for(int j = 0; j < clients.size(); j++){
-		    if(this.getContactList().get(i).getNickname().equals(clients.get(j).getNickname())){
-			list += "(Online)";
-		    }			
+	public String getContacts(User u){
+		String list="";
+	    	for(User contact : u.getContactList()){
+			list += contact.getNickname();
+			if(contact.isOnline()) list += "(Online)";
+			list += ":";
 		}
-		if(i == this.getContactList().size())
-		    break;
-		else
-		    list += ":";
-	    }
-	    return list;
+		return list;
 	}
 		
+	/**
+ 	* Gets the current logged in User on the connected client
+ 	* @author Jared Leeong
+ 	* @version F16
+	*/ 
+	public User getUser(){
+		return currentUser;
+	}
 	/**
 	 * Sets the authorization of the cilent
 	 * @param b true when client is authorized, otherwise false
@@ -400,126 +402,126 @@ public class Server{
 	 * On failure it removes client from list and it closes all streams
 	 */
 	public void run() {
-	    try{
+	try{
 		//when the client is not authorized, check the identity 
 		//if the identity checking success, then start to broadcasting message
 		//if the identity checking failed, return a string with nothing and throws an exception
 		while(!isAuthorized){
-		    //read the username and password
-		    String identity = dis.readUTF();
-		    String[] identities = identity.split("&");
-		    controller.displayMsg(serverMsgPrefix + "User trying to login with Username: " + identities[0] + " Password: " + identities[1] + '\n');
-		    for(Client c : clients){
-			if(c.getName().equals(identities[0]) && !(identities[0].isEmpty()))
-			    throw new UserExistException();
-                        else if (identities[0].isEmpty())
-			    throw new BlankNameException();
-			
- 
-		    } 
-		    for(User u : users){
-			if(u.getName().equals(identities[0])){
-			    this.setName(u.getName());
-			    this.setNickname(u.getNickname());
-			    if(u.getPassword().equals(identities[1])){
-				//if password is checked, then get the contactlist and sent it back to the client
-				this.setPassword(u.getPassword());
-				//send the client its contacts list
-				this.setContactList(u.getContactList());
-				String myContactList = getContacts();
-				this.sendMsg(myContactList + "&1004");
-				//send the client its nickname
-				this.sendMsg(u.getNickname() + "&1007");
-				isAuthorized = true;
-				break;
-			    }
+			//read the username and password
+			String identity = dis.readUTF();
+			String[] identities = identity.split("&");
+			controller.displayMsg(serverMsgPrefix + "User trying to login with Username: " 
+				+ identities[0] + " Password: " + identities[1] + '\n');
+			if(identities[0].isEmpty()) throw new BlankNameException();
+			//parse through and check if user is logged in already
+			//and check password
+			for(User u : users){
+				if(u.getName().equals(identities[0])){
+					if(u.isOnline()) throw new UserExistException();
+					else if(u.getPassword().equals(identities[1])){
+						//send the client its contacts list
+						//
+						this.sendMsg(getContacts(u)+"&1004");
+						//send the client its nickname
+						this.sendMsg(u.getNickname()+"&1007");
+						isAuthorized=true;
+						currentUser=u;
+						currentUser.setOnline(true);
+					}
+				}
 			}
-		    }
-		    if(!isAuthorized){
-			controller.displayMsg(serverMsgPrefix + "User login failed, wrong username or password\n");
-			this.sendMsg("Wrong username or password");
-			throw new Exception();
-		    }			
+			//if authentication failure
+			if(!isAuthorized){
+				controller.displayMsg(serverMsgPrefix+"User login failed\n");
+				this.sendMsg("Wrong username or password");
+				throw new Exception();
+			}
 		}
 
 		///broadcast online notification when a client is online and successfully login
-		if(isAuthorized){
-		    controller.displayMsg(serverMsgPrefix + "User login success, " + this.getName() + " (" + this.getNickname() + ") "  + " is online now!\n");
-		    controller.displayMsg(serverMsgPrefix + "TOTAL # OF CLIENTS: " + clients.size() + '\n');
-            for(Client c : clients) {
-                c.sendMsg("TOTAL # OF CLIENTS: " + clients.size() + "&1001");
-            }
+		controller.displayMsg(serverMsgPrefix + "User login success, " + currentUser.getName()+
+			" (" + currentUser.getNickname() + ") "  + " is online now!\n");
+		controller.displayMsg(serverMsgPrefix + "TOTAL # OF CLIENTS: " + clients.size() + '\n');
+            	for(Client c : clients) {
+                	c.sendMsg("TOTAL # OF CLIENTS: " + clients.size() + "&1001");
+            	}
                 //update online list (server side)
-		    updateWhoIsOnline();
+		updateWhoIsOnline();
 					
-		    //sent online notification to the clients
-		    for(int i = 0; i < clients.size(); i++){
+		//send online notification to the clients
+		for(int i = 0; i < clients.size(); i++){
 			Client c = clients.get(i);
-			if(!c.getName().equals(this.getNickname()))
-			    c.sendMsg(this.getNickname() + "&1002");
-		    }
+			if(!c.getUser().getName().equals(currentUser.getNickname()))
+			    c.sendMsg(currentUser.getNickname() + "&1002");
 		}
+	
 				
 		while(isClientConnect && isServerStart && isAuthorized){
-		    //readUTF always waiting unless there is something has been inputed
-		    String msg = dis.readUTF();
-		    if (!isServerStart)
-			throw new Exception();
-		    controller.displayMsg(clientMsgPrefix + msg + '\n');
-		    String[] strs = parseMsg(msg);
+			//readUTF always waiting unless there is something has been inputed
+			String msg = dis.readUTF();
+			if (!isServerStart)
+				throw new Exception();
+			controller.displayMsg(clientMsgPrefix + msg + '\n');
+			String[] strs = parseMsg(msg);
+						
+			//client going offline
+			if(strs[2].equals("1003")){
+				controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" 
+					+currentUser.getNickname() + 
+					") is trying to logoff and disconnect with the server\n");
+				broadcast2all(strs);
+				currentUser.setOnline(false);
+			}
 					
-		    //client going offline
-		    if(strs[2].equals("1003")){
-			controller.displayMsg(serverMsgPrefix + this.getName() + " (" + this.getNickname() + ") is trying to logoff and disconnect with the server\n");
-			broadcast2all(strs);
-		    }
-					
-		    //client doing regular chatting
-		    else{
+			//client doing regular chatting
+			else{
 			//if the client doing broadcasting
 			if(strs[1].equals("Broadcast")){
-			    broadcast2all(strs);
+				broadcast2all(strs);
 			}
 			//the user is requesting a nickname change
 			else if(strs[1].equals("NAME_CHANGE")){
-			    changeNickname(strs);
+				changeNickname(strs);
 			}
 			//the user has deleted someone from their contact list
 			else if(strs[1].equals("DELETE")){
-				deleteContact(strs[2]);
+				currentUser.deleteContact(strs[2]);
 			}
 			//sent to a certain person in the contact list
 			else{
-			    broadcast2one(strs);					
+				broadcast2one(strs);					
 			}
-		    }			
-		}
-		
-	    } catch(UserExistException uee){
+			}			
+		}	
+
+	}
+	catch(UserExistException uee){
 		this.sendMsg("This user has logged in already");
 		clients.remove(this);
 		controller.displayMsg(serverMsgPrefix + "User has logged in already!\n");
-
-	    }catch(BlankNameException bl){
+	}
+	catch(BlankNameException bl){
 		this.sendMsg("No name was entered");
 		clients.remove(this);
 		controller.displayMsg(serverMsgPrefix + "User Login error!\n");	
 
-	    } catch(Exception e){
-		//remove the current client from the list on server
-		if(!isServerStart)
-		    clients.clear();
-		else{
-		    clients.remove(this);
-		    controller.displayMsg(serverMsgPrefix + this.getName() + " (" + this.getNickname() + ") has successfully disconnected\n");
-		    for(Client c : clients){
-			if(!c.getNickname().equals(this.getNickname()))
-			    c.sendMsg(this.getNickname() + "&1003");
-		    }
+	}
+	catch(Exception e){
+	//remove the current client from the list on server
+	if(!isServerStart)
+		clients.clear();
+	else{
+		clients.remove(this);
+		controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" + currentUser.getNickname() + ") has successfully disconnected\n");
+		for(Client c : clients){
+			if(!c.getUser().getNickname().equals(currentUser.getNickname()))
+				c.sendMsg(currentUser.getNickname() + "&1003");
 		}
-		updateWhoIsOnline();
+	}
+	updateWhoIsOnline();
 				
-	    } finally{
+	}
+	finally{
 		try {
 		    if(dos != null)
 			dos.close();
@@ -531,9 +533,9 @@ public class Server{
 		} catch (IOException e1) {
 		    controller.displayMsg("Server is down\n");
 		}
-	    }
 	}
-    }
+	}
+}
 	
 	
     /**
