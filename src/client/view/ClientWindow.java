@@ -416,16 +416,31 @@ public class ClientWindow extends JFrame{
 						      int index,
 						      boolean isSelected,
 						      boolean cellHasFocus) {
-	    Color thiscolor = (Color) value;
-	    /*  for(int i = 0;i<10;i++){
-		if (thiscolor.toString()= colors[i].toString()){
-		    setText(names[i]);
-		    break;
-		}
-		}*/
-	     setText(thiscolor.toString());
-		Color background;
-		Color foreground;
+	    /**
+	       Color thiscolor = (Color) value;
+	       setText(thiscolor.toString());
+	    */
+
+	    Font theFont = null;
+	    Color theForeground = null;
+	    String theText = null;
+	    JLabel renderer = (JLabel) defaultRenderer.getListCellRenderComponent(list,
+										  value,
+										  index,
+										  isSelected,
+										  cellHasFocus);
+	    if(value instanceof Object[]){
+		Object values[] = (Object[]) value;
+		thrForeground = (Color) values[0];
+		theText = (String) values[1];
+		theBackground = (Color) values[2];
+	    }else{
+		theText = "";
+		theForeground = list.getForeground();
+		theBackground = list.getBackground();
+	    }
+	     Color background;
+	     Color foreground;
 		
 		// check if this cell represents the current DnD drop location
 		JList.DropLocation dropLocation = list.getDropLocation();
@@ -435,22 +450,22 @@ public class ClientWindow extends JFrame{
 		    
 		    background = Color.RED;
 		    foreground = Color.WHITE;
-		    
+
 		    // check if this cell is selected
 		} else if (isSelected) {
 		    background = Color.BLUE;
-		       foreground = Color.WHITE;
+		    foreground = Color.WHITE;
 		       
 		       // unselected, and not the DnD drop location
 		} else {
 		    background = Color.WHITE;
-             foreground = Color.BLACK;
+		    // foreground = Color.BLACK;
 		};
 		
 		setBackground(background);
-		setForeground(foreground);
-		
-		return this;
+		//	setForeground(foreground);
+		renderer.setText(theText);
+		return renderer;
 		
 	}
     }
