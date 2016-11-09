@@ -404,12 +404,14 @@ public class ClientWindow extends JFrame{
 		  setText(names[i]);
 	      }
 	      }*/
-	String test[]={"a","b","c","d"};
+
+
+	/**String test[]={"a","b","c","d"};
 	Color thiscolor = (Color) value;
 	for(int i=0;i<10;i++){
 	    setText(test[10%i]);
-	}
-	//setText(thiscolor.toString());
+	    }*/
+	setText(thiscolor.toString());
          Color background;
          Color foreground;
 
