@@ -65,14 +65,14 @@ public class ClientWindow extends JFrame{
     java.awt.Color blueColor = new java.awt.Color(000,000,255);
     String names[] = {"Black", "Blue", "Cyan",  "Gray", "Green", 
 		       "Orange", "Pink", "Red", "White", "Yellow"};
-	
+    
     Color colors[] = {Color.BLACK, Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.ORANGE, Color.PINK, Color.RED, Color.WHITE, Color.YELLOW};
     
 
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     Font fonts[] = ge.getAllFonts();
    
-
+    //  Object colors[][] = {{ Color.RED, "A" },{  Color.BLUE, "b" }, {  Color.GREEN, "A" }, };
     /**
      * Default constructor
      */
@@ -382,7 +382,62 @@ public class ClientWindow extends JFrame{
 	    taOutput.setForeground(newColor);
 	}
   }
-    /**
+   
+    
+    class ColorCellRenderer extends JLabel implements ListCellRenderer<Object> {
+	protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+	 
+	public ColorCellRenderer() {
+	    setOpaque(true);
+	}
+	  
+    public Component getListCellRendererComponent(JList<?> list,
+                                                   Object value,
+                                                   int index,
+                                                   boolean isSelected,
+                                                   boolean cellHasFocus) {
+	/**	 Color thiscolor = (Color) value;
+	 String names[] = {"Black", "Blue", "Cyan",  "Gray", "Green",  "Orange", "Pink", "Red", "White", "Yellow"};
+	 Color colors[] = {Color.BLACK, Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.ORANGE, Color.PINK, Color.RED, Color.WHITE, Color.YELLOW};
+	  for(int i = 0;i<10;i++){
+	      if(thiscolor.toString()== colors[i].toString()){
+		  setText(names[i]);
+	      }
+	      }*/
+
+	Color thiscolor = (Color) value;
+	setText(thiscolor.toString());
+         Color background;
+         Color foreground;
+
+         // check if this cell represents the current DnD drop location
+         JList.DropLocation dropLocation = list.getDropLocation();
+         if (dropLocation != null
+                 && !dropLocation.isInsert()
+                 && dropLocation.getIndex() == index) {
+
+             background = Color.BLUE;
+             foreground = Color.WHITE;
+
+         // check if this cell is selected
+         } else if (isSelected) {
+             background = Color.RED;
+             foreground = Color.WHITE;
+
+         // unselected, and not the DnD drop location
+         } else {
+             background = Color.WHITE;
+             foreground = Color.BLACK;
+         };
+
+         setBackground(background);
+         setForeground(foreground);
+
+         return this;
+     }
+ }
+
+/**
      * Handles actions when Delete user button is clicked
      * @author Winfred Huang, Arturo Milanes, and Jared Leeong
      * @version F16
@@ -404,93 +459,6 @@ public class ClientWindow extends JFrame{
 	    }
 	}
     }
-    
-    class ColorCellRenderer extends JLabel implements ListCellRenderer<Object> {
-	 
-	public ColorCellRenderer() {
-	    setOpaque(true);
-	}
-	  
-	public Component getListCellRendererComponent(JList<?> list,
-						      Object value,
-						      int index,
-						      boolean isSelected,
-						      boolean cellHasFocus) {
-	    /**
-	       Color thiscolor = (Color) value;
-	       setText(thiscolor.toString());
-	    */
-
-	    Font theFont = null;
-	    Color theForeground = null;
-	    String theText = null;
-	    JLabel renderer = (JLabel) defaultRenderer.getListCellRenderComponent(list,
-										  value,
-										  index,
-										  isSelected,
-										  cellHasFocus);
-	    if(value instanceof Object[]){
-		Object values[] = (Object[]) value;
-		thrForeground = (Color) values[0];
-		theText = (String) values[1];
-		theBackground = (Color) values[2];
-	    }else{
-		theText = "";
-		theForeground = list.getForeground();
-		theBackground = list.getBackground();
-	    }
-	     Color background;
-	     Color foreground;
-		
-		// check if this cell represents the current DnD drop location
-		JList.DropLocation dropLocation = list.getDropLocation();
-		if (dropLocation != null
-		       && !dropLocation.isInsert()
-		    && dropLocation.getIndex() == index) {
-		    
-		    background = Color.RED;
-		    foreground = Color.WHITE;
-
-		    // check if this cell is selected
-		} else if (isSelected) {
-		    background = Color.BLUE;
-		    foreground = Color.WHITE;
-		       
-		       // unselected, and not the DnD drop location
-		} else {
-		    background = Color.WHITE;
-		    // foreground = Color.BLACK;
-		};
-		
-		setBackground(background);
-		//	setForeground(foreground);
-		renderer.setText(theText);
-		return renderer;
-		
-	}
-    }
-	/**
-	 * Handles actions when Delete user button is clicked
-	 * @author Winfred Huang and Arturo Milanes
-	 */
-    /**	class MyButtonListener5 implements ActionListener{
-	    public void actionPerformed(ActionEvent e){
-		if(listContacts.getSelectedIndex() == 0){
-		    controller.displayMsg("Can't delete broadcast.\n");
-		}
-		else if(listContacts.getSelectedIndex() > 0){
-		    controller.displayMsg("You tried to delete " + listContacts.getSelectedValue() +".\n");
-		    model.remove(listContacts.getSelectedIndex());
-		    listContacts.setModel(model);
-		    controller.displayMsg("Successful");
-		}
-		else{
-		    controller.displayMsg("No contact to delete. Please select one.\n");
-		}
-	    }
-	}
-	
-    */	    
 	    /**
 	     * Handles actions when Refresh button is pressed
 	     * @author Winfred Huang and Arturo Milanes
