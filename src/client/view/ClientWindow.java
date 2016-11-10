@@ -195,7 +195,7 @@ public class ClientWindow extends JFrame{
 	ColorCellRenderer colorCellRender = new ColorCellRenderer();
 	JComboBox colorList = new JComboBox(colors);
 	colorList.setRenderer(colorCellRender);
-	colorList.setPreferredSize(new Dimension(200,25));
+	colorList.setPreferredSize(new Dimension(100,25));
 	menuPanel.add(colorList,BorderLayout.EAST);
 	
 
@@ -234,20 +234,7 @@ public class ClientWindow extends JFrame{
 	soundbox.setSelected(true);
     }
 
-    /**
-     * Randomly generates a color
-     */
-    public void randomColorGenerator(){
-	Random rand = new Random();
-	int randNumber = rand.nextInt(3);
-	if (randNumber == 0)
-	    ;
-	else if (randNumber == 1)
-	    ;
-	else if (randNumber == 2)
-	    ;
-    }
-
+    
     /**
      * Creates the name change window
      */
@@ -340,7 +327,7 @@ public class ClientWindow extends JFrame{
 
          // check if this cell is selected
          } else if (isSelected) {
-             background = Color.RED;
+             background = Color.GRAY;
              foreground = Color.WHITE;
 
          // unselected, and not the DnD drop location
@@ -385,33 +372,25 @@ public class ClientWindow extends JFrame{
    
     
     class ColorCellRenderer extends JLabel implements ListCellRenderer<Object> {
-	protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 	 
 	public ColorCellRenderer() {
 	    setOpaque(true);
 	}
-	  
+	boolean b = false;  
     public Component getListCellRendererComponent(JList<?> list,
                                                    Object value,
                                                    int index,
                                                    boolean isSelected,
                                                    boolean cellHasFocus) {
-	/**	 Color thiscolor = (Color) value;
-	 String names[] = {"Black", "Blue", "Cyan",  "Gray", "Green",  "Orange", "Pink", "Red", "White", "Yellow"};
-	 Color colors[] = {Color.BLACK, Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.ORANGE, Color.PINK, Color.RED, Color.WHITE, Color.YELLOW};
-	  for(int i = 0;i<10;i++){
-	      if(thiscolor.toString()== colors[i].toString()){
+	Color thiscolor = (Color) value;
+
+	String names[] = {"Black", "Blue", "Cyan", "Dark Gray", "Gray", "Green", "Light Gray","Magenta", "Orange", "Pink", "Red", "White", "Yellow"};
+	Color colors[] = {Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray, Color.green, Color.lightGray,Color.magenta, Color.orange, Color.pink, Color.red, Color.white, Color.yellow};
+	  for(int i = 0;i<13;i++){
+	      if (thiscolor.equals(colors[i]))
 		  setText(names[i]);
 	      }
-	      }*/
 
-
-	/**String test[]={"a","b","c","d"};
-	Color thiscolor = (Color) value;
-	for(int i=0;i<10;i++){
-	    setText(test[10%i]);
-	    }*/
-	setText(thiscolor.toString());
          Color background;
          Color foreground;
 
@@ -426,7 +405,7 @@ public class ClientWindow extends JFrame{
 
          // check if this cell is selected
          } else if (isSelected) {
-             background = Color.RED;
+             background = Color.gray;
              foreground = Color.WHITE;
 
          // unselected, and not the DnD drop location
