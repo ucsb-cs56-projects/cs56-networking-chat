@@ -350,7 +350,10 @@ public class Client {
 		    }
 		    else if(strs[1].equals("1001")){
 			// display the incoming message
-			controller.displayMsg(strs[0] + '\n');
+			//	JTextArea newMsg = new JJextArea(strs[0]);]
+			//	newMsg.serForeground(Color.RED);
+			controller.displayMsg(strs[0]+ '\n');
+		
 			//play a sound
 			if(soundOn)
 			    {

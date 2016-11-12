@@ -63,16 +63,16 @@ public class ClientWindow extends JFrame{
     java.awt.Color redColor = new java.awt.Color(255,000,000);
     java.awt.Color greenColor = new java.awt.Color(000,255,000);
     java.awt.Color blueColor = new java.awt.Color(000,000,255);
-    Color[] colors = { Color.red, Color.blue, Color.cyan,
-            Color.green, Color.gray, new Color(0xFFAA00) };
-    Random Random = new Random();
-    int x = Random.nextInt(colors.length);
-    //Pre-determined font to randomly use
+    String names[] = {"Black", "Blue", "Cyan",  "Gray", "Green", 
+		       "Orange", "Pink", "Red", "White", "Yellow"};
+    
+    Color colors[] = {Color.BLACK, Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.ORANGE, Color.PINK, Color.RED, Color.WHITE, Color.YELLOW};
+    
+
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     Font fonts[] = ge.getAllFonts();
-    Random random = new Random();
-    int y = random.nextInt(fonts.length);
-
+   
+    //  Object colors[][] = {{ Color.RED, "A" },{  Color.BLUE, "b" }, {  Color.GREEN, "A" }, };
     /**
      * Default constructor
      */
@@ -83,19 +83,10 @@ public class ClientWindow extends JFrame{
 	spScrollPane = new JScrollPane(taOutput);
 	taOutput.setLineWrap(true);
 	taOutput.setWrapStyleWord(true);
-	taOutput.setForeground(Color.BLACK);
+	taOutput.setForeground(Color.ORANGE);
 	taOutput.setFont(new Font("default", Font.PLAIN, 12));
 	taOutput.setEditable(false);
 	model = new DefaultListModel<String>();
-	contactList = controller.getContacts();
-	//for(int i = 0; i < contactList.length; i++){ //NEW
-	    //model.addElement(contactList[i]);
-	//}
-	for(String contact : contactList){
-	    model.addElement(contact);
-	}
-	//listContacts = new JList<String>(controller.getContacts());
-	//listContacts = new JList(controller.getContacts());
 	listContacts = new JList<String>();
 	listContacts.setModel(model);
 	lblContact = new JLabel("Contacts");
@@ -152,7 +143,11 @@ public class ClientWindow extends JFrame{
 	this.getContentPane().add(tfServerIp);
 	this.getContentPane().add(lblLoginError);
 	this.getContentPane().add(btConnect);
-	btConnect.addActionListener(new MyButtonListener());
+	LoginListener loginListener = new LoginListener();
+	btConnect.addActionListener(loginListener);
+	tfUsername.addActionListener(loginListener);
+	pfPassword.addActionListener(loginListener);
+	tfServerIp.addActionListener(loginListener);
 	btConnect.setSelected(true);
 	this.setVisible(true);
     }
@@ -172,7 +167,7 @@ public class ClientWindow extends JFrame{
 	    });
 	this.getContentPane().removeAll();
 	this.setLayout(new BorderLayout());
-	this.setSize(600, 400);
+	this.setSize(800, 400);
 	this.setTitle("Chatting Client-" + name);
 	JPanel leftPanel = new JPanel();
 	JPanel rightPanel = new JPanel();
@@ -188,13 +183,20 @@ public class ClientWindow extends JFrame{
 	menuPanel.add(soundbox, BorderLayout.EAST);
 	
 	
-	//change botton to box
-	//assume the font list has already exist
-	MyCellRenderer aCellRender = new MyCellRenderer();
+
+	
+	MyCellRenderer fontCellRender = new MyCellRenderer();
 	JComboBox fontList = new JComboBox(fonts);
-	fontList.setRenderer(aCellRender);
+	fontList.setRenderer(fontCellRender);
 	fontList.setPreferredSize(new Dimension(150,25));
 	menuPanel.add(fontList,BorderLayout.EAST);
+
+	//*************here i start to add stuff about change color***************
+	ColorCellRenderer colorCellRender = new ColorCellRenderer();
+	JComboBox colorList = new JComboBox(colors);
+	colorList.setRenderer(colorCellRender);
+	colorList.setPreferredSize(new Dimension(100,25));
+	menuPanel.add(colorList,BorderLayout.EAST);
 	
 
 	JButton deleteUser = new JButton("Delete User");
@@ -227,24 +229,12 @@ public class ClientWindow extends JFrame{
 	nickName.addActionListener(new MyButtonListener2());
 	privateRoom.addActionListener(new MyButtonListener3());
 	fontList.addActionListener(new FontListener());
+	colorList.addActionListener(new ColorListener());
 	soundbox.addItemListener(new CheckListener());
 	soundbox.setSelected(true);
     }
 
-    /**
-     * Randomly generates a color
-     */
-    public void randomColorGenerator(){
-	Random rand = new Random();
-	int randNumber = rand.nextInt(3);
-	if (randNumber == 0)
-	    ;
-	else if (randNumber == 1)
-	    ;
-	else if (randNumber == 2)
-	    ;
-    }
-
+    
     /**
      * Creates the name change window
      */
@@ -273,82 +263,13 @@ public class ClientWindow extends JFrame{
 	return taOutput;
     }      
 
-    /*
-     * append method for JTextPane, includes font and color
-
-    public void appendToPane(JTextPane tp, String msg, Color c)
-    {
-        StyleContext sc = StyleContext.getDefaultStyleContext();
-        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
-
-        aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Arial");
-        aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-
-        int len = tp.getDocument().getLength();
-        tp.setCaretPosition(len);
-        tp.setCharacterAttributes(aset, false);
-        tp.replaceSelection(msg);
-    }
-*/
-
-
-    /*
-    this.text_panel = taOutput;
-    this.text_panel.setContentType("text/html");
-    this.text_panel.setEditable(false);
-    this.text_panel.setBackground(this.text_background_color);
-    this.text_panel_html_kit = new HTMLEditorKit();
-    this.text_panel.setEditorKit(text_panel_html_kit);
-    this.text_panel.setDocument(new HTMLDocument());
-
-
-    // Appending a string using HTML
-    public void append(String line){
-	SimpleDateFormat date_format = new SimpleDateFormat("HH:mm:ss");
-	Date date = new Date();
-	
-	line = "<div><font size=3 color=GRAY>[" + date_format.format(date) + "]</font><font size=3 color=BLACK>"+ line + "</font></div>";
-	
-	try {
-	    this.text_panel_html_kit.insertHTML((HTMLDocument) this.text_panel.getDocument(), this.text_panel.getDocument().getLength(), line, 0, 0, null);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-    }
-    */
-    
-
-    /*
-     * adding a style for JTextPane
-     
-    public void {
-
-	StyledContext doc = textPane.getStyledDocument();
-
-        Style style = textPane.addStyle("I'm a Style", null);
-        StyleConstants.setForeground(style, Color.red);
-
-        try { 
-	    doc.insertString(doc.getLength(), "BLAH ",style);
-	}
-        catch (BadLocationException e){}
-	
-        StyleConstants.setForeground(style, Color.blue);
-	
-        try {
-	    doc.insertString(doc.getLength(), "BLEH",style);
-	}
-        catch (BadLocationException e){}
-    }
-    */
-
 
     /**
      * Get the contact list
      * @return the list component of the client window
      */
-    public JList getContactList(){
-	return listContacts;
+    public DefaultListModel getContactList(){
+    	return model;
     }
     
     /**
@@ -374,8 +295,8 @@ public class ClientWindow extends JFrame{
     }
 
     /**
-     * Handles actions when Change Font button is clicked
-     * @author Winfred Huang and Arturo Milanes
+     * Inner class that formats the list output by JComboBox
+     * Only prints name of font that exists in the list instead of entire Font object	
      */
 
     //helper for Fontlistener
@@ -406,7 +327,7 @@ public class ClientWindow extends JFrame{
 
          // check if this cell is selected
          } else if (isSelected) {
-             background = Color.RED;
+             background = Color.GRAY;
              foreground = Color.WHITE;
 
          // unselected, and not the DnD drop location
@@ -421,8 +342,11 @@ public class ClientWindow extends JFrame{
          return this;
      }
  } 
-    
-
+   /**
+    * Listener class that registers when the changeFont JComboBox is pressed
+    * @author Xinyuan Zhang and Jared Leeong
+   */
+   
     
     class FontListener implements ActionListener{
 	public void actionPerformed(ActionEvent e){
@@ -434,19 +358,84 @@ public class ClientWindow extends JFrame{
 	}
     }
 
-    /**
+
+
+
+    //******************here I start colorlistener*****************************
+  class ColorListener implements ActionListener{
+	public void actionPerformed(ActionEvent e){
+	    JComboBox ex = (JComboBox)e.getSource();
+	    Color newColor = (Color)ex.getSelectedItem();
+	    taOutput.setForeground(newColor);
+	}
+  }
+   
+    
+    class ColorCellRenderer extends JLabel implements ListCellRenderer<Object> {
+	 
+	public ColorCellRenderer() {
+	    setOpaque(true);
+	}
+	boolean b = false;  
+    public Component getListCellRendererComponent(JList<?> list,
+                                                   Object value,
+                                                   int index,
+                                                   boolean isSelected,
+                                                   boolean cellHasFocus) {
+	Color thiscolor = (Color) value;
+
+	String names[] = {"Black", "Blue", "Cyan", "Dark Gray", "Gray", "Green", "Light Gray","Magenta", "Orange", "Pink", "Red", "White", "Yellow"};
+	Color colors[] = {Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray, Color.green, Color.lightGray,Color.magenta, Color.orange, Color.pink, Color.red, Color.white, Color.yellow};
+	  for(int i = 0;i<13;i++){
+	      if (thiscolor.equals(colors[i]))
+		  setText(names[i]);
+	      }
+
+         Color background;
+         Color foreground;
+
+         // check if this cell represents the current DnD drop location
+         JList.DropLocation dropLocation = list.getDropLocation();
+         if (dropLocation != null
+                 && !dropLocation.isInsert()
+                 && dropLocation.getIndex() == index) {
+
+             background = Color.BLUE;
+             foreground = Color.WHITE;
+
+         // check if this cell is selected
+         } else if (isSelected) {
+             background = Color.gray;
+             foreground = Color.WHITE;
+
+         // unselected, and not the DnD drop location
+         } else {
+             background = Color.WHITE;
+             foreground = Color.BLACK;
+         };
+
+         setBackground(background);
+         setForeground(foreground);
+
+         return this;
+     }
+ }
+
+/**
      * Handles actions when Delete user button is clicked
-     * @author Winfred Huang and Arturo Milanes
+     * @author Winfred Huang, Arturo Milanes, and Jared Leeong
+     * @version F16
      */
     class MyButtonListener5 implements ActionListener{
 	public void actionPerformed(ActionEvent e){
-	    if(listContacts.getSelectedIndex() == 0){
+		int index = listContacts.getSelectedIndex();
+	    if(index == 0){
 		controller.displayMsg("Can't delete broadcast.\n");
 	    }
-	    else if(listContacts.getSelectedIndex() > 0){
+	    else if(index > 0){
 		controller.displayMsg("You tried to delete " + listContacts.getSelectedValue() +".\n");
-		model.remove(listContacts.getSelectedIndex());
-		listContacts.setModel(model);
+		controller.sendMsg2Server("&DELETE:"+listContacts.getSelectedValue());
+		model.remove(index);
 		controller.displayMsg("Successful");
 	    }
 	    else{
@@ -454,175 +443,146 @@ public class ClientWindow extends JFrame{
 	    }
 	}
     }
-
-    /**
-     * Handles actions when Refresh button is pressed
-     * @author Winfred Huang and Arturo Milanes
-     */
-    class MyButtonListener6 implements ActionListener{
-	public void actionPerformed(ActionEvent e){
-	    int count = 1;
-	    ListModel<String> list = listContacts.getModel();
-	    for(int i = 0; i < list.getSize(); i++){
-		if(list.getElementAt(i).endsWith("(Online)")){
-		    count++;
+	    /**
+	     * Handles actions when Refresh button is pressed
+	     * @author Winfred Huang and Arturo Milanes
+	     */
+	    class MyButtonListener6 implements ActionListener{
+		public void actionPerformed(ActionEvent e){
+		    int count = 1;
+		    ListModel<String> list = listContacts.getModel();
+		    for(int i = 0; i < list.getSize(); i++){
+			if(list.getElementAt(i).endsWith("(Online)")){
+			    count++;
+			}
+		    }
+		    onlineCountNum.setText(String.valueOf(count));
 		}
 	    }
-	    onlineCountNum.setText(String.valueOf(count));
-	}
-    }
-    
-    /**
-     * Handles actions when buttons are clicked
-     * @author Peng Wang with Andro Stotts
-     * @version 0.4
-     */		
-    class MyButtonListener implements ActionListener{
-	private ClientWindow window = ClientWindow.getWindow();
-	public void actionPerformed(ActionEvent e) {			
-	    name = tfUsername.getText();
-	    password = pfPassword.getText();
-	    boolean tester = false;
-	    if (name.isEmpty()) 
-		tester = true;
-	    else 
-		tester = false;
-	    boolean tester2 = false;
-	    if (password.isEmpty()) 
-		tester2 = true;
-	    else 
-		tester2 = false;
-	
 	    
-	
-	    password = new String(pfPassword.getPassword());
-	    ip = tfServerIp.getText();
-			
-	    int result; 
-	    if (tester && !tester2) 
-		result = 3;
-
-	    else if (!tester && tester2)
-		result = 4;
-
-	    else if (tester && tester2)
-		result = 5;
-
-	    else 
-		result = controller.connectServer(ip, name, password);
-	    
-	    if(result == 0)
-		window.launchChatWindow();
-			
-	    else{
+	    /**
+	     * Handles actions when login button is pressed or when enter is pressed on LoginWindow
+	     * @author Peng Wang with Andro Stotts
+	     * @version 0.4
+	     */		
+	    class LoginListener implements ActionListener, KeyListener{
+		private ClientWindow window = ClientWindow.getWindow();
+		private void attemptLogin(){
+		    name = tfUsername.getText();
+		    password = new String(pfPassword.getPassword());
+		    if(name.isEmpty()||password.isEmpty()){
+			tfUsername.setText("");
+			lblLoginError.setText("Incorrect Login Credentials");
+		    }
+		    else{
+			ip = tfServerIp.getText();
+			int connected = controller.connectServer(ip,name,password);
+			if(connected==0){
+			    window.launchChatWindow();
+			}
+			else if(connected==1){
+			    tfUsername.setText("");
+			    lblLoginError.setText("Wrong username or password");
+			}
+			else if(connected==2){
+			    tfUsername.setText("");
+			    lblLoginError.setText("This user has logged in already");
+			}
+			else{
+			    tfServerIp.setText("");
+			    lblLoginError.setText("Server unavailable on this IP address");
+			}
+		    }
+		}
+		public void actionPerformed(ActionEvent e) {			
+		    attemptLogin();
+		    window.getContentPane().repaint();
+		}
 		
-		pfPassword.setText("");
-		lblLoginError.setForeground(Color.RED);
-		if(result == 1){
-		    tfUsername.setText("");	
-		    lblLoginError.setText("Wrong username or password");
+		public void keyTyped(KeyEvent e) {}
+		public void keyReleased(KeyEvent e) {}
+		public void keyPressed(KeyEvent e) {
+		    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			attemptLogin();
+		    }
+		    else{
+			lblLoginError.setText("incorrect keypress");
+		    }
 		}
-		else if(result == 2){
-		    tfUsername.setText("");	
-		    lblLoginError.setText("This user has logged in already");
-		}
-	        else if(result == 3){
-		    tfUsername.setText("");
-		    lblLoginError.setText("No name was entered");
-		}
-		else if(result == 4){
-		    tfUsername.setText("");
-		    lblLoginError.setText("No password entered");
-		}
-		else if(result == 5){
-		    tfUsername.setText("");
-		    lblLoginError.setText("Please enter login information");
-		}
-		else if(result == 9){
-		    tfUsername.setText("");	
-		    lblLoginError.setText("Server is not available");
-		}
-		else{
-		    tfServerIp.setText("");
-		    lblLoginError.setText("Server unavailable on this IP address");
-		}
-	      }
-		window.getContentPane().repaint();
-	    }
-    }	
-    
-    /**
-     * Handles checkbox that toggles sound
-     * @author Bryce Filler and Max Hinson
-     * @version 0.4
-     */
-    class CheckListener implements ItemListener {
-	
-	public CheckListener(){};
-	
-	public void itemStateChanged(ItemEvent e) {
-	    Object source = e.getItemSelectable();
+	    }	
 	    
-	    if (e.getStateChange() == ItemEvent.DESELECTED)
-		controller.setSound(false);
-	    else
-		controller.setSound(true);
-	}
+	    /**
+	     * Handles checkbox that toggles sound
+	     * @author Bryce Filler and Max Hinson
+	     * @version 0.4
+	     */
+	    class CheckListener implements ItemListener {
+		
+		public CheckListener(){};
+		
+		public void itemStateChanged(ItemEvent e) {
+		    Object source = e.getItemSelectable();
+		    
+		    if (e.getStateChange() == ItemEvent.DESELECTED)
+			controller.setSound(false);
+		    else
+			controller.setSound(true);
+		}
     }	
-
-    /**
+	    
+	    /**
      * Handles actions when name is changed
      * @author Bryce Filler and Max Hinson
      * @version 0.4
      */
-    class InputListener2 implements ActionListener, KeyListener{
-	//input listener for name change
-	public void actionPerformed(ActionEvent e) {
-	    String text = tfNickName.getText().trim();
-	    if(!text.isEmpty())
-		{
-		    tfNickName.setText("");
-		    controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
-		    nicknameWindow.dispose();
-                }
-	}
-	public void keyTyped(KeyEvent e) {}
-        public void keyReleased(KeyEvent e) {}
-	public void keyPressed(KeyEvent e) {
-	    int key = e.getKeyCode();
-	    if (key == KeyEvent.VK_ENTER) {
-	    String text = tfNickName.getText().trim();
-	    if(!text.isEmpty())
-		{
-		    tfNickName.setText("");
-		    controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
-		    nicknameWindow.dispose();
-                }
+	    class InputListener2 implements ActionListener, KeyListener{
+		//input listener for name change
+		public void actionPerformed(ActionEvent e) {
+		    String text = tfNickName.getText().trim();
+		    if(!text.isEmpty())
+			{
+			    tfNickName.setText("");
+			    controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
+			    nicknameWindow.dispose();
+			}
+		}
+		public void keyTyped(KeyEvent e) {}
+		public void keyReleased(KeyEvent e) {}
+		public void keyPressed(KeyEvent e) {
+		    int key = e.getKeyCode();
+		    if (key == KeyEvent.VK_ENTER) {
+			String text = tfNickName.getText().trim();
+			if(!text.isEmpty())
+			    {
+				tfNickName.setText("");
+				controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
+				nicknameWindow.dispose();
+			    }
+		    }
+		    
+		}
 	    }
-		
-	}
-    }
-
-    /**
-     * Handles the action when user clicks enter on keyboard
-     * @author Peng Wang with Andro Stotts
-     * @version 0.4
-     */
-    class InputListener implements ActionListener{
-	public void actionPerformed(ActionEvent e) {
-	    if(listContacts.isSelectionEmpty()){
-		taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
-	    }
-	    else{
-		String text = tfInput.getText().trim();
-		tfInput.setText("");
-
-		nickname = controller.getNickname();
-
-		if(!listContacts.getSelectedValue().equals("Broadcast")) {
-		    String parts[] = listContacts.getSelectedValue().toString().split("");
-		    String receiverName = "";
-		    ListModel<String> list = listContacts.getModel();
+	    
+	    /**
+	     * Handles the action when user clicks enter on keyboard
+	     * @author Peng Wang with Andro Stotts
+	     * @version 0.4
+	     */
+	    class InputListener implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+		    if(listContacts.isSelectionEmpty()){
+			taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
+		    }
+		    else{
+			String text = tfInput.getText().trim();
+			tfInput.setText("");
+			
+			nickname = controller.getNickname();
+			
+			if(!listContacts.getSelectedValue().equals("Broadcast")) {
+			    String parts[] = listContacts.getSelectedValue().toString().split("");
+			    String receiverName = "";
+			    ListModel<String> list = listContacts.getModel();
 		    for (int i = 0; i < listContacts.getSelectedValue().length(); i++) {
 			String ch = parts[i];
 			if (!ch.equals("(")) {
@@ -632,11 +592,10 @@ public class ClientWindow extends JFrame{
 		    }
 		    
 		    controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
-		}
-		else
-		    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
+			}
+			else
+			    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
+		    }
+		}	
 	    }
-	}	
-    }
 }
-

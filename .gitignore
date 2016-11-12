@@ -1,8 +1,10 @@
 *.class
-
+*#
+*.swp
 # Package Files #
 *.war
 *.ear
 
 # Temp Files #
 *~
+javadoc/
