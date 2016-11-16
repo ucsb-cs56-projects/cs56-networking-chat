@@ -8,15 +8,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Set;
 
 /*
  *SPECIAL CODE used by system to indicate the type of message
  *   MESSAGE FORMAT (everything inside <> is variable)
  *
  *1001-regular one-to-one or broadcast message
- *   [Client Message] <sender's nickname>: <message>&<recipient's nickname>(Online):1001
+ *   [Client@<client-ip>] <sender's nickname>: <message>&<recipient's nickname>(Online):1001
  *   or
- *   [Client Message] <sender's nickname>(Broadcast): <message>&Broadcast:1001
+ *   [Client@<client-ip>] <sender's nickname>(Broadcast): <message>&Broadcast:1001
  *
  *1002-let contacts know that someone has logged on
  *   <nickname of online user>&1002
@@ -35,6 +36,9 @@ import java.util.ArrayList;
  *
  *1007-tell the client its new nickname
  *   <newnickname>&1007
+ *
+ *1008-regular message sent to a chatroom
+ *   [Client@<client-ip>] <sender's nickname>: <message>&<recipient's nickname>(Online):1008:<room-number>
  */
 
 /**
@@ -54,6 +58,7 @@ public class Server{
     private String [] clientsOnline;
     private ArrayList<Client> clients;
     private ArrayList<User> users;
+	private Set<ChatRoom> rooms;
 
     private String usage = "------------------------------------------SERVER USAGE-----------------------------------------------\n" +
 	"             We currently have a FAKE users with only the users listed below:         \n" +
@@ -78,7 +83,6 @@ public class Server{
 	ss = null;
 	serverMsg = "";
 	serverMsgPrefix = "[Server Message] ";
-	clientMsgPrefix = "[Client Message] ";
 	clients = new ArrayList<Client>();
 		
 	//make our own fake users
@@ -461,6 +465,7 @@ public class Server{
 			String msg = dis.readUTF();
 			if (!isServerStart)
 				throw new Exception();
+			clientMsgPrefix = "[Client@"+ip.toString()+" ]";
 			controller.displayMsg(clientMsgPrefix + msg + '\n');
 			String[] strs = parseMsg(msg);
 						
