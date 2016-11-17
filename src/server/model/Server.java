@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -261,11 +262,12 @@ public class Server{
 	 */
 	public String[] parseMsg(String s){
 	    int index = s.lastIndexOf("&");
-	    String msg = s.substring(0, index);
-	    String c = s.substring(index+1, s.length());
-	    String[] cmd = c.split(":");
-	    String[] str = {msg, cmd[0], cmd[1]};
-	    return str;
+	    String msg = s.substring(0,index);
+	    String[] params = s.substring(index+1, s.length()).split(":");
+	    ArrayList<String> parsed = new ArrayList<String>();
+	    parsed.add(msg);
+	    parsed.addAll(Arrays.asList(params));
+	    return parsed.toArray(new String[parsed.size()]);
 	}
 		
 	/**
