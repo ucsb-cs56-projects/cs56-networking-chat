@@ -58,7 +58,7 @@ public class ClientWindow extends JFrame{
     private String ip;
     private String password;
     private JFrame nicknameWindow;
-
+ 
     //Pre-determined color to randomly use
     java.awt.Color redColor = new java.awt.Color(255,000,000);
     java.awt.Color greenColor = new java.awt.Color(000,255,000);
@@ -165,6 +165,7 @@ public class ClientWindow extends JFrame{
 		    System.exit(0);
 		}
 	    });
+
 	this.getContentPane().removeAll();
 	this.setLayout(new BorderLayout());
 	this.setSize(800, 400);
@@ -182,6 +183,7 @@ public class ClientWindow extends JFrame{
 	menuPanel.setLayout(new FlowLayout());
 	menuPanel.add(soundbox, BorderLayout.EAST);
 	
+
 	
 
 	
@@ -202,6 +204,11 @@ public class ClientWindow extends JFrame{
 	JButton deleteUser = new JButton("Delete User");
 	menuPanel.add(deleteUser,BorderLayout.EAST);
 	deleteUser.addActionListener(new MyButtonListener5());
+
+	JButton logout = new JButton("Logout");
+	menuPanel.add(logout,BorderLayout.EAST);
+	logout.addActionListener(new LogoutListener());
+	
 	
 	rightPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	rightPanel.setLayout(new BorderLayout());
@@ -232,6 +239,7 @@ public class ClientWindow extends JFrame{
 	colorList.addActionListener(new ColorListener());
 	soundbox.addItemListener(new CheckListener());
 	soundbox.setSelected(true);
+	
     }
 
     
@@ -528,61 +536,61 @@ public class ClientWindow extends JFrame{
 		    else
 			controller.setSound(true);
 		}
-    }	
+	    }	
 	    
 	    /**
      * Handles actions when name is changed
      * @author Bryce Filler and Max Hinson
      * @version 0.4
      */
-	    class InputListener2 implements ActionListener, KeyListener{
-		//input listener for name change
-		public void actionPerformed(ActionEvent e) {
-		    String text = tfNickName.getText().trim();
+    class InputListener2 implements ActionListener, KeyListener{
+	//input listener for name change
+	public void actionPerformed(ActionEvent e) {
+	    String text = tfNickName.getText().trim();
 		    if(!text.isEmpty())
 			{
 			    tfNickName.setText("");
 			    controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
 			    nicknameWindow.dispose();
 			}
-		}
-		public void keyTyped(KeyEvent e) {}
-		public void keyReleased(KeyEvent e) {}
-		public void keyPressed(KeyEvent e) {
-		    int key = e.getKeyCode();
-		    if (key == KeyEvent.VK_ENTER) {
-			String text = tfNickName.getText().trim();
-			if(!text.isEmpty())
-			    {
-				tfNickName.setText("");
-				controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
-				nicknameWindow.dispose();
-			    }
+	}
+	public void keyTyped(KeyEvent e) {}
+	public void keyReleased(KeyEvent e) {}
+	public void keyPressed(KeyEvent e) {
+	    int key = e.getKeyCode();
+	    if (key == KeyEvent.VK_ENTER) {
+		String text = tfNickName.getText().trim();
+		if(!text.isEmpty())
+		    {
+			tfNickName.setText("");
+			controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
+			nicknameWindow.dispose();
 		    }
-		    
-		}
 	    }
 	    
-	    /**
-	     * Handles the action when user clicks enter on keyboard
-	     * @author Peng Wang with Andro Stotts
-	     * @version 0.4
-	     */
-	    class InputListener implements ActionListener{
-		public void actionPerformed(ActionEvent e) {
-		    if(listContacts.isSelectionEmpty()){
-			taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
-		    }
-		    else{
-			String text = tfInput.getText().trim();
-			tfInput.setText("");
-			
-			nickname = controller.getNickname();
-			
-			if(!listContacts.getSelectedValue().equals("Broadcast")) {
-			    String parts[] = listContacts.getSelectedValue().toString().split("");
-			    String receiverName = "";
-			    ListModel<String> list = listContacts.getModel();
+	}
+    }
+    
+    /**
+     * Handles the action when user clicks enter on keyboard
+     * @author Peng Wang with Andro Stotts
+     * @version 0.4
+     */
+    class InputListener implements ActionListener{
+	public void actionPerformed(ActionEvent e) {
+	    if(listContacts.isSelectionEmpty()){
+		taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
+	    }
+	    else{
+		String text = tfInput.getText().trim();
+		tfInput.setText("");
+		
+		nickname = controller.getNickname();
+		
+		if(!listContacts.getSelectedValue().equals("Broadcast")) {
+		    String parts[] = listContacts.getSelectedValue().toString().split("");
+		    String receiverName = "";
+		    ListModel<String> list = listContacts.getModel();
 		    for (int i = 0; i < listContacts.getSelectedValue().length(); i++) {
 			String ch = parts[i];
 			if (!ch.equals("(")) {
@@ -592,10 +600,43 @@ public class ClientWindow extends JFrame{
 		    }
 		    
 		    controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
-			}
-			else
-			    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
-		    }
-		}	
+		}
+		else
+		    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
 	    }
+	}	
+    }
+
+    class LogoutListener implements ActionListener {
+	public void actionPerformed(ActionEvent e){
+	    addWindowListener(new WindowAdapter(){
+		    public void windowClosing(WindowEvent we){
+			controller.sendMsg2Server(name + "&Broadcast:1003");
+			System.exit(1);
+		    }
+		});
+	    window.removeAll();
+	    setSize(300, 270);
+	    setTitle("Chatting Client");
+	    setLayout(new FlowLayout());
+	    
+	    window.getContentPane().add(lblUserName);
+	    window.getContentPane().add(tfUsername);
+	    window.getContentPane().add(lblPassword);
+	    window.getContentPane().add(pfPassword);
+	    window.getContentPane().add(lblServerIp);
+	    window.getContentPane().add(tfServerIp);
+	    window.getContentPane().add(lblLoginError);
+	    window.getContentPane().add(btConnect);
+	    LoginListener loginListener = new LoginListener();
+	    btConnect.addActionListener(loginListener);
+	    tfUsername.addActionListener(loginListener);
+	    pfPassword.addActionListener(loginListener);
+	    tfServerIp.addActionListener(loginListener);
+	    btConnect.setSelected(true);
+	    setVisible(true);
+		
+	    //	launchLoginWindow();
+	}
+    }
 }
