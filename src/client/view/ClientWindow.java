@@ -129,7 +129,7 @@ public class ClientWindow extends JFrame{
      * Creates the login window
      */
     public void launchLoginWindow(){
-	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	this.setLocation(100, 100);
 	this.setSize(300, 270);
 	this.setTitle("Chatting Client");
@@ -165,7 +165,7 @@ public class ClientWindow extends JFrame{
 		    System.exit(0);
 		}
 	    });
-
+	
 	this.getContentPane().removeAll();
 	this.setLayout(new BorderLayout());
 	this.setSize(800, 400);
@@ -608,13 +608,8 @@ public class ClientWindow extends JFrame{
     }
 
     class LogoutListener implements ActionListener {
-	public void actionPerformed(ActionEvent e){
-	    addWindowListener(new WindowAdapter(){
-		    public void windowClosing(WindowEvent we){
-			controller.sendMsg2Server(name + "&Broadcast:1003");
-			System.exit(1);
-		    }
-		});
+	/**	public void actionPerformed(ActionEvent e){
+	    
 	    window.removeAll();
 	    setSize(300, 270);
 	    setTitle("Chatting Client");
@@ -634,8 +629,16 @@ public class ClientWindow extends JFrame{
 	    pfPassword.addActionListener(loginListener);
 	    tfServerIp.addActionListener(loginListener);
 	    btConnect.setSelected(true);
-	    setVisible(true);
-		
+	    setVisible(true);*/
+	public void actionPerformed(ActionEvent e){
+	    //   window.removeAll();
+	    controller.sendMsg2Server(name+"&Broadcast:1008");
+	    //  window == null;
+	    window.dispose();
+	    //	    controller.sendMsg2Server(name+"&Broadcast:1008");
+ 	    ClientWindow w = new ClientWindow();
+	     w.launchLoginWindow();
+	    
 	    //	launchLoginWindow();
 	}
     }

@@ -35,6 +35,9 @@ import java.util.ArrayList;
  *
  *1007-tell the client its new nickname
  *   <newnickname>&1007
+ *
+ *1008-let contacts know that someone has logged off and disconnected.
+ *   <nickname of offline user>&1003
  */
 
 /**
@@ -472,7 +475,24 @@ public class Server{
 				broadcast2all(strs);
 				currentUser.setOnline(false);
 			}
-					
+			//cient offline and window will auto change to the status of waiting for new login 
+			if(strs[2].equals("1008")){
+			    controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" 
+						  +currentUser.getNickname() + 
+						  ") is trying to logoff and disconnect with the server\n");
+			    broadcast2all(strs);
+			    currentUser.setOnline(false);
+			    
+			    
+			    clients.remove(this);
+			    controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" + currentUser.getNickname() + ") has successfully disconnected\n");
+			    for(Client c : clients){
+				if(!c.getUser().getNickname().equals(currentUser.getNickname()))
+				    c.sendMsg(currentUser.getNickname() + "&1003");
+			    }
+			    
+			    updateWhoIsOnline();
+			}
 			//client doing regular chatting
 			else{
 			//if the client doing broadcasting
