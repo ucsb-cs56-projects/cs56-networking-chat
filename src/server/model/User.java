@@ -125,6 +125,20 @@ public class User {
  	*/
 	public void setOnline(boolean status){
 		isOnline=status;
-	}	
-	
+	}
+
+	/**Overriden .equals() inherited from Object. Will evaluate to true if the 'name' matches on both objects
+	*@param o Object to be compared to
+	*@author Jared Leeong
+	*@version F16	
+	*/
+	@Override
+	public boolean equals(Object o){
+	if(o==null) return false;
+		if(o instanceof User){
+			User u = (User) o;
+			return name.equals(u.getName());
+		}
+		else return false;	
+	}
 }

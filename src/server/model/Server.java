@@ -59,7 +59,7 @@ public class Server{
     private String [] clientsOnline;
     private ArrayList<Client> clients;
     private ArrayList<User> users;
-	private Set<ChatRoom> rooms;
+    private ArrayList<ChatRoom> rooms;
 
     private String usage = "------------------------------------------SERVER USAGE-----------------------------------------------\n" +
 	"             We currently have a FAKE users with only the users listed below:         \n" +
@@ -309,6 +309,24 @@ public class Server{
 	    if(!isOnline){
 		this.sendMsg("***THE USER YOU ARE TRYING TO SEND MESSAGE TO IS NOT ONLINE***&" + strs[2]);
 	    }	
+	}
+	
+	/**
+	*
+	*
+	*/
+	//public void singularBroadcast(
+
+	/**
+	* broadcast message to all users in a single chatroom
+	* @param strs array of strings that contain message and message metadata
+	*@author Jared Leeong
+	*@version F16
+	*/
+	public void broadcast2room(String[] strs){
+		double rn = Double.parseDouble(strs[3]);
+		ChatRoom cr = rooms.get(rooms.indexOf(new ChatRoom(rn)));
+		
 	}
 
 	/**
