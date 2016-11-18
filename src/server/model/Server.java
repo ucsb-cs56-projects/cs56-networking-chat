@@ -16,7 +16,7 @@ import java.util.Set;
  *   MESSAGE FORMAT (everything inside <> is variable)
  *
  *1001-regular one-to-one or broadcast message
- *   [Client@<client-ip>] <sender's nickname>: <message>&<recipient's nickname>(Online):1001
+ *   [Client@<client-ip>] <sender's nickname>: <message>&<recipient's nickname>:1001
  *   or
  *   [Client@<client-ip>] <sender's nickname>(Broadcast): <message>&Broadcast:1001
  *
@@ -300,7 +300,7 @@ public class Server{
 	    boolean isOnline = false;
 	    this.sendMsg(strs[0] + "&" + strs[2]);
 	    for(Client c : clients){
-		if(strs[1].equals(c.getUser().getNickname()+"(Online)")){
+		if(strs[1].equals(c.getUser().getNickname())){
 		    c.sendMsg(strs[0] + "&" + strs[2]);
 		    isOnline = true;
 		    break;

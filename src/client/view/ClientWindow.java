@@ -570,32 +570,18 @@ public class ClientWindow extends JFrame{
 	     */
 	    class InputListener implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
-		    if(listContacts.isSelectionEmpty()){
-			taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
-		    }
-		    else{
-			String text = tfInput.getText().trim();
-			tfInput.setText("");
-			
-			nickname = controller.getNickname();
-			
-			if(!listContacts.getSelectedValue().equals("Broadcast")) {
-			    String parts[] = listContacts.getSelectedValue().toString().split("");
-			    String receiverName = "";
-			    ListModel<String> list = listContacts.getModel();
-		    for (int i = 0; i < listContacts.getSelectedValue().length(); i++) {
-			String ch = parts[i];
-			if (!ch.equals("(")) {
-			    receiverName = receiverName + ch;
-			} else
-			    break;
-		    }
-		    
-		    controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
+			if(listContacts.isSelectionEmpty()){
+				taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
 			}
-			else
-			    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
-		    }
+			else{
+				String text = tfInput.getText().trim();
+				tfInput.setText("");
+				String receiver = listContacts.getSelectedValue();
+				String recNoStatus = receiver;
+				if(receiver.contains("(Online)"))
+					recNoStatus = receiver.substring(0,receiver.indexOf('('));
+				controller.sendIM(text, recNoStatus);
+			}
 		}	
 	    }
 }

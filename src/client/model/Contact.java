@@ -46,4 +46,19 @@ public class Contact {
 	public void setOnline(boolean status){
 		isOnline=status;
 	}
+
+	/**Overriden equals() inherited from Object.
+	* @return True if the nicknames match. False otherwise
+	* @author jleeong
+	* @version F16
+	*/
+	@Override
+	public boolean equals(Object o){
+		if(o==null) return false;
+		if(o instanceof Contact){
+			Contact c = (Contact) o;
+			return nickname.equals(c.getNickname());
+		}
+		return false;
+	}
 }
