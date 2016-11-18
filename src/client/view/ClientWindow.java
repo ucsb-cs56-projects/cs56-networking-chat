@@ -344,7 +344,7 @@ public class ClientWindow extends JFrame{
  } 
    /**
     * Listener class that registers when the changeFont JComboBox is pressed
-    * @author Xinyuan Zhang and Jared Leeong
+    * @author Xinyuan Zhang and jleeong
    */
    
     
@@ -423,7 +423,7 @@ public class ClientWindow extends JFrame{
 
 /**
      * Handles actions when Delete user button is clicked
-     * @author Winfred Huang, Arturo Milanes, and Jared Leeong
+     * @author Winfred Huang, Arturo Milanes, and jleeong
      * @version F16
      */
     class MyButtonListener5 implements ActionListener{

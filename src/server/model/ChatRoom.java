@@ -7,7 +7,7 @@ import java.util.Set;
 *must devise a method of keeping track of unique instances of ChatRoom objects. The ChatRoom object provides an instance variable
 *'roomNumber' and relevant setter and getter function to assign a double value to each ChatRoom object. It does not, however,
 *gaurantee uniqueness between different ChatRoom objects. Two ChatRoom objects without an assigned roomNumber will always be equal
-*@author Jared Leeong
+*@author jleeong
 *@version F16
 */
 public class ChatRoom{
@@ -19,7 +19,7 @@ public class ChatRoom{
 	*Users that are participants in this ChatRoom. Calling class must also call .setRoomNumber(double d) to
 	*assign room number for room tracking.
 	*@param p A set of User objects that represent the specific Users that are members of this room
-	*@author Jared Leeong
+	*@author jleeong
 	*@version F16
 	*/	
 	public ChatRoom(Set<User> p){
@@ -33,14 +33,14 @@ public class ChatRoom{
 	/**Secondary constructor used to verify ChatRoom existence. Typically used in Server.java when needing
 	*to verify existence of certain ChatRoom. Use ChatRoom(Set<User> p) for proper construction of ChatRoom
 	*@param rn A positive double value that represents the room number.
-	*@author Jared Leeong
+	*@author jleeong
 	*@version F16
 	*/
 	public ChatRoom(double rn){
 		roomNumber=rn;
 	}
 	/**Returns true if ChatRoom has at least 1 user online, false otherwise
-	*@author Jared Leeong
+	*@author jleeong
 	*@version F16
 	*/
 	public boolean isActive(){
@@ -49,7 +49,7 @@ public class ChatRoom{
 	
 	/**Sets the roomNumber instance variable identifying this ChatRoom object
 	*@param rn A double value that uniquely identifies each ChatRoom object
-	*@author Jared Leeong
+	*@author jleeong
 	*@author F16
 	*/
 	public void setRoomNumber(double rn){
@@ -57,7 +57,7 @@ public class ChatRoom{
 	}
 
 	/** Returns the roomNumber associated with the ChatRoom
-	*@author Jared Leeong
+	*@author jleeong
 	*@version F16
 	*/
 	public double getRoomNumber(){
@@ -65,7 +65,7 @@ public class ChatRoom{
 	}
 
 	/** Function to access set of Users that are participants of this ChatRoom
-	*@author Jared Leeong
+	*@author jleeong
 	*@version F16
 	*/
 	public Set<User> getParticipants(){
@@ -74,7 +74,7 @@ public class ChatRoom{
 
 	/** Overriden equals() inherited from Object. Will consider any other ChatRoom object
 	*equal if it has the same room number.
-	*@author Jared Leeong
+	*@author jleeong
 	*@version F16
 	*/
 	@Override

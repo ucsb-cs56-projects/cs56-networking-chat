@@ -39,13 +39,16 @@ import java.util.Set;
  *   <newnickname>&1007
  *
  *1008-regular message sent to a chatroom
- *   [Client@<client-ip>] <sender's nickname>: <message>&<recipient's nickname>(Online):1008:<room-number>
+ *   [Client@<client-ip>] <sender's nickname>: <message>&<room-number>:1008
+ *
+ *1009-client registering a new chatroom with the server
+ *   &1009:participant1:participant2:participant3:...
  */
 
 /**
  * Represents the server model
- * @author Peng Wang, Andro Stotts, Max Hinson, and Bryce Filler
- * @version 0.5
+ * @author Peng Wang, Andro Stotts, Max Hinson, and Bryce Filler, jleeong
+ * @version F16
  */
 public class Server{
     private final int port = 8888;
@@ -217,7 +220,7 @@ public class Server{
 
     /**
      * inner class Client only provide service to the outer class
-     * @author Peng Wang, Andro Stotts, Max Hinson, Bryce Filler, Jared Leeong
+     * @author Peng Wang, Andro Stotts, Max Hinson, Bryce Filler, jleeong
      * @version F16
      */
     class Client implements Runnable{
@@ -293,40 +296,47 @@ public class Server{
 	}
 		
 	/**
-	 * broadcast message to one particular person who is current online
-	 * @param strs message after parsing
+	 * broadcast message to one particular person who is currently online
+	 * @param msg The instant message to be delivered
+	 * @param rec The nickname of the User to send to
+	 * @author jleeong
+	 * @version F16
 	 */
-	public void broadcast2one(String[] strs){
+	public void broadcast2one(String msg, String rec){
 	    boolean isOnline = false;
-	    this.sendMsg(strs[0] + "&" + strs[2]);
+	    this.sendMsg(msg + "&1001");
 	    for(Client c : clients){
-		if(strs[1].equals(c.getUser().getNickname())){
-		    c.sendMsg(strs[0] + "&" + strs[2]);
+		if(rec.equals(c.getUser().getNickname())){
+		    c.sendMsg(msg + "&1001");
 		    isOnline = true;
 		    break;
 		}
 	    }
 	    if(!isOnline){
-		this.sendMsg("***THE USER YOU ARE TRYING TO SEND MESSAGE TO IS NOT ONLINE***&" + strs[2]);
+		this.sendMsg("***THE USER YOU ARE TRYING TO MESSAGE IS NOT ONLINE***&1001");
 	    }	
 	}
 	
 	/**
-	*
-	*
-	*/
-	//public void singularBroadcast(
-
-	/**
 	* broadcast message to all users in a single chatroom
-	* @param strs array of strings that contain message and message metadata
-	*@author Jared Leeong
+	* @param msg The instant message to be sent
+	* @param rn A double representing the roomnumber of the specified chatroom
+	*@author jleeong
 	*@version F16
 	*/
-	public void broadcast2room(String[] strs){
-		double rn = Double.parseDouble(strs[3]);
-		ChatRoom cr = rooms.get(rooms.indexOf(new ChatRoom(rn)));
-		
+	public void broadcast2room(String msg, double rn){
+		int rIndex = rooms.indexOf(new ChatRoom(rn));
+		if(rIndex != -1){
+			ChatRoom cr = rooms.get(rIndex);
+			Set<User> participants = cr.getParticipants();
+			for(Client c : clients){
+				if(participants.contains(c.getUser()))
+					c.sendMsg(msg+"&1001");
+			}
+		}
+		else{
+			this.sendMsg("***THE ROOM YOU ARE TRYING TO MESSAGE DOES NOT EXIST***&1001");
+		}
 	}
 
 	/**
@@ -392,7 +402,7 @@ public class Server{
 	/**
 	 * Gets the contact list for the current client and appends "(Online)" to those users
 	 * that are online
-	 * @author Jared Leeong
+	 * @author jleeong
 	 * @version F16
 	 */
 	public String getContacts(User u){
@@ -407,7 +417,7 @@ public class Server{
 		
 	/**
  	* Gets the current logged in User on the connected client
- 	* @author Jared Leeong
+ 	* @author jleeong
  	* @version F16
 	*/ 
 	public User getUser(){
@@ -497,7 +507,11 @@ public class Server{
 				broadcast2all(strs);
 				currentUser.setOnline(false);
 			}
-					
+			
+			//client chatting in chatroom
+			if(strs[2].equals("1008")){
+				broadcast2room(strs[0], Double.parseDouble(strs[1]));
+			}		
 			//client doing regular chatting
 			else{
 			//if the client doing broadcasting
@@ -512,9 +526,8 @@ public class Server{
 			else if(strs[1].equals("DELETE")){
 				currentUser.deleteContact(strs[2]);
 			}
-			//sent to a certain person in the contact list
 			else{
-				broadcast2one(strs);					
+				broadcast2one(strs[0],strs[1]);					
 			}
 			}			
 		}	

@@ -108,19 +108,16 @@ public class ClientController {
 	
 	/** Adds contact to the Client contact list and appends the contact to the ClientWindow list
 	*@param contact A string containing the nickname of the contact to be added
-	*@author Jared Leeong
+	*@author jleeong
 	*@version F16
 	*/
 	public void addContact(String contact){
 		String nickname = contact;
-		boolean onlineStatus = false;
 		if(contact.contains("(Online)")){
 			nickname = contact.substring(0, contact.indexOf('('));
-			onlineStatus = true;
 		}
 		client.addContact(new Contact(nickname));
 		ClientWindow.getWindow().getContactList().addElement(contact);
-		//updateContact(nickname, onlineStatus);
 	}
 	
 	/** Updates the Client's contact list to reflect the online status of a contact and mirrors the result in ClientWindow list

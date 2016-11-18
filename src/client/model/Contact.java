@@ -11,7 +11,7 @@ public class Contact {
     /**
      * Overloaded constructor that takes the user's name
      * @param nn The nickname to be associated with this Contact object.
-     *@author Jared Leeong
+     *@author jleeong
      *@version F16
      */
     public Contact(String nn){
@@ -22,7 +22,7 @@ public class Contact {
     /**
      * Get the nickname associated with this contact
      * @return user's nickname
-     * @author Jared Leeong
+     * @author jleeong
      * @version F16
      */
     public String getNickname(){
@@ -31,7 +31,7 @@ public class Contact {
 
 	/**Get online status of the Contact
 	* @return True if this contact is online and connected to the same server. False otherwise
-	* @author Jared Leeong
+	* @author jleeong
 	* @version F16
 	*/
 	public boolean isOnline(){
@@ -40,7 +40,7 @@ public class Contact {
 	
 	/**Set online status of the Contact
 	* @param status True if Contact is online and connected to the same server. False otherwise
-	* @author Jared Leeong
+	* @author jleeong
 	* @version F16
 	*/
 	public void setOnline(boolean status){

@@ -112,7 +112,7 @@ public class User {
 	
 	/**
 	 * returns online status of the User
-	 * @author Jared Leeong
+	 * @author jleeong
 	 */
 	public boolean isOnline(){
 		return isOnline;
@@ -121,7 +121,7 @@ public class User {
 	/**
  	* sets online status
  	* @param status the new online status of current user
- 	* @author Jared Leeong
+ 	* @author jleeong
  	*/
 	public void setOnline(boolean status){
 		isOnline=status;
@@ -129,7 +129,7 @@ public class User {
 
 	/**Overriden .equals() inherited from Object. Will evaluate to true if the 'name' matches on both objects
 	*@param o Object to be compared to
-	*@author Jared Leeong
+	*@author jleeong
 	*@version F16	
 	*/
 	@Override
