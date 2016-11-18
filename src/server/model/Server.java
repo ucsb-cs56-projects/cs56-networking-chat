@@ -8,8 +8,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.TreeSet;
 
 /*
  *SPECIAL CODE used by system to indicate the type of message
@@ -398,7 +400,28 @@ public class Server{
 	        return 1;
 	    }
 	}
-		
+	
+	/**Method to register a new chatroom with the server.
+	*@param participants is a List containing the nicknames of all Users who will participate in the chatroom, with first element equal to "1009"
+	*@author jleeong
+	*@version F16
+	*/
+	public void registerChatRoom(List<String> participants){
+		participants.remove(0);
+		ArrayList<String> pnames = new ArrayList<String>();
+		pnames.addAll(participants);
+		Set<User> p = new TreeSet<User>();
+		for(User u : users){
+			if(pnames.contains(u.getNickname()))
+				p.add(users.get(users.indexOf(u)));
+		}
+		ChatRoom newRoom = new ChatRoom(p);
+		newRoom.setRoomNumber(Math.random());
+		while(rooms.contains(newRoom)){
+			newRoom.setRoomNumber(Math.random());
+		}
+		rooms.add(newRoom);
+	}	
 	/**
 	 * Gets the contact list for the current client and appends "(Online)" to those users
 	 * that are online
@@ -511,6 +534,11 @@ public class Server{
 			//client chatting in chatroom
 			if(strs[2].equals("1008")){
 				broadcast2room(strs[0], Double.parseDouble(strs[1]));
+			}
+
+			//client registering a new chatroom
+			if(strs[0].equals("1009")){
+				registerChatRoom(Arrays.asList(strs));	
 			}		
 			//client doing regular chatting
 			else{
