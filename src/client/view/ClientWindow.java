@@ -72,7 +72,6 @@ public class ClientWindow extends JFrame{
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     Font fonts[] = ge.getAllFonts();
    
-    //  Object colors[][] = {{ Color.RED, "A" },{  Color.BLUE, "b" }, {  Color.GREEN, "A" }, };
     /**
      * Default constructor
      */
@@ -608,38 +607,11 @@ public class ClientWindow extends JFrame{
     }
 
     class LogoutListener implements ActionListener {
-	/**	public void actionPerformed(ActionEvent e){
-	    
-	    window.removeAll();
-	    setSize(300, 270);
-	    setTitle("Chatting Client");
-	    setLayout(new FlowLayout());
-	    
-	    window.getContentPane().add(lblUserName);
-	    window.getContentPane().add(tfUsername);
-	    window.getContentPane().add(lblPassword);
-	    window.getContentPane().add(pfPassword);
-	    window.getContentPane().add(lblServerIp);
-	    window.getContentPane().add(tfServerIp);
-	    window.getContentPane().add(lblLoginError);
-	    window.getContentPane().add(btConnect);
-	    LoginListener loginListener = new LoginListener();
-	    btConnect.addActionListener(loginListener);
-	    tfUsername.addActionListener(loginListener);
-	    pfPassword.addActionListener(loginListener);
-	    tfServerIp.addActionListener(loginListener);
-	    btConnect.setSelected(true);
-	    setVisible(true);*/
 	public void actionPerformed(ActionEvent e){
-	    //   window.removeAll();
-	    controller.sendMsg2Server(name+"&Broadcast:1008");
-	    //  window == null;
 	    window.dispose();
-	    //	    controller.sendMsg2Server(name+"&Broadcast:1008");
- 	    ClientWindow w = new ClientWindow();
-	     w.launchLoginWindow();
-	    
-	    //	launchLoginWindow();
+	    controller.sendMsg2Server(name+"&Broadcast:1008");
+	    window = new ClientWindow();
+	    window.launchLoginWindow();
 	}
     }
 }

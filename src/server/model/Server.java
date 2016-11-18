@@ -479,13 +479,13 @@ public class Server{
 			if(strs[2].equals("1008")){
 			    controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" 
 						  +currentUser.getNickname() + 
-						  ") is trying to logoff and disconnect with the server\n");
+						  ") has successfully logoffed and disconnected with the server\n");
 			    broadcast2all(strs);
 			    currentUser.setOnline(false);
 			    
 			    
 			    clients.remove(this);
-			    controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" + currentUser.getNickname() + ") has successfully disconnected\n");
+			    controller.displayMsg(serverMsgPrefix +"Server is waiting for a new client connection\n");
 			    for(Client c : clients){
 				if(!c.getUser().getNickname().equals(currentUser.getNickname()))
 				    c.sendMsg(currentUser.getNickname() + "&1003");
