@@ -153,6 +153,7 @@ public class ClientWindow extends JFrame{
 	
     /**
      * Creates the chat window
+     * It will be invoked from the LoginListener
      */
     public void launchChatWindow(){
 	//add window listener for closing window
@@ -176,7 +177,7 @@ public class ClientWindow extends JFrame{
 	menuPanel.add(onlineCountUpdate, BorderLayout.WEST);
 	menuPanel.add(onlineCountText, BorderLayout.WEST);
 	menuPanel.add(onlineCountNum, BorderLayout.WEST);
-	onlineCountUpdate.addActionListener(new MyButtonListener6());
+	onlineCountUpdate.addActionListener(new OnlineCountUpdateButtonListener());
 	
 	menuPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	menuPanel.setLayout(new FlowLayout());
@@ -186,7 +187,7 @@ public class ClientWindow extends JFrame{
 	
 
 	
-	MyCellRenderer fontCellRender = new MyCellRenderer();
+	FontCellRenderer fontCellRender = new FontCellRenderer();
 	JComboBox fontList = new JComboBox(fonts);
 	fontList.setRenderer(fontCellRender);
 	fontList.setPreferredSize(new Dimension(150,25));
@@ -202,7 +203,7 @@ public class ClientWindow extends JFrame{
 
 	JButton deleteUser = new JButton("Delete User");
 	menuPanel.add(deleteUser,BorderLayout.EAST);
-	deleteUser.addActionListener(new MyButtonListener5());
+	deleteUser.addActionListener(new DeleteUserButtonListener());
 
 	JButton logout = new JButton("Logout");
 	menuPanel.add(logout,BorderLayout.EAST);
@@ -231,9 +232,9 @@ public class ClientWindow extends JFrame{
 	this.getContentPane().add(rightPanel, BorderLayout.CENTER);
 	this.getContentPane().add(menuPanel, BorderLayout.NORTH);
 	this.repaint();
-	tfInput.addActionListener(new InputListener());
-	nickName.addActionListener(new MyButtonListener2());
-	privateRoom.addActionListener(new MyButtonListener3());
+	tfInput.addActionListener(new ChatInputListener());
+	nickName.addActionListener(new LaunchChangeWindowListener());
+	privateRoom.addActionListener(new PrivateRoomButtonListener());
 	fontList.addActionListener(new FontListener());
 	colorList.addActionListener(new ColorListener());
 	soundbox.addItemListener(new CheckListener());
@@ -258,8 +259,8 @@ public class ClientWindow extends JFrame{
 	nicknameWindow.getContentPane().add(tfNickName);
 	nicknameWindow.getContentPane().add(btNickname);
 	nicknameWindow.setVisible(true);
-	btNickname.addActionListener(new InputListener2());
-	tfNickName.addKeyListener(new InputListener2());
+	btNickname.addActionListener(new ChangeNickNameListener());
+	tfNickName.addKeyListener(new ChangeNickNameListener());
     }
 
     /**
@@ -284,7 +285,7 @@ public class ClientWindow extends JFrame{
      * @author Bryce Filler and Max Hinson
      * @version 0.4
      */
-    class MyButtonListener2 implements ActionListener{
+    class LaunchChangeWindowListener implements ActionListener{
     	private ClientWindow window2 = ClientWindow.getWindow();
 	public void actionPerformed(ActionEvent e){
 	    
@@ -293,12 +294,11 @@ public class ClientWindow extends JFrame{
 	}
     }
 
-    class MyButtonListener3 implements ActionListener{
-        public void actionPerformed(ActionEvent e){
-
+    
+    class PrivateRoomButtonListener implements ActionListener{
+	public void actionPerformed(ActionEvent e){
 	    
-
-        }
+	}
     }
 
     /**
@@ -307,8 +307,8 @@ public class ClientWindow extends JFrame{
      */
 
     //helper for Fontlistener
-   class MyCellRenderer extends JLabel implements ListCellRenderer<Object> {
-     public MyCellRenderer() {
+   class FontCellRenderer extends JLabel implements ListCellRenderer<Object> {
+     public FontCellRenderer() {
          setOpaque(true);
      }
 
@@ -433,7 +433,7 @@ public class ClientWindow extends JFrame{
      * @author Winfred Huang, Arturo Milanes, and Jared Leeong
      * @version F16
      */
-    class MyButtonListener5 implements ActionListener{
+    class DeleteUserButtonListener implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 		int index = listContacts.getSelectedIndex();
 	    if(index == 0){
@@ -454,7 +454,7 @@ public class ClientWindow extends JFrame{
 	     * Handles actions when Refresh button is pressed
 	     * @author Winfred Huang and Arturo Milanes
 	     */
-	    class MyButtonListener6 implements ActionListener{
+	    class  OnlineCountUpdateButtonListener implements ActionListener{
 		public void actionPerformed(ActionEvent e){
 		    int count = 1;
 		    ListModel<String> list = listContacts.getModel();
@@ -542,7 +542,7 @@ public class ClientWindow extends JFrame{
      * @author Bryce Filler and Max Hinson
      * @version 0.4
      */
-    class InputListener2 implements ActionListener, KeyListener{
+    class ChangeNickNameListener implements ActionListener, KeyListener{
 	//input listener for name change
 	public void actionPerformed(ActionEvent e) {
 	    String text = tfNickName.getText().trim();
@@ -575,7 +575,7 @@ public class ClientWindow extends JFrame{
      * @author Peng Wang with Andro Stotts
      * @version 0.4
      */
-    class InputListener implements ActionListener{
+    class ChatInputListener implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 	    if(listContacts.isSelectionEmpty()){
 		taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");

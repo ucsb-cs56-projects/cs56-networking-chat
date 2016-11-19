@@ -58,6 +58,8 @@ public class Server{
     private ArrayList<Client> clients;
     private ArrayList<User> users;
 
+    private Boolean connect = true;
+
     private String usage = "------------------------------------------SERVER USAGE-----------------------------------------------\n" +
 	"             We currently have a FAKE users with only the users listed below:         \n" +
 	"                     Username: Peng Wang        Nickname: peng     Password: 123abc      \n" +
@@ -477,6 +479,7 @@ public class Server{
 			}
 			//cient offline and window will auto change to the status of waiting for new login 
 			if(strs[2].equals("1008")){
+			    connect = false;
 			    controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" 
 						  +currentUser.getNickname() + 
 						  ") has successfully logoffed and disconnected with the server\n");
@@ -530,6 +533,8 @@ public class Server{
 	//remove the current client from the list on server
 	if(!isServerStart)
 		clients.clear();
+	if(connect == true){
+	}
 	else{
 		clients.remove(this);
 		controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" + currentUser.getNickname() + ") has successfully disconnected\n");
