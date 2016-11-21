@@ -33,6 +33,7 @@ public class ClientWindow extends JFrame{
     private JTextField tfUsername;
     private JTextField tfNickName;
     private JTextField tfServerIp;
+    private JTextField tfChatRoomParticipants;
     private JPasswordField pfPassword;
     private JScrollPane spScrollPane;
     private JList<String> listContacts;
@@ -51,6 +52,7 @@ public class ClientWindow extends JFrame{
     private JButton btNickname;
     private JButton btChangeFont;
     private JButton onlineCountUpdate;
+    private JButton btAccept;
     private static ClientWindow window;
     private ClientController controller;
     private String name;
@@ -102,8 +104,10 @@ public class ClientWindow extends JFrame{
 	tfUsername = new JTextField(20);
 	tfNickName = new JTextField(20);
 	tfServerIp = new JTextField(20);
+	tfChatRoomParticipants = new JTextField(20);
 	pfPassword = new JPasswordField(20);
-	
+	btAccept = new JButton("Accept");
+
 	//default connection
 	tfServerIp.setText("127.0.0.1");
 	soundbox = new JCheckBox("Play Sounds");
@@ -214,10 +218,10 @@ public class ClientWindow extends JFrame{
 	leftPanel.add(listContacts, BorderLayout.CENTER);
 
 	JButton nickName = new JButton("Change nickname");
-	JButton privateRoom = new JButton("Private Room");
+	JButton chatRoom = new JButton("Chat Room");
 	
 	leftPanel.add(nickName, BorderLayout.SOUTH);
-	leftPanel.add(privateRoom, BorderLayout.NORTH);
+	leftPanel.add(chatRoom, BorderLayout.NORTH);
 		
 	listContacts.setSelectedIndex(0);
 		
@@ -227,7 +231,7 @@ public class ClientWindow extends JFrame{
 	this.repaint();
 	tfInput.addActionListener(new InputListener());
 	nickName.addActionListener(new MyButtonListener2());
-	privateRoom.addActionListener(new MyButtonListener3());
+	chatRoom.addActionListener(new RegisterChatRoomListener());
 	fontList.addActionListener(new FontListener());
 	colorList.addActionListener(new ColorListener());
 	soundbox.addItemListener(new CheckListener());
@@ -255,6 +259,26 @@ public class ClientWindow extends JFrame{
 	tfNickName.addKeyListener(new InputListener2());
     }
 
+	/**Method to launch the window to register a new ChatRoom. Creates a popup window that prompts for the nicknames of the
+	* participants who are part of the ChatRoom
+	* @author jleeong
+	* @version F16
+	*/
+	public void launchRegisterChatRoomWindow(){
+		JFrame registrant = new JFrame();
+		registrant.setLocation(100, 100);
+		registrant.setSize(300, 125);
+		registrant.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		registrant.setTitle("Set Nickname");
+		registrant.setLayout(new FlowLayout());
+		registrant.getContentPane().add(new JLabel("Enter participant nicknames"));
+		registrant.getContentPane().add(tfChatRoomParticipants);
+		
+		registrant.getContentPane().add(btAccept);
+		registrant.setVisible(true);
+		//btNickname.addActionListener();
+		//tfNickName.addKeyListener();
+	}
     /**
      * Get the message display component
      * @return the text area which displays the message
@@ -286,11 +310,9 @@ public class ClientWindow extends JFrame{
 	}
     }
 
-    class MyButtonListener3 implements ActionListener{
+    class RegisterChatRoomListener implements ActionListener{
         public void actionPerformed(ActionEvent e){
-
-	    
-
+		ClientWindow.getWindow().launchRegisterChatRoomWindow();
         }
     }
 
@@ -530,6 +552,23 @@ public class ClientWindow extends JFrame{
 		}
     }	
 	    
+	/**ActionListener class used in the launchRegisterChatRoomWindow
+	*@author jleeong
+	*@version F16
+	*/
+	class RegistrantListener implements ActionListener, KeyListener{
+		public void actionPerformed(ActionEvent e){
+			sendRegistration();
+		}
+		public void keyTyped(KeyEvent e) {}
+		public void keyReleased(KeyEvent e) {}
+		public void keyPressed(KeyEvent e) {
+			sendRegistration();
+		}
+		private void sendRegistration(){
+
+		}
+	}
 	    /**
      * Handles actions when name is changed
      * @author Bryce Filler and Max Hinson
