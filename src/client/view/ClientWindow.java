@@ -60,6 +60,7 @@ public class ClientWindow extends JFrame{
     private String ip;
     private String password;
     private JFrame nicknameWindow;
+    private JFrame registrant;
 
     //Pre-determined color to randomly use
     java.awt.Color redColor = new java.awt.Color(255,000,000);
@@ -265,19 +266,19 @@ public class ClientWindow extends JFrame{
 	* @version F16
 	*/
 	public void launchRegisterChatRoomWindow(){
-		JFrame registrant = new JFrame();
+		registrant = new JFrame();
 		registrant.setLocation(100, 100);
 		registrant.setSize(300, 125);
 		registrant.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		registrant.setTitle("Set Nickname");
 		registrant.setLayout(new FlowLayout());
-		registrant.getContentPane().add(new JLabel("Enter participant nicknames"));
+		registrant.getContentPane().add(new JLabel("Enter participant nicknames. Separate nicknames with commas, no spaces."));
 		registrant.getContentPane().add(tfChatRoomParticipants);
-		
+		tfChatRoomParticipants.setText("user1,user2,user3...");
 		registrant.getContentPane().add(btAccept);
 		registrant.setVisible(true);
-		//btNickname.addActionListener();
-		//tfNickName.addKeyListener();
+		btAccept.addActionListener(new RegistrantListener());
+		tfChatRoomParticipants.addKeyListener(new RegistrantListener());
 	}
     /**
      * Get the message display component
@@ -563,10 +564,13 @@ public class ClientWindow extends JFrame{
 		public void keyTyped(KeyEvent e) {}
 		public void keyReleased(KeyEvent e) {}
 		public void keyPressed(KeyEvent e) {
+		    if (e.getKeyCode() == KeyEvent.VK_ENTER)
 			sendRegistration();
 		}
 		private void sendRegistration(){
-
+			String reg = tfChatRoomParticipants.getText().trim();
+			controller.sendChatRoomRegistration(reg);
+			registrant.dispose();
 		}
 	}
 	    /**
@@ -617,9 +621,15 @@ public class ClientWindow extends JFrame{
 				tfInput.setText("");
 				String receiver = listContacts.getSelectedValue();
 				String recNoStatus = receiver;
-				if(receiver.contains("(Online)"))
+				if(receiver.contains("(Online)")){
 					recNoStatus = receiver.substring(0,receiver.indexOf('('));
-				controller.sendIM(text, recNoStatus);
+					controller.sendIM(text,recNoStatus);
+				}
+				else if(receiver.contains("ChatRoom")){
+					String[] parts = receiver.split(":");
+					recNoStatus = parts[1];
+					controller.sendGrpMsg(text,recNoStatus);
+				}
 			}
 		}	
 	    }

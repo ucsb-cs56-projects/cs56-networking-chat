@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.HashSet;
 
 /*
  *SPECIAL CODE used by system to indicate the type of message
@@ -90,7 +90,8 @@ public class Server{
 	serverMsg = "";
 	serverMsgPrefix = "[Server Message] ";
 	clients = new ArrayList<Client>();
-		
+	rooms = new ArrayList<ChatRoom>();
+	
 	//make our own fake users
 	users = new ArrayList<User>();
 	User peng = new User("Peng Wang", "peng", "123abc");		
@@ -401,26 +402,32 @@ public class Server{
 	    }
 	}
 	
-	/**Method to register a new chatroom with the server.
+	/**Method to register a new chatroom with the server. Receives a registerChatRoom message from the Client, creates and stores
+	* a new instance of a ChatRoom containing all the participants, assigns a room number identifying the room, and sends the 
+	* room number back to the client thus completing the registration process.
 	*@param participants is a List containing the nicknames of all Users who will participate in the chatroom, with first element equal to "1009"
 	*@author jleeong
 	*@version F16
 	*/
 	public void registerChatRoom(List<String> participants){
-		participants.remove(0);
+		//for (String parts : participants){System.out.println(parts);}
+		controller.displayMsg("registering new ChatRoom...");
 		ArrayList<String> pnames = new ArrayList<String>();
 		pnames.addAll(participants);
-		Set<User> p = new TreeSet<User>();
+		HashSet<User> p = new HashSet<User>();
 		for(User u : users){
 			if(pnames.contains(u.getNickname()))
 				p.add(users.get(users.indexOf(u)));
 		}
 		ChatRoom newRoom = new ChatRoom(p);
+		controller.displayMsg("ChatRoom created...");
 		newRoom.setRoomNumber(Math.random());
 		while(rooms.contains(newRoom)){
 			newRoom.setRoomNumber(Math.random());
 		}
 		rooms.add(newRoom);
+		controller.displayMsg("new ChatRoom registered at: "+newRoom.getRoomNumber()+"\n");
+		this.sendMsg(newRoom.getRoomNumber()+"&1009");
 	}	
 	/**
 	 * Gets the contact list for the current client and appends "(Online)" to those users
@@ -537,7 +544,7 @@ public class Server{
 			}
 
 			//client registering a new chatroom
-			if(strs[0].equals("1009")){
+			if(strs[1].equals("1009")){
 				registerChatRoom(Arrays.asList(strs));	
 			}		
 			//client doing regular chatting

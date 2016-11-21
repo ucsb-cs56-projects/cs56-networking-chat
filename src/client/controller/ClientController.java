@@ -89,6 +89,16 @@ public class ClientController {
 	public void sendIM(String msg, String rec){
 		client.sendIM(" to "+rec+": "+msg+"&"+rec+":1001");
 	}
+
+	/**Method to send a message to a ChatRoom on the server.
+	*@param msg The message inteded to be sent to ChatRoom
+	*@param rn The room number of the ChatRoom
+	*@author jleeong
+	*@version F16
+	*/
+	public void sendGrpMsg(String msg, String rn){
+		client.sendIM(" to ChatRoom: "+msg+"&"+rn+":1008");
+	}
 	
     /**
      * Sends a message to the server
@@ -124,5 +134,19 @@ public class ClientController {
 		DefaultListModel windowlist = ClientWindow.getWindow().getContactList();
 		if(status) windowlist.set(windowlist.lastIndexOf(contact), contact+"(Online)");
 		else windowlist.set(windowlist.lastIndexOf(contact+"(Online)"), contact);
+	}
+	
+	/** Method to send a ChatRoom registration the server.
+	* @param reg A string representing the participants list as inputed from the launchRegisterChatRoomWindow
+	* @author jleeong
+	* @version F16
+	*/
+	public void sendChatRoomRegistration(String reg){
+		String [] parts = reg.split(",");
+		String msg = "&1009:";
+		for(String x : parts){
+			msg += x +":";
+		}
+		client.sendChatRoomRegistration(msg);
 	}
 }

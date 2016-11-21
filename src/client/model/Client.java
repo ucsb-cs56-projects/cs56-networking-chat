@@ -313,8 +313,15 @@ public class Client {
 		while(isConnected){
 		    String msg = dis.readUTF();
 		    String[] strs = parseReceivingMsg(msg);
+		    //Client has received a single number. This is ChatRoom registration.
+		    if(strs[1].equals("1009")){
+			controller.displayMsg("Registered in ChatRoom\n");
+			String roomnum=strs[0]; 
+			String newc = "ChatRoom:"+roomnum;
+			controller.addContact(newc);
+		    }
 		    //client go online
-		    if(strs[1].equals("1002")){
+		    else if(strs[1].equals("1002")){
 			Contact arrival = new Contact(strs[0]);
 			if(contacts.contains(arrival)){
 				controller.updateContact(strs[0], true);
@@ -384,5 +391,14 @@ public class Client {
 	public void updateContact(String contact, boolean status){
 		Contact mod = new Contact(contact);
 		contacts.get(contacts.indexOf(mod)).setOnline(status);
+	}
+	
+	/**Method to send a ChatRoom registration request to the Server. Sends the registration message to the server.
+	* @param reg a String constructed from the ClientController for proper message structure.
+	* @author jleeong
+	* @version F16
+	*/
+	public void sendChatRoomRegistration(String reg){
+		sendMsg(reg);
 	}	
 }

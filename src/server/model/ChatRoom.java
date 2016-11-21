@@ -1,6 +1,6 @@
 package server.model;
 
-import java.util.Set;
+import java.util.HashSet;
 
 /**ChatRoom class that represents a chatroom containing n Users as participants. It is the responsibility of the calling
 *class to maintain a function mapping from a double value to a ChatRoom object. e.g. The class that deploys ChatRoom objects
@@ -12,7 +12,7 @@ import java.util.Set;
 */
 public class ChatRoom{
 	private double roomNumber;
-	private Set<User> participants;
+	private HashSet<User> participants;
 	private boolean isActive;
 
 	/**Primary constructor used to create a ChatRoom object. Initializes the interior Set that keeps track of
@@ -22,8 +22,8 @@ public class ChatRoom{
 	*@author jleeong
 	*@version F16
 	*/	
-	public ChatRoom(Set<User> p){
-		participants.addAll(p);
+	public ChatRoom(HashSet<User> p){
+		participants = p;
 		if(participants.size()>0)
 			isActive=true;
 		else
@@ -68,7 +68,7 @@ public class ChatRoom{
 	*@author jleeong
 	*@version F16
 	*/
-	public Set<User> getParticipants(){
+	public HashSet<User> getParticipants(){
 		return participants;
 	}
 
