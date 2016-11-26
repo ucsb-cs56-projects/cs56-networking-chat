@@ -35,6 +35,9 @@ import java.util.ArrayList;
  *
  *1007-tell the client its new nickname
  *   <newnickname>&1007
+ *
+ *1008-let contacts know that someone has logged off and disconnected.
+ *   <nickname of offline user>&1003
  */
 
 /**
@@ -54,6 +57,8 @@ public class Server{
     private String [] clientsOnline;
     private ArrayList<Client> clients;
     private ArrayList<User> users;
+
+    private Boolean connect = true;
 
     private String usage = "------------------------------------------SERVER USAGE-----------------------------------------------\n" +
 	"             We currently have a FAKE users with only the users listed below:         \n" +
@@ -472,7 +477,25 @@ public class Server{
 				broadcast2all(strs);
 				currentUser.setOnline(false);
 			}
-					
+			//cient offline and window will auto change to the status of waiting for new login 
+			if(strs[2].equals("1008")){
+			    connect = false;
+			    controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" 
+						  +currentUser.getNickname() + 
+						  ") has successfully logoffed and disconnected with the server\n");
+			    broadcast2all(strs);
+			    currentUser.setOnline(false);
+			    
+			    
+			    clients.remove(this);
+			    controller.displayMsg(serverMsgPrefix +"Server is waiting for a new client connection\n");
+			    for(Client c : clients){
+				if(!c.getUser().getNickname().equals(currentUser.getNickname()))
+				    c.sendMsg(currentUser.getNickname() + "&1003");
+			    }
+			    
+			    updateWhoIsOnline();
+			}
 			//client doing regular chatting
 			else{
 			//if the client doing broadcasting
@@ -510,6 +533,8 @@ public class Server{
 	//remove the current client from the list on server
 	if(!isServerStart)
 		clients.clear();
+	if(connect == true){
+	}
 	else{
 		clients.remove(this);
 		controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" + currentUser.getNickname() + ") has successfully disconnected\n");

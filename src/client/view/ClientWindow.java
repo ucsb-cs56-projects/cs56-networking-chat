@@ -58,7 +58,7 @@ public class ClientWindow extends JFrame{
     private String ip;
     private String password;
     private JFrame nicknameWindow;
-
+ 
     //Pre-determined color to randomly use
     java.awt.Color redColor = new java.awt.Color(255,000,000);
     java.awt.Color greenColor = new java.awt.Color(000,255,000);
@@ -72,7 +72,6 @@ public class ClientWindow extends JFrame{
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     Font fonts[] = ge.getAllFonts();
    
-    //  Object colors[][] = {{ Color.RED, "A" },{  Color.BLUE, "b" }, {  Color.GREEN, "A" }, };
     /**
      * Default constructor
      */
@@ -129,7 +128,7 @@ public class ClientWindow extends JFrame{
      * Creates the login window
      */
     public void launchLoginWindow(){
-	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	this.setLocation(100, 100);
 	this.setSize(300, 270);
 	this.setTitle("Chatting Client");
@@ -154,6 +153,7 @@ public class ClientWindow extends JFrame{
 	
     /**
      * Creates the chat window
+     * It will be invoked from the LoginListener
      */
     public void launchChatWindow(){
 	//add window listener for closing window
@@ -165,6 +165,7 @@ public class ClientWindow extends JFrame{
 		    System.exit(0);
 		}
 	    });
+	
 	this.getContentPane().removeAll();
 	this.setLayout(new BorderLayout());
 	this.setSize(800, 400);
@@ -176,16 +177,17 @@ public class ClientWindow extends JFrame{
 	menuPanel.add(onlineCountUpdate, BorderLayout.WEST);
 	menuPanel.add(onlineCountText, BorderLayout.WEST);
 	menuPanel.add(onlineCountNum, BorderLayout.WEST);
-	onlineCountUpdate.addActionListener(new MyButtonListener6());
+	onlineCountUpdate.addActionListener(new OnlineCountUpdateButtonListener());
 	
 	menuPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	menuPanel.setLayout(new FlowLayout());
 	menuPanel.add(soundbox, BorderLayout.EAST);
 	
+
 	
 
 	
-	MyCellRenderer fontCellRender = new MyCellRenderer();
+	FontCellRenderer fontCellRender = new FontCellRenderer();
 	JComboBox fontList = new JComboBox(fonts);
 	fontList.setRenderer(fontCellRender);
 	fontList.setPreferredSize(new Dimension(150,25));
@@ -201,7 +203,12 @@ public class ClientWindow extends JFrame{
 
 	JButton deleteUser = new JButton("Delete User");
 	menuPanel.add(deleteUser,BorderLayout.EAST);
-	deleteUser.addActionListener(new MyButtonListener5());
+	deleteUser.addActionListener(new DeleteUserButtonListener());
+
+	JButton logout = new JButton("Logout");
+	menuPanel.add(logout,BorderLayout.EAST);
+	logout.addActionListener(new LogoutListener());
+	
 	
 	rightPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	rightPanel.setLayout(new BorderLayout());
@@ -225,13 +232,14 @@ public class ClientWindow extends JFrame{
 	this.getContentPane().add(rightPanel, BorderLayout.CENTER);
 	this.getContentPane().add(menuPanel, BorderLayout.NORTH);
 	this.repaint();
-	tfInput.addActionListener(new InputListener());
-	nickName.addActionListener(new MyButtonListener2());
-	privateRoom.addActionListener(new MyButtonListener3());
+	tfInput.addActionListener(new ChatInputListener());
+	nickName.addActionListener(new LaunchChangeWindowListener());
+	privateRoom.addActionListener(new PrivateRoomButtonListener());
 	fontList.addActionListener(new FontListener());
 	colorList.addActionListener(new ColorListener());
 	soundbox.addItemListener(new CheckListener());
 	soundbox.setSelected(true);
+	
     }
 
     
@@ -251,8 +259,8 @@ public class ClientWindow extends JFrame{
 	nicknameWindow.getContentPane().add(tfNickName);
 	nicknameWindow.getContentPane().add(btNickname);
 	nicknameWindow.setVisible(true);
-	btNickname.addActionListener(new InputListener2());
-	tfNickName.addKeyListener(new InputListener2());
+	btNickname.addActionListener(new ChangeNickNameListener());
+	tfNickName.addKeyListener(new ChangeNickNameListener());
     }
 
     /**
@@ -277,7 +285,7 @@ public class ClientWindow extends JFrame{
      * @author Bryce Filler and Max Hinson
      * @version 0.4
      */
-    class MyButtonListener2 implements ActionListener{
+    class LaunchChangeWindowListener implements ActionListener{
     	private ClientWindow window2 = ClientWindow.getWindow();
 	public void actionPerformed(ActionEvent e){
 	    
@@ -286,12 +294,11 @@ public class ClientWindow extends JFrame{
 	}
     }
 
-    class MyButtonListener3 implements ActionListener{
-        public void actionPerformed(ActionEvent e){
-
+    
+    class PrivateRoomButtonListener implements ActionListener{
+	public void actionPerformed(ActionEvent e){
 	    
-
-        }
+	}
     }
 
     /**
@@ -300,8 +307,8 @@ public class ClientWindow extends JFrame{
      */
 
     //helper for Fontlistener
-   class MyCellRenderer extends JLabel implements ListCellRenderer<Object> {
-     public MyCellRenderer() {
+   class FontCellRenderer extends JLabel implements ListCellRenderer<Object> {
+     public FontCellRenderer() {
          setOpaque(true);
      }
 
@@ -426,7 +433,7 @@ public class ClientWindow extends JFrame{
      * @author Winfred Huang, Arturo Milanes, and Jared Leeong
      * @version F16
      */
-    class MyButtonListener5 implements ActionListener{
+    class DeleteUserButtonListener implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 		int index = listContacts.getSelectedIndex();
 	    if(index == 0){
@@ -447,7 +454,7 @@ public class ClientWindow extends JFrame{
 	     * Handles actions when Refresh button is pressed
 	     * @author Winfred Huang and Arturo Milanes
 	     */
-	    class MyButtonListener6 implements ActionListener{
+	    class  OnlineCountUpdateButtonListener implements ActionListener{
 		public void actionPerformed(ActionEvent e){
 		    int count = 1;
 		    ListModel<String> list = listContacts.getModel();
@@ -528,61 +535,61 @@ public class ClientWindow extends JFrame{
 		    else
 			controller.setSound(true);
 		}
-    }	
+	    }	
 	    
 	    /**
      * Handles actions when name is changed
      * @author Bryce Filler and Max Hinson
      * @version 0.4
      */
-	    class InputListener2 implements ActionListener, KeyListener{
-		//input listener for name change
-		public void actionPerformed(ActionEvent e) {
-		    String text = tfNickName.getText().trim();
+    class ChangeNickNameListener implements ActionListener, KeyListener{
+	//input listener for name change
+	public void actionPerformed(ActionEvent e) {
+	    String text = tfNickName.getText().trim();
 		    if(!text.isEmpty())
 			{
 			    tfNickName.setText("");
 			    controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
 			    nicknameWindow.dispose();
 			}
-		}
-		public void keyTyped(KeyEvent e) {}
-		public void keyReleased(KeyEvent e) {}
-		public void keyPressed(KeyEvent e) {
-		    int key = e.getKeyCode();
-		    if (key == KeyEvent.VK_ENTER) {
-			String text = tfNickName.getText().trim();
-			if(!text.isEmpty())
-			    {
-				tfNickName.setText("");
-				controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
-				nicknameWindow.dispose();
-			    }
+	}
+	public void keyTyped(KeyEvent e) {}
+	public void keyReleased(KeyEvent e) {}
+	public void keyPressed(KeyEvent e) {
+	    int key = e.getKeyCode();
+	    if (key == KeyEvent.VK_ENTER) {
+		String text = tfNickName.getText().trim();
+		if(!text.isEmpty())
+		    {
+			tfNickName.setText("");
+			controller.sendMsg2Server(name + "(NAME_CHANGE): " + text + "&" + "NAME_CHANGE" + ":1001");
+			nicknameWindow.dispose();
 		    }
-		    
-		}
 	    }
 	    
-	    /**
-	     * Handles the action when user clicks enter on keyboard
-	     * @author Peng Wang with Andro Stotts
-	     * @version 0.4
-	     */
-	    class InputListener implements ActionListener{
-		public void actionPerformed(ActionEvent e) {
-		    if(listContacts.isSelectionEmpty()){
-			taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
-		    }
-		    else{
-			String text = tfInput.getText().trim();
-			tfInput.setText("");
-			
-			nickname = controller.getNickname();
-			
-			if(!listContacts.getSelectedValue().equals("Broadcast")) {
-			    String parts[] = listContacts.getSelectedValue().toString().split("");
-			    String receiverName = "";
-			    ListModel<String> list = listContacts.getModel();
+	}
+    }
+    
+    /**
+     * Handles the action when user clicks enter on keyboard
+     * @author Peng Wang with Andro Stotts
+     * @version 0.4
+     */
+    class ChatInputListener implements ActionListener{
+	public void actionPerformed(ActionEvent e) {
+	    if(listContacts.isSelectionEmpty()){
+		taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
+	    }
+	    else{
+		String text = tfInput.getText().trim();
+		tfInput.setText("");
+		
+		nickname = controller.getNickname();
+		
+		if(!listContacts.getSelectedValue().equals("Broadcast")) {
+		    String parts[] = listContacts.getSelectedValue().toString().split("");
+		    String receiverName = "";
+		    ListModel<String> list = listContacts.getModel();
 		    for (int i = 0; i < listContacts.getSelectedValue().length(); i++) {
 			String ch = parts[i];
 			if (!ch.equals("(")) {
@@ -592,10 +599,19 @@ public class ClientWindow extends JFrame{
 		    }
 		    
 		    controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
-			}
-			else
-			    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
-		    }
-		}	
+		}
+		else
+		    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
 	    }
+	}	
+    }
+
+    class LogoutListener implements ActionListener {
+	public void actionPerformed(ActionEvent e){
+	    window.dispose();
+	    controller.sendMsg2Server(name+"&Broadcast:1008");
+	    window = new ClientWindow();
+	    window.launchLoginWindow();
+	}
+    }
 }
