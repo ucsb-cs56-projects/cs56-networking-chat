@@ -97,7 +97,7 @@ public class ClientController {
 	*@version F16
 	*/
 	public void sendGrpMsg(String msg, String rn){
-		client.sendIM(" to ChatRoom: "+msg+"&"+rn+":1008");
+		client.sendIM(" to ChatRoom: "+msg+"&"+rn+":1010");
 	}
 	
     /**
