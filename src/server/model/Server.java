@@ -40,11 +40,13 @@ import java.util.HashSet;
  *1007-tell the client its new nickname
  *   <newnickname>&1007
  *
- *1008-regular message sent to a chatroom
- *   [Client@<client-ip>] <sender's nickname>: <message>&<room-number>:1008
+ *1010-regular message sent to a chatroom
+ *   [Client@<client-ip>] <sender's nickname>: <message>&<room-number>:1010
  *
  *1009-client registering a new chatroom with the server
  *   &1009:participant1:participant2:participant3:...
+ *1008-let contacts know that someone has logged off and disconnected.
+ *   <nickname of offline user>&1003
  */
 
 /**
@@ -65,6 +67,8 @@ public class Server{
     private ArrayList<Client> clients;
     private ArrayList<User> users;
     private ArrayList<ChatRoom> rooms;
+
+    private Boolean connect = true;
 
     private String usage = "------------------------------------------SERVER USAGE-----------------------------------------------\n" +
 	"             We currently have a FAKE users with only the users listed below:         \n" +
@@ -539,7 +543,7 @@ public class Server{
 			}
 			
 			//client chatting in chatroom
-			if(strs[2].equals("1008")){
+			if(strs[2].equals("1010")){
 				broadcast2room(strs[0], Double.parseDouble(strs[1]));
 			}
 
@@ -547,6 +551,25 @@ public class Server{
 			if(strs[1].equals("1009")){
 				registerChatRoom(Arrays.asList(strs));	
 			}		
+			//cient offline and window will auto change to the status of waiting for new login 
+			if(strs[2].equals("1008")){
+			    connect = false;
+			    controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" 
+						  +currentUser.getNickname() + 
+						  ") has successfully logoffed and disconnected with the server\n");
+			    broadcast2all(strs);
+			    currentUser.setOnline(false);
+			    
+			    
+			    clients.remove(this);
+			    controller.displayMsg(serverMsgPrefix +"Server is waiting for a new client connection\n");
+			    for(Client c : clients){
+				if(!c.getUser().getNickname().equals(currentUser.getNickname()))
+				    c.sendMsg(currentUser.getNickname() + "&1003");
+			    }
+			    
+			    updateWhoIsOnline();
+			}
 			//client doing regular chatting
 			else{
 			//if the client doing broadcasting
@@ -583,6 +606,8 @@ public class Server{
 	//remove the current client from the list on server
 	if(!isServerStart)
 		clients.clear();
+	if(connect == true){
+	}
 	else{
 		clients.remove(this);
 		controller.displayMsg(serverMsgPrefix + currentUser.getName() + " (" + currentUser.getNickname() + ") has successfully disconnected\n");
