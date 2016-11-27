@@ -4,6 +4,7 @@ import client.model.Client;
 import client.model.Contact;
 import client.view.ClientWindow;
 import java.awt.Color;
+import javax.swing.DefaultListModel;
 
 /**
  * ClientController class controlls the communication between client view and client model
@@ -75,19 +76,29 @@ public class ClientController {
      * @param msg message to display on client window
      */
     public void displayMsg(String msg){
-
-	//	JTextComponent jtc= ClientWindow.getWindow().getTaOutput();
-	//JTextPane tpane = jtc;
-
 	ClientWindow.getWindow().getTaOutput().append(msg);
-	//appendToPane(ClientWindow.getWindow().getTaOutput(), msg, Color.ORANGE);
-	//    ClientWindow.getWindow().getTaOutput().setCaretPosition(ClientWindow.getWindow().getTaOutput().getDocument().getLength());
-
-	//	ClientWindow.getWindow().getTaOutput().setCarteColor(Color.ORANGE);
     }
     
+       /**Method to send a message to a single recipient. This is the preferred method to use when sending a single message to another Client.
+	*Takes the raw input from the ClientWindow and adds details relevant to the server (e.g. sender, receiver, service code)
+	*@param msg The instant message intended to be sent to another User
+	*@param rec The nickname of the intended User
+	*@author jleeong
+	*@version F16
+	*/ 
+	public void sendIM(String msg, String rec){
+		client.sendIM(" to "+rec+": "+msg+"&"+rec+":1001");
+	}
 
-        
+	/**Method to send a message to a ChatRoom on the server.
+	*@param msg The message inteded to be sent to ChatRoom
+	*@param rn The room number of the ChatRoom
+	*@author jleeong
+	*@version F16
+	*/
+	public void sendGrpMsg(String msg, String rn){
+		client.sendIM(" to ChatRoom: "+msg+"&"+rn+":1010");
+	}
 	
     /**
      * Sends a message to the server
@@ -97,28 +108,45 @@ public class ClientController {
 	client.sendMsg(s);
     }
 	
-    /**
-     * Initiated the contact list and return contact list to the client window
-     * @return contact names
-     */
-    public String[] getContacts(){
-	Contact[] contacts = new Contact[5];
-	String[] names = new String[5];
-	for(int i = 0; i < 5; i++){
-	    contacts[i] = new Contact("contact" + i);
-	    names[i] = contacts[i].getName();
+	/** Adds contact to the Client contact list and appends the contact to the ClientWindow list
+	*@param contact A string containing the nickname of the contact to be added
+	*@author jleeong
+	*@version F16
+	*/
+	public void addContact(String contact){
+		String nickname = contact;
+		if(contact.contains("(Online)")){
+			nickname = contact.substring(0, contact.indexOf('('));
+		}
+		client.addContact(new Contact(nickname));
+		ClientWindow.getWindow().getContactList().addElement(contact);
 	}
-	return names;
-    }
 	
-    /**
-     * Update the contact list
-     * @param contact an array of strings represents a contact list
-     */
-    public void updateContactList(String[] contact){
-    	for(String c : contact){
-		ClientWindow.getWindow().getContactList().addElement(c);
+	/** Updates the Client's contact list to reflect the online status of a contact and mirrors the result in ClientWindow list
+	*@param contact A string containing the nickname of the contact that has changed their online status
+	*@param status A boolean that represents the online status of the Contact
+	*@author jleeong
+	*@version F16
+	*/
+	public void updateContact(String contact, boolean status){
+		client.updateContact(contact, status);
+		String online = "";
+		DefaultListModel windowlist = ClientWindow.getWindow().getContactList();
+		if(status) windowlist.set(windowlist.lastIndexOf(contact), contact+"(Online)");
+		else windowlist.set(windowlist.lastIndexOf(contact+"(Online)"), contact);
 	}
-    }
-
+	
+	/** Method to send a ChatRoom registration the server.
+	* @param reg A string representing the participants list as inputed from the launchRegisterChatRoomWindow
+	* @author jleeong
+	* @version F16
+	*/
+	public void sendChatRoomRegistration(String reg){
+		String [] parts = reg.split(",");
+		String msg = "&1009:";
+		for(String x : parts){
+			msg += x +":";
+		}
+		client.sendChatRoomRegistration(msg);
+	}
 }

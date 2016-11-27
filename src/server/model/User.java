@@ -112,7 +112,7 @@ public class User {
 	
 	/**
 	 * returns online status of the User
-	 * @author Jared Leeong
+	 * @author jleeong
 	 */
 	public boolean isOnline(){
 		return isOnline;
@@ -121,10 +121,24 @@ public class User {
 	/**
  	* sets online status
  	* @param status the new online status of current user
- 	* @author Jared Leeong
+ 	* @author jleeong
  	*/
 	public void setOnline(boolean status){
 		isOnline=status;
-	}	
-	
+	}
+
+	/**Overriden .equals() inherited from Object. Will evaluate to true if the 'name' matches on both objects
+	*@param o Object to be compared to
+	*@author jleeong
+	*@version F16	
+	*/
+	@Override
+	public boolean equals(Object o){
+	if(o==null) return false;
+		if(o instanceof User){
+			User u = (User) o;
+			return name.equals(u.getName());
+		}
+		else return false;	
+	}
 }

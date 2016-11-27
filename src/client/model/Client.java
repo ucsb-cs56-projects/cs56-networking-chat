@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-
+import java.util.ArrayList;
 
 
 import javax.sound.sampled.AudioFormat;
@@ -33,8 +33,7 @@ public class Client {
     private String nickName;
     private String serverIP;
     private String clientIP;
-    private String[] contactList;
-
+    private ArrayList<Contact> contacts;
     private Socket mySocket;
 
     private DataOutputStream dos;
@@ -57,7 +56,7 @@ public class Client {
 	dos = null;
 	dis = null;
 	isConnected = false;
-	contactList = null;
+	contacts = new ArrayList<Contact>();
     }
 	
     /**
@@ -233,8 +232,10 @@ public class Client {
 		return 3;
 	    }
 	    else{
-		contactList = parseContactList(temp[0]);
-		controller.updateContactList(contactList);
+		String [] contactList = parseContactList(temp[0]);
+		for(int i=0; i<contactList.length; i++){
+			controller.addContact(contactList[i]);
+		}
 		return 0;
 	    }
 				
@@ -287,7 +288,20 @@ public class Client {
 	    controller.displayMsg("Error occured when sending message to the server\n");
 	}
     }
-	
+
+	/**Method used to send a message to a single User. This is the preferred method to use when sending a single message to another User
+	*Appends nickName to the front of the message to adhere to the server's message parsing requirements
+	*@param msg String that contains the message to be sent as well as the relevant server information (See ClientController.sendIM())
+	*@author jleeong
+	*@version F16
+	*/
+	public void sendIM(String msg){
+		try {
+			dos.writeUTF(nickName+msg);
+	 	} catch (IOException e) {
+	    		controller.displayMsg("Error occured when sending message to the server\n");
+		}
+    	}
     /**
      * RecieveMsg class represent a seperate thread that constantly recieving message from the server
      * @author Peng Wang and Andro Stotts
@@ -299,51 +313,39 @@ public class Client {
 		while(isConnected){
 		    String msg = dis.readUTF();
 		    String[] strs = parseReceivingMsg(msg);
+		    //Client has received a single number. This is ChatRoom registration.
+		    if(strs[1].equals("1009")){
+			controller.displayMsg("Registered in ChatRoom\n");
+			String roomnum=strs[0]; 
+			String newc = "ChatRoom:"+roomnum;
+			controller.addContact(newc);
+		    }
 		    //client go online
-		    if(strs[1].equals("1002")){
-			for(int i = 0; i < contactList.length; i++){
-			    if(contactList[i].equals(strs[0])){
-				contactList[i] += "(Online)";
-				controller.updateContactList(contactList);
-				//play a sound
-				if(soundOn)
-				    {
-					AePlayWave onlineSound = new AePlayWave("OhYeah.aiff");
-					onlineSound.start();
-				    }
-				break;
-			    }
+		    else if(strs[1].equals("1002")){
+			Contact arrival = new Contact(strs[0]);
+			if(contacts.contains(arrival)){
+				controller.updateContact(strs[0], true);
 			}
-			
+			if(soundOn)
+			    {
+				AePlayWave onlineSound = new AePlayWave("OhYeah.aiff");
+				onlineSound.start();
+			    }
 		    }
 		    //client go offline
 		    else if(strs[1].equals("1003")){
-			for(int i = 0; i < contactList.length; i++){
-			    if(contactList[i].equals(strs[0]+"(Online)")){
-				contactList[i] = strs[0];
-				controller.updateContactList(contactList);
-				//play a sound
-				if(soundOn)
-				    {
-					AePlayWave offlineSound = new AePlayWave("HitWallObs.aiff");
-					offlineSound.start();
-				    }
-				break;
-			    }
+			Contact departed = new Contact(strs[0]);
+			if(contacts.contains(departed)){
+				controller.updateContact(strs[0], false);
 			}
-		
+			if(soundOn){
+				AePlayWave offlineSound = new AePlayWave("HitWallObs.aiff");
+				offlineSound.start();
+			}
 		    }
 		    //update the contact's nickname
 		    else if(strs[1].equals("1006")){
-			String[] nicknames = strs[0].split(":");
-			for(int i = 0; i < contactList.length; i++){
-			    if(contactList[i].equals(nicknames[0] + "(Online)")){
-				contactList[i] = nicknames[1] + "(Online)";
-				controller.updateContactList(contactList);
-				controller.displayMsg(nicknames[0] + "'s nickname has been changed to " + nicknames[1] + "\n");
-				break;
-			    }
-			}
+		    //STUB
 		    }
 		    else if(strs[1].equals("1007")){
 			controller.setNickname(strs[0]);
@@ -369,5 +371,34 @@ public class Client {
 	    }
 	}		
     }
+
+	/**Method to add a Contact to ArrayList<Contact> contacts.
+	*@param nn a String representing the nickname of the contact to be added.
+	*@author jleeong
+	*@version F16
+	*/
+	public void addContact(Contact newc){
+		if(!contacts.contains(newc))
+			contacts.add(newc);
+	}
 	
+	/**Method to modify online status of a Contact.
+	*@param contact The nickname of the contact to modify
+	*@param status A boolean representing online status.
+	*@author jleeong
+	*@version F16
+	*/
+	public void updateContact(String contact, boolean status){
+		Contact mod = new Contact(contact);
+		contacts.get(contacts.indexOf(mod)).setOnline(status);
+	}
+	
+	/**Method to send a ChatRoom registration request to the Server. Sends the registration message to the server.
+	* @param reg a String constructed from the ClientController for proper message structure.
+	* @author jleeong
+	* @version F16
+	*/
+	public void sendChatRoomRegistration(String reg){
+		sendMsg(reg);
+	}	
 }

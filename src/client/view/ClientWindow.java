@@ -33,6 +33,7 @@ public class ClientWindow extends JFrame{
     private JTextField tfUsername;
     private JTextField tfNickName;
     private JTextField tfServerIp;
+    private JTextField tfChatRoomParticipants;
     private JPasswordField pfPassword;
     private JScrollPane spScrollPane;
     private JList<String> listContacts;
@@ -51,6 +52,7 @@ public class ClientWindow extends JFrame{
     private JButton btNickname;
     private JButton btChangeFont;
     private JButton onlineCountUpdate;
+    private JButton btAccept;
     private static ClientWindow window;
     private ClientController controller;
     private String name;
@@ -58,6 +60,7 @@ public class ClientWindow extends JFrame{
     private String ip;
     private String password;
     private JFrame nicknameWindow;
+    private JFrame registrant;
  
     //Pre-determined color to randomly use
     java.awt.Color redColor = new java.awt.Color(255,000,000);
@@ -101,8 +104,10 @@ public class ClientWindow extends JFrame{
 	tfUsername = new JTextField(20);
 	tfNickName = new JTextField(20);
 	tfServerIp = new JTextField(20);
+	tfChatRoomParticipants = new JTextField(20);
 	pfPassword = new JPasswordField(20);
-	
+	btAccept = new JButton("Accept");
+
 	//default connection
 	tfServerIp.setText("127.0.0.1");
 	soundbox = new JCheckBox("Play Sounds");
@@ -221,10 +226,10 @@ public class ClientWindow extends JFrame{
 	leftPanel.add(listContacts, BorderLayout.CENTER);
 
 	JButton nickName = new JButton("Change nickname");
-	JButton privateRoom = new JButton("Private Room");
+	JButton chatRoom = new JButton("Chat Room");
 	
 	leftPanel.add(nickName, BorderLayout.SOUTH);
-	leftPanel.add(privateRoom, BorderLayout.NORTH);
+	leftPanel.add(chatRoom, BorderLayout.NORTH);
 		
 	listContacts.setSelectedIndex(0);
 		
@@ -232,9 +237,9 @@ public class ClientWindow extends JFrame{
 	this.getContentPane().add(rightPanel, BorderLayout.CENTER);
 	this.getContentPane().add(menuPanel, BorderLayout.NORTH);
 	this.repaint();
-	tfInput.addActionListener(new ChatInputListener());
+	tfInput.addActionListener(new InputListener());
+	chatRoom.addActionListener(new RegisterChatRoomListener());
 	nickName.addActionListener(new LaunchChangeWindowListener());
-	privateRoom.addActionListener(new PrivateRoomButtonListener());
 	fontList.addActionListener(new FontListener());
 	colorList.addActionListener(new ColorListener());
 	soundbox.addItemListener(new CheckListener());
@@ -263,6 +268,26 @@ public class ClientWindow extends JFrame{
 	tfNickName.addKeyListener(new ChangeNickNameListener());
     }
 
+	/**Method to launch the window to register a new ChatRoom. Creates a popup window that prompts for the nicknames of the
+	* participants who are part of the ChatRoom
+	* @author jleeong
+	* @version F16
+	*/
+	public void launchRegisterChatRoomWindow(){
+		registrant = new JFrame();
+		registrant.setLocation(100, 100);
+		registrant.setSize(300, 125);
+		registrant.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		registrant.setTitle("Set Nickname");
+		registrant.setLayout(new FlowLayout());
+		registrant.getContentPane().add(new JLabel("Enter participant nicknames. Separate nicknames with commas, no spaces."));
+		registrant.getContentPane().add(tfChatRoomParticipants);
+		tfChatRoomParticipants.setText("user1,user2,user3...");
+		registrant.getContentPane().add(btAccept);
+		registrant.setVisible(true);
+		btAccept.addActionListener(new RegistrantListener());
+		tfChatRoomParticipants.addKeyListener(new RegistrantListener());
+	}
     /**
      * Get the message display component
      * @return the text area which displays the message
@@ -294,11 +319,10 @@ public class ClientWindow extends JFrame{
 	}
     }
 
-    
-    class PrivateRoomButtonListener implements ActionListener{
-	public void actionPerformed(ActionEvent e){
-	    
-	}
+    class RegisterChatRoomListener implements ActionListener{
+        public void actionPerformed(ActionEvent e){
+		ClientWindow.getWindow().launchRegisterChatRoomWindow();
+        }
     }
 
     /**
@@ -351,7 +375,7 @@ public class ClientWindow extends JFrame{
  } 
    /**
     * Listener class that registers when the changeFont JComboBox is pressed
-    * @author Xinyuan Zhang and Jared Leeong
+    * @author Xinyuan Zhang and jleeong
    */
    
     
@@ -430,7 +454,7 @@ public class ClientWindow extends JFrame{
 
 /**
      * Handles actions when Delete user button is clicked
-     * @author Winfred Huang, Arturo Milanes, and Jared Leeong
+     * @author Winfred Huang, Arturo Milanes, and jleeong
      * @version F16
      */
     class DeleteUserButtonListener implements ActionListener{
@@ -537,6 +561,26 @@ public class ClientWindow extends JFrame{
 		}
 	    }	
 	    
+	/**ActionListener class used in the launchRegisterChatRoomWindow
+	*@author jleeong
+	*@version F16
+	*/
+	class RegistrantListener implements ActionListener, KeyListener{
+		public void actionPerformed(ActionEvent e){
+			sendRegistration();
+		}
+		public void keyTyped(KeyEvent e) {}
+		public void keyReleased(KeyEvent e) {}
+		public void keyPressed(KeyEvent e) {
+		    if (e.getKeyCode() == KeyEvent.VK_ENTER)
+			sendRegistration();
+		}
+		private void sendRegistration(){
+			String reg = tfChatRoomParticipants.getText().trim();
+			controller.sendChatRoomRegistration(reg);
+			registrant.dispose();
+		}
+	}
 	    /**
      * Handles actions when name is changed
      * @author Bryce Filler and Max Hinson
@@ -566,45 +610,35 @@ public class ClientWindow extends JFrame{
 			nicknameWindow.dispose();
 		    }
 	    }
-	    
-	}
-    }
-    
-    /**
-     * Handles the action when user clicks enter on keyboard
-     * @author Peng Wang with Andro Stotts
-     * @version 0.4
-     */
-    class ChatInputListener implements ActionListener{
-	public void actionPerformed(ActionEvent e) {
-	    if(listContacts.isSelectionEmpty()){
-		taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
+	}    
+}
+	    /**
+	     * Handles the action when user clicks enter on keyboard
+	     * @author Peng Wang with Andro Stotts
+	     * @version 0.4
+	     */
+	    class InputListener implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			if(listContacts.isSelectionEmpty()){
+				taOutput.append("***PLEASE SELECT A CONTACT PERSON FIRST, THEN SEND YOUR MESSAGE***\n");
+			}
+			else{
+				String text = tfInput.getText().trim();
+				tfInput.setText("");
+				String receiver = listContacts.getSelectedValue();
+				String recNoStatus = receiver;
+				if(receiver.contains("(Online)")){
+					recNoStatus = receiver.substring(0,receiver.indexOf('('));
+					controller.sendIM(text,recNoStatus);
+				}
+				else if(receiver.contains("ChatRoom")){
+					String[] parts = receiver.split(":");
+					recNoStatus = parts[1];
+					controller.sendGrpMsg(text,recNoStatus);
+				}
+			}
+		}	
 	    }
-	    else{
-		String text = tfInput.getText().trim();
-		tfInput.setText("");
-		
-		nickname = controller.getNickname();
-		
-		if(!listContacts.getSelectedValue().equals("Broadcast")) {
-		    String parts[] = listContacts.getSelectedValue().toString().split("");
-		    String receiverName = "";
-		    ListModel<String> list = listContacts.getModel();
-		    for (int i = 0; i < listContacts.getSelectedValue().length(); i++) {
-			String ch = parts[i];
-			if (!ch.equals("(")) {
-			    receiverName = receiverName + ch;
-			} else
-			    break;
-		    }
-		    
-		    controller.sendMsg2Server(nickname + " to " + receiverName + ": " + text + "&" + listContacts.getSelectedValue() + ":1001");
-		}
-		else
-		    controller.sendMsg2Server(nickname + "(Broadcast): " + text + "&" + listContacts.getSelectedValue() + ":1001");
-	    }
-	}	
-    }
 
     class LogoutListener implements ActionListener {
 	public void actionPerformed(ActionEvent e){

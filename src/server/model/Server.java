@@ -7,16 +7,20 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 /*
  *SPECIAL CODE used by system to indicate the type of message
  *   MESSAGE FORMAT (everything inside <> is variable)
  *
  *1001-regular one-to-one or broadcast message
- *   [Client Message] <sender's nickname>: <message>&<recipient's nickname>(Online):1001
+ *   [Client@<client-ip>] <sender's nickname>: <message>&<recipient's nickname>:1001
  *   or
- *   [Client Message] <sender's nickname>(Broadcast): <message>&Broadcast:1001
+ *   [Client@<client-ip>] <sender's nickname>(Broadcast): <message>&Broadcast:1001
  *
  *1002-let contacts know that someone has logged on
  *   <nickname of online user>&1002
@@ -36,14 +40,19 @@ import java.util.ArrayList;
  *1007-tell the client its new nickname
  *   <newnickname>&1007
  *
+ *1010-regular message sent to a chatroom
+ *   [Client@<client-ip>] <sender's nickname>: <message>&<room-number>:1010
+ *
+ *1009-client registering a new chatroom with the server
+ *   &1009:participant1:participant2:participant3:...
  *1008-let contacts know that someone has logged off and disconnected.
  *   <nickname of offline user>&1003
  */
 
 /**
  * Represents the server model
- * @author Peng Wang, Andro Stotts, Max Hinson, and Bryce Filler
- * @version 0.5
+ * @author Peng Wang, Andro Stotts, Max Hinson, and Bryce Filler, jleeong
+ * @version F16
  */
 public class Server{
     private final int port = 8888;
@@ -57,6 +66,7 @@ public class Server{
     private String [] clientsOnline;
     private ArrayList<Client> clients;
     private ArrayList<User> users;
+    private ArrayList<ChatRoom> rooms;
 
     private Boolean connect = true;
 
@@ -83,9 +93,9 @@ public class Server{
 	ss = null;
 	serverMsg = "";
 	serverMsgPrefix = "[Server Message] ";
-	clientMsgPrefix = "[Client Message] ";
 	clients = new ArrayList<Client>();
-		
+	rooms = new ArrayList<ChatRoom>();
+	
 	//make our own fake users
 	users = new ArrayList<User>();
 	User peng = new User("Peng Wang", "peng", "123abc");		
@@ -217,7 +227,7 @@ public class Server{
 
     /**
      * inner class Client only provide service to the outer class
-     * @author Peng Wang, Andro Stotts, Max Hinson, Bryce Filler, Jared Leeong
+     * @author Peng Wang, Andro Stotts, Max Hinson, Bryce Filler, jleeong
      * @version F16
      */
     class Client implements Runnable{
@@ -262,11 +272,12 @@ public class Server{
 	 */
 	public String[] parseMsg(String s){
 	    int index = s.lastIndexOf("&");
-	    String msg = s.substring(0, index);
-	    String c = s.substring(index+1, s.length());
-	    String[] cmd = c.split(":");
-	    String[] str = {msg, cmd[0], cmd[1]};
-	    return str;
+	    String msg = s.substring(0,index);
+	    String[] params = s.substring(index+1, s.length()).split(":");
+	    ArrayList<String> parsed = new ArrayList<String>();
+	    parsed.add(msg);
+	    parsed.addAll(Arrays.asList(params));
+	    return parsed.toArray(new String[parsed.size()]);
 	}
 		
 	/**
@@ -292,22 +303,47 @@ public class Server{
 	}
 		
 	/**
-	 * broadcast message to one particular person who is current online
-	 * @param strs message after parsing
+	 * broadcast message to one particular person who is currently online
+	 * @param msg The instant message to be delivered
+	 * @param rec The nickname of the User to send to
+	 * @author jleeong
+	 * @version F16
 	 */
-	public void broadcast2one(String[] strs){
+	public void broadcast2one(String msg, String rec){
 	    boolean isOnline = false;
-	    this.sendMsg(strs[0] + "&" + strs[2]);
+	    this.sendMsg(msg + "&1001");
 	    for(Client c : clients){
-		if(strs[1].equals(c.getUser().getNickname()+"(Online)")){
-		    c.sendMsg(strs[0] + "&" + strs[2]);
+		if(rec.equals(c.getUser().getNickname())){
+		    c.sendMsg(msg + "&1001");
 		    isOnline = true;
 		    break;
 		}
 	    }
 	    if(!isOnline){
-		this.sendMsg("***THE USER YOU ARE TRYING TO SEND MESSAGE TO IS NOT ONLINE***&" + strs[2]);
+		this.sendMsg("***THE USER YOU ARE TRYING TO MESSAGE IS NOT ONLINE***&1001");
 	    }	
+	}
+	
+	/**
+	* broadcast message to all users in a single chatroom
+	* @param msg The instant message to be sent
+	* @param rn A double representing the roomnumber of the specified chatroom
+	*@author jleeong
+	*@version F16
+	*/
+	public void broadcast2room(String msg, double rn){
+		int rIndex = rooms.indexOf(new ChatRoom(rn));
+		if(rIndex != -1){
+			ChatRoom cr = rooms.get(rIndex);
+			Set<User> participants = cr.getParticipants();
+			for(Client c : clients){
+				if(participants.contains(c.getUser()))
+					c.sendMsg(msg+"&1001");
+			}
+		}
+		else{
+			this.sendMsg("***THE ROOM YOU ARE TRYING TO MESSAGE DOES NOT EXIST***&1001");
+		}
 	}
 
 	/**
@@ -369,11 +405,38 @@ public class Server{
 	        return 1;
 	    }
 	}
-		
+	
+	/**Method to register a new chatroom with the server. Receives a registerChatRoom message from the Client, creates and stores
+	* a new instance of a ChatRoom containing all the participants, assigns a room number identifying the room, and sends the 
+	* room number back to the client thus completing the registration process.
+	*@param participants is a List containing the nicknames of all Users who will participate in the chatroom, with first element equal to "1009"
+	*@author jleeong
+	*@version F16
+	*/
+	public void registerChatRoom(List<String> participants){
+		//for (String parts : participants){System.out.println(parts);}
+		controller.displayMsg("registering new ChatRoom...");
+		ArrayList<String> pnames = new ArrayList<String>();
+		pnames.addAll(participants);
+		HashSet<User> p = new HashSet<User>();
+		for(User u : users){
+			if(pnames.contains(u.getNickname()))
+				p.add(users.get(users.indexOf(u)));
+		}
+		ChatRoom newRoom = new ChatRoom(p);
+		controller.displayMsg("ChatRoom created...");
+		newRoom.setRoomNumber(Math.random());
+		while(rooms.contains(newRoom)){
+			newRoom.setRoomNumber(Math.random());
+		}
+		rooms.add(newRoom);
+		controller.displayMsg("new ChatRoom registered at: "+newRoom.getRoomNumber()+"\n");
+		this.sendMsg(newRoom.getRoomNumber()+"&1009");
+	}	
 	/**
 	 * Gets the contact list for the current client and appends "(Online)" to those users
 	 * that are online
-	 * @author Jared Leeong
+	 * @author jleeong
 	 * @version F16
 	 */
 	public String getContacts(User u){
@@ -388,7 +451,7 @@ public class Server{
 		
 	/**
  	* Gets the current logged in User on the connected client
- 	* @author Jared Leeong
+ 	* @author jleeong
  	* @version F16
 	*/ 
 	public User getUser(){
@@ -466,6 +529,7 @@ public class Server{
 			String msg = dis.readUTF();
 			if (!isServerStart)
 				throw new Exception();
+			clientMsgPrefix = "[Client@"+ip.toString()+" ]";
 			controller.displayMsg(clientMsgPrefix + msg + '\n');
 			String[] strs = parseMsg(msg);
 						
@@ -477,6 +541,16 @@ public class Server{
 				broadcast2all(strs);
 				currentUser.setOnline(false);
 			}
+			
+			//client chatting in chatroom
+			if(strs[2].equals("1010")){
+				broadcast2room(strs[0], Double.parseDouble(strs[1]));
+			}
+
+			//client registering a new chatroom
+			if(strs[1].equals("1009")){
+				registerChatRoom(Arrays.asList(strs));	
+			}		
 			//cient offline and window will auto change to the status of waiting for new login 
 			if(strs[2].equals("1008")){
 			    connect = false;
@@ -510,9 +584,8 @@ public class Server{
 			else if(strs[1].equals("DELETE")){
 				currentUser.deleteContact(strs[2]);
 			}
-			//sent to a certain person in the contact list
 			else{
-				broadcast2one(strs);					
+				broadcast2one(strs[0],strs[1]);					
 			}
 			}			
 		}	
