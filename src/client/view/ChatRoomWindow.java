@@ -15,7 +15,7 @@ public class ChatRoomWindow extends JFrame{
 	private JScrollPane centerPane;
 	
 	public ChatRoomWindow(ChatRoom room){
-		roomDisplay = room.getTextArea();
+		//roomDisplay = room.getTextArea();
 		tfInput = new JTextField();
 		centerPane = new JScrollPane(roomDisplay);
 		roomDisplay.setLineWrap(true);

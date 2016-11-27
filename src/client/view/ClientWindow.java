@@ -239,7 +239,6 @@ public class ClientWindow extends JFrame{
 	this.repaint();
 	tfInput.addActionListener(new InputListener());
 	chatRoom.addActionListener(new RegisterChatRoomListener());
-	tfInput.addActionListener(new ChatInputListener());
 	nickName.addActionListener(new LaunchChangeWindowListener());
 	fontList.addActionListener(new FontListener());
 	colorList.addActionListener(new ColorListener());
@@ -611,7 +610,8 @@ public class ClientWindow extends JFrame{
 			nicknameWindow.dispose();
 		    }
 	    }
-	    
+	}    
+}
 	    /**
 	     * Handles the action when user clicks enter on keyboard
 	     * @author Peng Wang with Andro Stotts
@@ -638,8 +638,6 @@ public class ClientWindow extends JFrame{
 				}
 			}
 		}	
-	    }
-	}	
 	    }
 
     class LogoutListener implements ActionListener {
