@@ -83,3 +83,23 @@ The first version of this code pre-dates the use of github for CS56 projects.   
 *Definetely refactor the code before doing anything else.
 *Refactor the database in server first.
 *Follow the pattern especially the observer pattern.
+
+##F16 Final Remarks
+
+## State of the Program:
+* Able to select font color and text of the output
+* Able to create private chatroom with select user based on their nickname
+* Send and receive messages normally
+* Send to offline user with an error displayed to the sender
+* Able to delete a contact from the ClientWindow for a specific User and have that change be persistent in the Server
+
+### Bugs
+* The Chatroom implementation leaves much to desire. it is very basic and only allows the creator of the chatroom to actually talk in the chatroom. Furthermore there can be improvements to the list of Chatrooms(i.e. names of chatrooms). Furthermore, sending to the chatroom displays a user offline error even if the message goes through.
+* The ChangeNickname button is not working due to refactor of online status of users
+* Using the delete user button for a chat room does not properly work and may cause errors
+
+### Notes about project
+* Currently the server and client communicate with a set of service codes that convey information about the message being sent. This set of codes is somewhat inconsistently implemented throughout the project and must be re-evaluated and documented. See Issue 51
+* The Chatroom implementation is very basic and lacks a lot of functionality of a full chat room including: adding users, responding to a group message, removing users, chatroom display name.
+* The way the server processes closing windows and a user logging out needs fixing up. Originally the Server depended on a message exception being thrown by a badly formed message when the ClientWindow is closed. Now with the log-out button implemented, there exists a proper service code to tell the Server that the ClientWindow is closing and so closing the ClientWindow should now send a properly formed service code to the Server.
+* The best way of understanding the way that both the Server and Client work and interact is to really understand the respective Controller classes. The Controller contains an instance of a Client/Server as well as a Window to display them. It therefore has ways of altering the state of both Client/Server and their respective window. This is the proper place to put methods to change the state in a centralized class. Because of it's composition of Server/Client and Window Objects, the Controller is the place to do message parsing and creating properly formed messages. Server/Client objects only need the relevant information, parsed from the raw message received by the Controller.
