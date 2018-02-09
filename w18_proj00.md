@@ -1,4 +1,4 @@
-### Chi X, SHengjia Y
+### Chi X, Shengjia Y
 
 
 
