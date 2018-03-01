@@ -12,6 +12,9 @@ import javax.swing.JComboBox;
 import java.awt.GraphicsEnvironment;
 import javax.swing.*;
 import java.awt.Dimension;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.io.IOException;
 
 //Import random library
 import java.util.Random;
@@ -47,6 +50,7 @@ public class ClientWindow extends JFrame{
     private JLabel lblLoginError;
     private JLabel onlineCountNum;
     private JLabel onlineCountText;
+    private JLabel userInRoom;
     private JCheckBox soundbox;
     private JButton btConnect;
     private JButton btNickname;
@@ -61,6 +65,10 @@ public class ClientWindow extends JFrame{
     private String password;
     private JFrame nicknameWindow;
     private JFrame registrant;
+    //    private JFrame editWindow;
+    private int roomUsers;
+    private int count;
+    
  
     //Pre-determined color to randomly use
     java.awt.Color redColor = new java.awt.Color(255,000,000);
@@ -74,6 +82,7 @@ public class ClientWindow extends JFrame{
 
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     Font fonts[] = ge.getAllFonts();
+    
    
     /**
      * Default constructor
@@ -173,7 +182,7 @@ public class ClientWindow extends JFrame{
 	
 	this.getContentPane().removeAll();
 	this.setLayout(new BorderLayout());
-	this.setSize(800, 400);
+	this.setSize(1000, 500);
 	this.setTitle("Chatting Client-" + name);
 	JPanel leftPanel = new JPanel();
 	JPanel rightPanel = new JPanel();
@@ -182,8 +191,7 @@ public class ClientWindow extends JFrame{
 	menuPanel.add(onlineCountUpdate, BorderLayout.WEST);
 	menuPanel.add(onlineCountText, BorderLayout.WEST);
 	menuPanel.add(onlineCountNum, BorderLayout.WEST);
-	onlineCountUpdate.addActionListener(new OnlineCountUpdateButtonListener());
-	
+	onlineCountUpdate.addActionListener(new OnlineCountUpdateButtonListener());	
 	menuPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	menuPanel.setLayout(new FlowLayout());
 	menuPanel.add(soundbox, BorderLayout.EAST);
@@ -227,11 +235,19 @@ public class ClientWindow extends JFrame{
 
 	JButton nickName = new JButton("Change nickname");
 	JButton chatRoom = new JButton("Chat Room");
+
+	//new
+	JButton editRoom = new JButton("Edit my room");
+        
+	menuPanel.add(editRoom, BorderLayout.EAST);
 	
 	leftPanel.add(nickName, BorderLayout.SOUTH);
 	leftPanel.add(chatRoom, BorderLayout.NORTH);
+	
 		
 	listContacts.setSelectedIndex(0);
+	onlineCountUpdate.addActionListener(new OnlineCountUpdateButtonListener());
+	onlineCountUpdate.doClick();
 		
 	this.getContentPane().add(leftPanel, BorderLayout.WEST);
 	this.getContentPane().add(rightPanel, BorderLayout.CENTER);
@@ -240,11 +256,14 @@ public class ClientWindow extends JFrame{
 	tfInput.addActionListener(new InputListener());
 	chatRoom.addActionListener(new RegisterChatRoomListener());
 	nickName.addActionListener(new LaunchChangeWindowListener());
+	//editRoom.addActionListener(new ChatroomListener());
 	fontList.addActionListener(new FontListener());
 	colorList.addActionListener(new ColorListener());
 	soundbox.addItemListener(new CheckListener());
 	soundbox.setSelected(true);
-	
+	Timer timer = new Timer();
+	timer.schedule(new timerThread(),0,1000);
+		
     }
 
     
@@ -266,6 +285,7 @@ public class ClientWindow extends JFrame{
 	nicknameWindow.setVisible(true);
 	btNickname.addActionListener(new ChangeNickNameListener());
 	tfNickName.addKeyListener(new ChangeNickNameListener());
+
     }
 
 	/**Method to launch the window to register a new ChatRoom. Creates a popup window that prompts for the nicknames of the
@@ -488,7 +508,12 @@ public class ClientWindow extends JFrame{
 			}
 		    }
 		    onlineCountNum.setText(String.valueOf(count));
+		    //revised
+		    // menuPanel.add(logout,BorderLayout.EAST);
+		    // launchChatWindow lCW = new lauchChatWindow();
+		    
 		}
+		
 	    }
 	    
 	    /**
@@ -527,7 +552,7 @@ public class ClientWindow extends JFrame{
 		}
 		public void actionPerformed(ActionEvent e) {			
 		    attemptLogin();
-		    window.getContentPane().repaint();
+		    // window.getContentPane().repaint();
 		}
 		
 		public void keyTyped(KeyEvent e) {}
@@ -563,6 +588,7 @@ public class ClientWindow extends JFrame{
 	    
 	/**ActionListener class used in the launchRegisterChatRoomWindow
 	*@author jleeong
+	*
 	*@version F16
 	*/
 	class RegistrantListener implements ActionListener, KeyListener{
@@ -577,6 +603,8 @@ public class ClientWindow extends JFrame{
 		}
 		private void sendRegistration(){
 			String reg = tfChatRoomParticipants.getText().trim();
+			//	String [] arr = reg.split(",");
+			//	roomUsers = arr.length;
 			controller.sendChatRoomRegistration(reg);
 			registrant.dispose();
 		}
@@ -642,10 +670,19 @@ public class ClientWindow extends JFrame{
 
     class LogoutListener implements ActionListener {
 	public void actionPerformed(ActionEvent e){
+	    window.repaint();
 	    window.dispose();
 	    controller.sendMsg2Server(name+"&Broadcast:1008");
 	    window = new ClientWindow();
 	    window.launchLoginWindow();
 	}
     }
+    class timerThread extends java.util.TimerTask{
+	
+	public void run (){
+	    onlineCountUpdate.addActionListener(new OnlineCountUpdateButtonListener());
+	    onlineCountUpdate.doClick();
+    	}
+    }
+    
 }
