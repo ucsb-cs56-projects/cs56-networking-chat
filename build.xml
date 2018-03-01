@@ -3,102 +3,41 @@
   <!-- build.xml for networking-chat, W14, CS56
        name: Eric Chen -->
 
-
-  <property environment="env"/> <!-- load the environment variables -->
-  <property name="webRoot" value="${env.HOME}/public_html/cs56/${projectName}" />
-  <property name="webBaseURL" value="http://www.cs.ucsb.edu/~${env.USER}/cs56/${quarter}/issues" />
-  <property name="projectName" value="cs56_networking_chat" /> 
-  <property name="javadocDest" value="${webRoot}/${projectName}/javadoc" /> 
-  <property name="javadocURL" value="${webBaseURL}/${projectName}/javadoc" />
-  <property name="jwsDest" value="${webRoot}/${projectName}" /> 
-  <property name="jwsURL" value="${webBaseURL}/${projectName}" />
-  <property name="mainClassClient" value="client.controller.RunClient" />
   <property name="mainClassServer" value="server.controller.RunServer" />
   <property name="server" value="Server" />
-  <property name="client" value="Client" />
+
 
 <path id="project.class.path">
   <pathelement location="build"/>
   <pathelement location="lib/junit-4.8.2.jar"/>
 </path>
 
-  <target name="compile" description="compile the code">
-    <mkdir dir="build" />
-    <javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source" includeantruntime="false" > 
-      <classpath refid="project.class.path" />
-    </javac>
-    <copy todir="build/resources">
-      <fileset dir="resources"/>
-    </copy>
-  </target>
 
 
-  <target name="clean" description="delete unnecessary files and directories">
-    <delete dir="build" quiet="true" />    
-    <delete dir="javadoc" quiet="true" />
-    <delete dir="dist" quiet="true" />                                  
-    <delete dir="temp" quiet="true" />
-  </target>
 
 
-  <property name="javadoc_absolute_path" location="javadoc"/>
-  
-  <target name="javadoc" depends="compile" description="generate javadocs from code">
-    <delete dir="javadoc" />                                                          
-    <javadoc  destdir="javadoc"  >                          
-      <fileset dir="src" includes="**/*.java"/>                                                 <classpath refid="project.class.path" />
-      <link href="https://docs.oracle.com/javase/8/docs/api/" />
-    </javadoc>                                                                                             
-    <echo>javadoc written to file://${javadoc_absolute_path}/index.html</echo>   
-  </target>  
 
 
-  <target name="test" depends="compile" description="run JUnit tests">
-    <junit haltonerror="no" haltonfailure="no">
-      <classpath refid="project.class.path" />
-  
-      <batchtest fork="yes">
-        <fileset dir="src">
-          <!-- this will pick up every class with a name ending in Test -->
-          <include name="**/*Test.java"/>
-        </fileset>
-      </batchtest>
-
-      <formatter type="plain" usefile="false" /> 
-      
-    </junit>
-  </target>
-
-
- <target name="dist" depends="compile" description="make jar files">
-    <mkdir dir="dist" />
+ <target name="jar" depends="compile" description="make jar files">
+    <mkdir dir="jar" />
     <mkdir dir="build/resources"/>
     <copy todir="build/resources">
       <fileset dir="resources"/>
     </copy>
 
-    <!-- <jar destfile="dist/${client}.jar" basedir="build" includes="edu/ucsb/cs56/${quarter}/${env.USER}/chatclient/**" excludes="**/chatserver"> -->
+    <!-- <jar destfile="jar/${client}.jar" basedir="build" includes="edu/ucsb/cs56/${quarter}/${env.USER}/chatclient/**" excludes="**/chatserver"> -->
 
-    <jar destfile="dist/${client}.jar" basedir="build" >
-      <manifest>                                                                 
-	<attribute name="Main-Class" value="${mainClassClient}"/>                 
-      </manifest>                                                                
-    </jar>
-    <jar destfile="dist/${server}.jar" basedir="build" includes="server/**" excludes="**/client" >
+
+    <jar destfile="jar/${server}.jar" basedir="build" includes="server/**" excludes="**/client" >
       <manifest>                                                                 
 	<attribute name="Main-Class" value="${mainClassServer}"/>                 
       </manifest>                                                                
     </jar>
-    <chmod dir="dist" perm="755" type="file" includes="**/*"/>
+    <chmod dir="jar" perm="755" type="file" includes="**/*"/>
   </target>  
 
 
-    
-
-  <target name="client" depends="compile, dist" description="run the client">
-    <java jar="dist/Client.jar" fork="true" classpath="build" />
-  </target>   
-
+ 
   <target name="server" depends="compile" description="run the server">
     <java classname="${mainClassServer}" fork="true" classpath="build" />
   </target>
