@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="client.junit.ClientTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2018-03-01T04:28:14" hostname="Chis-MBP" time="0.024">
+<testsuite name="client.junit.ClientTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2018-03-01T04:49:17" hostname="Chis-MBP" time="0.022">
   <properties/>
-  <testcase name="testGetClientIP" classname="client.junit.ClientTest" time="0.007"/>
-  <testcase name="testParseContactList" classname="client.junit.ClientTest" time="0.001"/>
+  <testcase name="testGetClientIP" classname="client.junit.ClientTest" time="0.006"/>
+  <testcase name="testParseContactList" classname="client.junit.ClientTest" time="0.0"/>
   <testcase name="testGetServerIP" classname="client.junit.ClientTest" time="0.0"/>
-  <testcase name="testParseReceivingMsg" classname="client.junit.ClientTest" time="0.0"/>
+  <testcase name="testParseReceivingMsg" classname="client.junit.ClientTest" time="0.001"/>
   <testcase name="testGetName" classname="client.junit.ClientTest" time="0.0"/>
   <testcase name="testgetNickname" classname="client.junit.ClientTest" time="0.0"/>
-  <testcase name="testConnectServer" classname="client.junit.ClientTest" time="0.015"/>
+  <testcase name="testConnectServer" classname="client.junit.ClientTest" time="0.012"/>
   <testcase name="testGetClient" classname="client.junit.ClientTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

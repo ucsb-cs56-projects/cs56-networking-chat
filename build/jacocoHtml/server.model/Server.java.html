@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Server.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cs56-networking-chat</a> &gt; <a href="index.source.html" class="el_package">server.model</a> &gt; <span class="el_source">Server.java</span></div><h1>Server.java</h1><pre class="source lang-java linenums">package server.model;
+import server.controller.ServerController;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+
+/*
+ *SPECIAL CODE used by system to indicate the type of message
+ *   MESSAGE FORMAT (everything inside &lt;&gt; is variable)
+ *
+ *1001-regular one-to-one or broadcast message
+ *   [Client@&lt;client-ip&gt;] &lt;sender's nickname&gt;: &lt;message&gt;&amp;&lt;recipient's nickname&gt;:1001
+ *   or
+ *   [Client@&lt;client-ip&gt;] &lt;sender's nickname&gt;(Broadcast): &lt;message&gt;&amp;Broadcast:1001
+ *
+ *1002-let contacts know that someone has logged on
+ *   &lt;nickname of online user&gt;&amp;1002
+ *
+ *1003-let contacts know that someone has logged off
+ *   &lt;nickname of offline user&gt;&amp;1003
+ *
+ *1004-send the client the user's contact list
+ *   &lt;nickname1:nickname2:nickname3(Online):nickname4...&gt;&amp;1004
+ *
+ *1005-user has logged in already
+ *
+ *
+ *1006-tell other clients that someone has changed their nickname
+ *   &lt;oldnickname&gt;:&lt;newnickname&gt;&amp;1006
+ *
+ *1007-tell the client its new nickname
+ *   &lt;newnickname&gt;&amp;1007
+ *
+ *1010-regular message sent to a chatroom
+ *   [Client@&lt;client-ip&gt;] &lt;sender's nickname&gt;: &lt;message&gt;&amp;&lt;room-number&gt;:1010
+ *
+ *1009-client registering a new chatroom with the server
+ *   &amp;1009:participant1:participant2:participant3:...
+ *1008-let contacts know that someone has logged off and disconnected.
+ *   &lt;nickname of offline user&gt;&amp;1003
+ */
+
+/**
+ * Represents the server model
+ * @author Peng Wang, Andro Stotts, Max Hinson, and Bryce Filler, jleeong
+ * @version F16
+ */
+public class Server{
+<span class="fc" id="L58">    private final int port = 8888;</span>
+<span class="fc" id="L59">    private static Server server = null;</span>
+    private boolean isServerStart;
+    private ServerSocket ss;
+
+    private String serverMsg;
+    private String serverMsgPrefix;
+    private String clientMsgPrefix;
+    private String [] clientsOnline;
+    private ArrayList&lt;Client&gt; clients;
+    private ArrayList&lt;User&gt; users;
+    private ArrayList&lt;ChatRoom&gt; rooms;
+
+<span class="fc" id="L71">    private Boolean connect = true;</span>
+
+<span class="fc" id="L73">    private String usage = &quot;------------------------------------------SERVER USAGE-----------------------------------------------\n&quot; +</span>
+	&quot;             We currently have a FAKE users with only the users listed below:         \n&quot; +
+	&quot;                     Username: Peng Wang        Nickname: peng     Password: 123abc      \n&quot; +
+	&quot;                     Username: Andro Stotts     Nickname: andro    Password: abc123      \n&quot; +
+	&quot;                     Username: Phillip Conrad   Nickname: phill    Password: 9876543     \n&quot; +
+	&quot;                     Username: Steve Jobs       Nickname: steven   Password: 2as134      \n&quot; +
+	&quot;                     Username: Bill Gates       Nickname: billy    Password: idu?e3e     \n&quot; +
+	&quot;                     Username: Orange Juice     Nickname: oj       Password: orangejuice \n&quot; +
+	&quot;                     Username: Max Hinson       Nickname: max      Password: password    \n&quot; +
+	&quot;                     Username: Bryce Filler     Nickname: bry      Password: bryce       \n&quot; +
+	&quot;-----------------------------------------------------------------------------------------------------\n&quot; +
+	&quot;      NOTE: PLEASE USE ABOVE ACCOUNTS TO LOGIN OUR CLIENT APPLICATION FOR TESTING PURPOSES           \n&quot; +
+	&quot;-----------------------------------------------------------------------------------------------------\n&quot;;
+	
+    /**
+     * Default constructor
+     */
+<span class="fc" id="L90">    private Server(){</span>
+<span class="fc" id="L91">	clientsOnline = null;</span>
+<span class="fc" id="L92">	isServerStart = false;</span>
+<span class="fc" id="L93">	ss = null;</span>
+<span class="fc" id="L94">	serverMsg = &quot;&quot;;</span>
+<span class="fc" id="L95">	serverMsgPrefix = &quot;[Server Message] &quot;;</span>
+<span class="fc" id="L96">	clients = new ArrayList&lt;Client&gt;();</span>
+<span class="fc" id="L97">	rooms = new ArrayList&lt;ChatRoom&gt;();</span>
+	
+	//make our own fake users
+<span class="fc" id="L100">	users = new ArrayList&lt;User&gt;();</span>
+<span class="fc" id="L101">	User peng = new User(&quot;Peng Wang&quot;, &quot;peng&quot;, &quot;123abc&quot;);		</span>
+<span class="fc" id="L102">	User andro = new User(&quot;Andro Stotts&quot;, &quot;andro&quot;, &quot;abc123&quot;);</span>
+<span class="fc" id="L103">	User philp = new User(&quot;Phillip Conrad&quot;, &quot;phill&quot;, &quot;9876543&quot;);</span>
+<span class="fc" id="L104">	User bill = new User(&quot;Bill Gates&quot;, &quot;billy&quot;, &quot;idu?e3e&quot;);</span>
+<span class="fc" id="L105">	User steve = new User(&quot;Steve Jobs&quot;, &quot;steven&quot;, &quot;2as134&quot;);</span>
+<span class="fc" id="L106">	User orange = new User(&quot;Orange Juice &quot;, &quot;oj&quot;, &quot;orangejuice&quot;);</span>
+<span class="fc" id="L107">	User max = new User(&quot;Max Hinson&quot;, &quot;max&quot;, &quot;password&quot;);</span>
+<span class="fc" id="L108">	User bryce = new User(&quot;Bryce Filler&quot;, &quot;bry&quot;, &quot;bryce&quot;);</span>
+<span class="fc" id="L109">	peng.addToContactList(andro);</span>
+<span class="fc" id="L110">	peng.addToContactList(philp);</span>
+<span class="fc" id="L111">	peng.addToContactList(steve);</span>
+<span class="fc" id="L112">	peng.addToContactList(bill);</span>
+<span class="fc" id="L113">	andro.addToContactList(peng);</span>
+<span class="fc" id="L114">	andro.addToContactList(bill);</span>
+<span class="fc" id="L115">	andro.addToContactList(orange);</span>
+<span class="fc" id="L116">	philp.addToContactList(peng);</span>
+<span class="fc" id="L117">	philp.addToContactList(andro);</span>
+<span class="fc" id="L118">	philp.addToContactList(max);</span>
+<span class="fc" id="L119">	steve.addToContactList(orange);</span>
+<span class="fc" id="L120">	steve.addToContactList(bill);</span>
+<span class="fc" id="L121">	steve.addToContactList(max);</span>
+<span class="fc" id="L122">	max.addToContactList(peng);</span>
+<span class="fc" id="L123">	max.addToContactList(andro);</span>
+<span class="fc" id="L124">	max.addToContactList(philp);</span>
+<span class="fc" id="L125">	max.addToContactList(bill);</span>
+<span class="fc" id="L126">	max.addToContactList(steve);</span>
+<span class="fc" id="L127">	max.addToContactList(orange);</span>
+<span class="fc" id="L128">	max.addToContactList(bryce);</span>
+<span class="fc" id="L129">	bryce.addToContactList(max);</span>
+<span class="fc" id="L130">	users.add(peng);</span>
+<span class="fc" id="L131">	users.add(andro);</span>
+<span class="fc" id="L132">	users.add(philp);</span>
+<span class="fc" id="L133">	users.add(bill);</span>
+<span class="fc" id="L134">	users.add(steve);</span>
+<span class="fc" id="L135">	users.add(orange);</span>
+<span class="fc" id="L136">	users.add(max);</span>
+<span class="fc" id="L137">	users.add(bryce);	</span>
+<span class="fc" id="L138">    }</span>
+	
+    /**
+     * Gets the server object
+     * @return the server object
+     */
+    public static Server getServer(){
+<span class="fc bfc" id="L145" title="All 2 branches covered.">	if(server == null)</span>
+<span class="fc" id="L146">	    server = new Server();</span>
+<span class="fc" id="L147">	return server;</span>
+    }
+	
+    /**
+     * start the server
+     */
+    public void start(){
+	try{
+	    //set the server's port and create a new thread that accepts connections
+<span class="fc" id="L156">	    ss = new ServerSocket(port);</span>
+<span class="fc" id="L157">	    isServerStart = true;</span>
+<span class="fc" id="L158">	    Connection c = new Connection();</span>
+<span class="fc" id="L159">	    new Thread(c).start();</span>
+			
+	    //set the server message
+<span class="fc" id="L162">	    serverMsg = usage + serverMsgPrefix + &quot;Server has been started and waiting for client connections\n&quot;;</span>
+<span class="nc" id="L163">	} catch(IOException ex){</span>
+<span class="nc" id="L164">	    serverMsg = serverMsgPrefix + &quot;Server started failed, please try to use another port\n&quot;;</span>
+<span class="fc" id="L165">	}</span>
+<span class="fc" id="L166">    }</span>
+	
+    /**
+     * close the server
+     */
+    public void close(){
+	try {
+	    //close the server socket and set the server status to be false
+<span class="nc" id="L174">	    ss.close();			</span>
+<span class="nc" id="L175">	    isServerStart = false;</span>
+			
+	    //set the server message
+<span class="nc" id="L178">	    serverMsg = serverMsgPrefix + &quot;Server shut down successfully\n&quot;;</span>
+<span class="nc" id="L179">	} catch (IOException e) {</span>
+<span class="nc" id="L180">	    serverMsg = serverMsgPrefix + &quot;Problem occured when server shutting down\n&quot;;</span>
+<span class="nc" id="L181">	}</span>
+<span class="nc" id="L182">    }</span>
+	
+    /**
+     * Kick the user out of the server
+     * @param userName user's name
+     */
+    public void kick(String userName){
+<span class="nc" id="L189">	String nickname = &quot;&quot;;</span>
+	//find the client that you want to kick
+<span class="nc bnc" id="L191" title="All 2 branches missed.">	for(int i = 0; i &lt; clients.size(); i++){</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">	    if(clients.get(i).getUser().getName().equals(userName)){</span>
+<span class="nc" id="L193">		nickname = clients.get(i).getUser().getNickname();</span>
+		//Removes client login privileges
+<span class="nc" id="L195">		clients.get(i).setIsAuthorized(false);</span>
+		try {
+		//closes the socket
+<span class="nc" id="L198">		    clients.get(i).s.close();</span>
+<span class="nc" id="L199">		} catch (IOException e) {</span>
+<span class="nc" id="L200">		    serverMsg = serverMsgPrefix + &quot;Kicking user failed\n&quot;;</span>
+<span class="nc" id="L201">		}</span>
+<span class="nc" id="L202">		serverMsg = serverMsgPrefix + userName + &quot; has been kicked\n&quot;;</span>
+	    }
+	}
+	//goes through each contact and removes deauthorized account from their contact lists
+<span class="nc bnc" id="L206" title="All 2 branches missed.">	for(Client c : clients){</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">	    if(!c.getUser().getNickname().equals(nickname))</span>
+<span class="nc" id="L208">		c.sendMsg(nickname + &quot;&amp;1003&quot;);</span>
+<span class="nc" id="L209">	}</span>
+<span class="nc" id="L210">    }</span>
+	
+    /**
+     * Get server status
+     * @return true when server is on, otherwise false
+     */
+    public boolean getServerStatus(){
+<span class="fc" id="L217">	return isServerStart;</span>
+    }
+	
+    /**
+     * Gets the server message
+     * @return server message
+     */
+    public String getServerMsg(){
+<span class="fc" id="L225">	return serverMsg;</span>
+    }
+
+    /**
+     * inner class Client only provide service to the outer class
+     * @author Peng Wang, Andro Stotts, Max Hinson, Bryce Filler, jleeong
+     * @version F16
+     */
+    class Client implements Runnable{
+	private Socket s;
+	private SocketAddress ip;
+	private boolean isClientConnect;
+<span class="nc" id="L237">	private boolean isAuthorized = false;</span>
+<span class="nc" id="L238">	private DataInputStream dis = null;</span>
+<span class="nc" id="L239">	private DataOutputStream dos = null;</span>
+<span class="nc" id="L240">	private ServerController controller = ServerController.getController();</span>
+	private User currentUser;
+	/**
+	 * Constructor initialize data for a client
+	 * @param s client's socket
+	 */
+<span class="nc" id="L246">	public Client(Socket s){</span>
+	    //save the client socket
+<span class="nc" id="L248">	    this.s = s;</span>
+			
+	    //get the client ip address
+<span class="nc" id="L251">	    ip = s.getRemoteSocketAddress();</span>
+
+	    try {
+		//get input and output stream
+<span class="nc" id="L255">		this.dis = new DataInputStream(s.getInputStream());</span>
+<span class="nc" id="L256">		this.dos = new DataOutputStream(s.getOutputStream());</span>
+				
+		//set the connection status to be true
+<span class="nc" id="L259">		this.isClientConnect = true;</span>
+				
+		//set the connection message
+<span class="nc" id="L262">		controller.displayMsg(serverMsgPrefix + &quot;A client has connected from IP: &quot; + ip + '\n');</span>
+<span class="nc" id="L263">	    } catch (IOException e) {</span>
+<span class="nc" id="L264">		e.printStackTrace();</span>
+<span class="nc" id="L265">	    } </span>
+<span class="nc" id="L266">	}</span>
+		
+	/**
+	 * parse message send by the client
+	 * @param s message send by the client
+	 * @return array of strings that contains message, contact person, and special code
+	 */
+	public String[] parseMsg(String s){
+<span class="nc" id="L274">	    int index = s.lastIndexOf(&quot;&amp;&quot;);</span>
+<span class="nc" id="L275">	    String msg = s.substring(0,index);</span>
+<span class="nc" id="L276">	    String[] params = s.substring(index+1, s.length()).split(&quot;:&quot;);</span>
+<span class="nc" id="L277">	    ArrayList&lt;String&gt; parsed = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L278">	    parsed.add(msg);</span>
+<span class="nc" id="L279">	    parsed.addAll(Arrays.asList(params));</span>
+<span class="nc" id="L280">	    return parsed.toArray(new String[parsed.size()]);</span>
+	}
+		
+	/**
+	 * Update user list
+	 */
+	public void updateWhoIsOnline(){
+	    //update who's online (server side)
+<span class="nc" id="L288">	    clientsOnline = new String[clients.size()];</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">	    for(int i=0; i &lt; clients.size();i++){</span>
+<span class="nc" id="L290">		clientsOnline[i] = clients.get(i).getUser().getName();</span>
+	    }
+<span class="nc" id="L292">	    controller.updateList(clientsOnline);</span>
+<span class="nc" id="L293">	}</span>
+		
+	/**
+	 * broadcast message to all users who are current online
+	 * @param strs message after parsing
+	 */
+	public void broadcast2all(String[] strs){
+<span class="nc bnc" id="L300" title="All 2 branches missed.">	    for(Client c : clients){</span>
+<span class="nc" id="L301">		c.sendMsg(strs[0] + &quot;&amp;&quot; + strs[2]);</span>
+<span class="nc" id="L302">	    }</span>
+<span class="nc" id="L303">	}</span>
+		
+	/**
+	 * broadcast message to one particular person who is currently online
+	 * @param msg The instant message to be delivered
+	 * @param rec The nickname of the User to send to
+	 * @author jleeong
+	 * @version F16
+	 */
+	public void broadcast2one(String msg, String rec){
+<span class="nc" id="L313">	    boolean isOnline = false;</span>
+<span class="nc" id="L314">	    this.sendMsg(msg + &quot;&amp;1001&quot;);</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">	    for(Client c : clients){</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">		if(rec.equals(c.getUser().getNickname())){</span>
+<span class="nc" id="L317">		    c.sendMsg(msg + &quot;&amp;1001&quot;);</span>
+<span class="nc" id="L318">		    isOnline = true;</span>
+<span class="nc" id="L319">		    break;</span>
+		}
+<span class="nc" id="L321">	    }</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">	    if(!isOnline){</span>
+<span class="nc" id="L323">		this.sendMsg(&quot;***THE USER YOU ARE TRYING TO MESSAGE IS NOT ONLINE***&amp;1001&quot;);</span>
+	    }	
+<span class="nc" id="L325">	}</span>
+	
+	/**
+	* broadcast message to all users in a single chatroom
+	* @param msg The instant message to be sent
+	* @param rn A double representing the roomnumber of the specified chatroom
+	*@author jleeong
+	*@version F16
+	*/
+	public void broadcast2room(String msg, double rn){
+<span class="nc" id="L335">		int rIndex = rooms.indexOf(new ChatRoom(rn));</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">		if(rIndex != -1){</span>
+<span class="nc" id="L337">			ChatRoom cr = rooms.get(rIndex);</span>
+<span class="nc" id="L338">			Set&lt;User&gt; participants = cr.getParticipants();</span>
+<span class="nc bnc" id="L339" title="All 2 branches missed.">			for(Client c : clients){</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">				if(participants.contains(c.getUser()))</span>
+<span class="nc" id="L341">					c.sendMsg(msg+&quot;&amp;1001&quot;);</span>
+<span class="nc" id="L342">			}</span>
+<span class="nc" id="L343">		}</span>
+		else{
+<span class="nc" id="L345">			this.sendMsg(&quot;***THE ROOM YOU ARE TRYING TO MESSAGE DOES NOT EXIST***&amp;1001&quot;);</span>
+		}
+<span class="nc" id="L347">	}</span>
+
+	/**
+	 * change a user's nickname
+	 * @param strs message after parsing
+	 */
+	public void changeNickname(String[] strs){
+	    //input string format (everything inside &lt;&gt; is variable):
+	    //&lt;username&gt;(NAME_CHANGE): &lt;newnickname&gt;
+
+	    //split input to get user's data
+<span class="nc" id="L358">	    String[] strings1 = strs[0].split(&quot;\\(&quot;);</span>
+<span class="nc" id="L359">	    String[] strings2 = strs[0].split(&quot;: &quot;);</span>
+<span class="nc" id="L360">	    String username = strings1[0];</span>
+<span class="nc" id="L361">	    String oldNickname = &quot;&quot;;</span>
+<span class="nc" id="L362">	    String newNickname = strings2[1];</span>
+
+	    //search the server's client list for the one that is changing its nickname
+<span class="nc bnc" id="L365" title="All 2 branches missed.">	    for(Client c : clients){</span>
+<span class="nc bnc" id="L366" title="All 2 branches missed.">		if(c.getUser().getName().equals(username))</span>
+		    {
+<span class="nc" id="L368">			oldNickname = c.getUser().getNickname();</span>
+
+			//update server's users and send message to client to change its nickname 
+<span class="nc bnc" id="L371" title="All 2 branches missed.">			if (c.sendMsg(newNickname + &quot;&amp;1007&quot;) == 0){</span>
+<span class="nc" id="L372">			c.getUser().setNickname(newNickname);</span>
+			//display messages on the server and client about the nickname change
+<span class="nc" id="L374">			controller.displayMsg(serverMsgPrefix + username + &quot;'s nickname has been changed from &quot; + oldNickname + &quot; to &quot; + newNickname);</span>
+<span class="nc" id="L375">			c.sendMsg(&quot;Your nickname has been changed from &quot; + oldNickname + &quot; to &quot; + newNickname + &quot;&amp;1001&quot;);</span>
+            }
+			else
+<span class="nc" id="L378">			c.sendMsg(&quot;Nickname change failed&quot; + &quot;&amp;1001&quot;);</span>
+<span class="nc" id="L379">			break;</span>
+		    }
+<span class="nc" id="L381">	    }</span>
+
+	    //notify all other contacts that the user has changed their nickname
+<span class="nc bnc" id="L384" title="All 2 branches missed.">	    for(Client c : clients)</span>
+<span class="nc bnc" id="L385" title="All 2 branches missed.">		if(!c.getUser().getName().equals(username))</span>
+<span class="nc" id="L386">		    c.sendMsg(oldNickname + &quot;:&quot; + newNickname + &quot;&amp;1006&quot;);</span>
+
+	    //update the user's new nickname in the users
+<span class="nc bnc" id="L389" title="All 2 branches missed.">	    for(User u : users)</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">		if(u.getName().equals(username))</span>
+<span class="nc" id="L391">		    u.setNickname(newNickname);</span>
+<span class="nc" id="L392">	}</span>
+		
+	/**
+	 * send message to the client
+	   @return returns 1 or 0 depending upon whether or not an exception has been thrown.
+	 * @param msg message to send
+	 */
+	public int sendMsg(String msg){
+	    try {
+<span class="nc" id="L401">		dos.writeUTF(msg);</span>
+<span class="nc" id="L402">	        return 0;			</span>
+<span class="nc" id="L403">	    } catch (IOException e) {</span>
+<span class="nc" id="L404">		controller.displayMsg(serverMsgPrefix + &quot; server send message to the client failed\n&quot;);</span>
+<span class="nc" id="L405">	        return 1;</span>
+	    }
+	}
+	
+	/**Method to register a new chatroom with the server. Receives a registerChatRoom message from the Client, creates and stores
+	* a new instance of a ChatRoom containing all the participants, assigns a room number identifying the room, and sends the 
+	* room number back to the client thus completing the registration process.
+	*@param participants is a List containing the nicknames of all Users who will participate in the chatroom, with first element equal to &quot;1009&quot;
+	*@author jleeong
+	*@version F16
+	*/
+	public void registerChatRoom(List&lt;String&gt; participants){
+		//for (String parts : participants){System.out.println(parts);}
+<span class="nc" id="L418">		controller.displayMsg(&quot;registering new ChatRoom...&quot;);</span>
+<span class="nc" id="L419">		ArrayList&lt;String&gt; pnames = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L420">		pnames.addAll(participants);</span>
+<span class="nc" id="L421">		HashSet&lt;User&gt; p = new HashSet&lt;User&gt;();</span>
+<span class="nc bnc" id="L422" title="All 2 branches missed.">		for(User u : users){</span>
+<span class="nc bnc" id="L423" title="All 2 branches missed.">			if(pnames.contains(u.getNickname()))</span>
+<span class="nc" id="L424">				p.add(users.get(users.indexOf(u)));</span>
+<span class="nc" id="L425">		}</span>
+<span class="nc" id="L426">		ChatRoom newRoom = new ChatRoom(p);</span>
+<span class="nc" id="L427">		controller.displayMsg(&quot;ChatRoom created...&quot;);</span>
+<span class="nc" id="L428">		newRoom.setRoomNumber(Math.random());</span>
+<span class="nc bnc" id="L429" title="All 2 branches missed.">		while(rooms.contains(newRoom)){</span>
+<span class="nc" id="L430">			newRoom.setRoomNumber(Math.random());</span>
+		}
+<span class="nc" id="L432">		rooms.add(newRoom);</span>
+<span class="nc" id="L433">		controller.displayMsg(&quot;new ChatRoom registered at: &quot;+newRoom.getRoomNumber()+&quot;\n&quot;);</span>
+<span class="nc" id="L434">		this.sendMsg(newRoom.getRoomNumber()+&quot;&amp;1009&quot;);</span>
+<span class="nc" id="L435">	}	</span>
+	/**
+	 * Gets the contact list for the current client and appends &quot;(Online)&quot; to those users
+	 * that are online
+	 * @author jleeong
+	 * @version F16
+	 */
+	public String getContacts(User u){
+<span class="nc" id="L443">		String list=&quot;&quot;;</span>
+<span class="nc bnc" id="L444" title="All 2 branches missed.">	    	for(User contact : u.getContactList()){</span>
+<span class="nc" id="L445">			list += contact.getNickname();</span>
+<span class="nc bnc" id="L446" title="All 2 branches missed.">			if(contact.isOnline()) list += &quot;(Online)&quot;;</span>
+<span class="nc" id="L447">			list += &quot;:&quot;;</span>
+<span class="nc" id="L448">		}</span>
+<span class="nc" id="L449">		return list;</span>
+	}
+		
+	/**
+ 	* Gets the current logged in User on the connected client
+ 	* @author jleeong
+ 	* @version F16
+	*/ 
+	public User getUser(){
+<span class="nc" id="L458">		return currentUser;</span>
+	}
+	/**
+	 * Sets the authorization of the cilent
+	 * @param b true when client is authorized, otherwise false
+	 */
+	public void setIsAuthorized(boolean b){
+<span class="nc" id="L465">	    isAuthorized = b;</span>
+<span class="nc" id="L466">	}</span>
+
+	/**
+	 * Waits for a message, and broadcasts it.
+	 * On failure it removes client from list and it closes all streams
+	 */
+	public void run() {
+	try{
+		//when the client is not authorized, check the identity 
+		//if the identity checking success, then start to broadcasting message
+		//if the identity checking failed, return a string with nothing and throws an exception
+<span class="nc bnc" id="L477" title="All 2 branches missed.">		while(!isAuthorized){</span>
+			//read the username and password
+<span class="nc" id="L479">			String identity = dis.readUTF();</span>
+<span class="nc" id="L480">			String[] identities = identity.split(&quot;&amp;&quot;);</span>
+<span class="nc" id="L481">			controller.displayMsg(serverMsgPrefix + &quot;User trying to login with Username: &quot; </span>
+				+ identities[0] + &quot; Password: &quot; + identities[1] + '\n');
+<span class="nc bnc" id="L483" title="All 2 branches missed.">			if(identities[0].isEmpty()) throw new BlankNameException();</span>
+			//parse through and check if user is logged in already
+			//and check password
+<span class="nc bnc" id="L486" title="All 2 branches missed.">			for(User u : users){</span>
+<span class="nc bnc" id="L487" title="All 2 branches missed.">				if(u.getName().equals(identities[0])){</span>
+<span class="nc bnc" id="L488" title="All 2 branches missed.">					if(u.isOnline()) throw new UserExistException();</span>
+<span class="nc bnc" id="L489" title="All 2 branches missed.">					else if(u.getPassword().equals(identities[1])){</span>
+						//send the client its contacts list
+						//
+<span class="nc" id="L492">						this.sendMsg(getContacts(u)+&quot;&amp;1004&quot;);</span>
+						//send the client its nickname
+<span class="nc" id="L494">						this.sendMsg(u.getNickname()+&quot;&amp;1007&quot;);</span>
+<span class="nc" id="L495">						isAuthorized=true;</span>
+<span class="nc" id="L496">						currentUser=u;</span>
+<span class="nc" id="L497">						currentUser.setOnline(true);</span>
+					}
+				}
+<span class="nc" id="L500">			}</span>
+			//if authentication failure
+<span class="nc bnc" id="L502" title="All 2 branches missed.">			if(!isAuthorized){</span>
+<span class="nc" id="L503">				controller.displayMsg(serverMsgPrefix+&quot;User login failed\n&quot;);</span>
+<span class="nc" id="L504">				this.sendMsg(&quot;Wrong username or password&quot;);</span>
+<span class="nc" id="L505">				throw new Exception();</span>
+			}
+<span class="nc" id="L507">		}</span>
+
+		///broadcast online notification when a client is online and successfully login
+<span class="nc" id="L510">		controller.displayMsg(serverMsgPrefix + &quot;User login success, &quot; + currentUser.getName()+</span>
+<span class="nc" id="L511">			&quot; (&quot; + currentUser.getNickname() + &quot;) &quot;  + &quot; is online now!\n&quot;);</span>
+<span class="nc" id="L512">		controller.displayMsg(serverMsgPrefix + &quot;TOTAL # OF CLIENTS: &quot; + clients.size() + '\n');</span>
+<span class="nc bnc" id="L513" title="All 2 branches missed.">            	for(Client c : clients) {</span>
+<span class="nc" id="L514">                	c.sendMsg(&quot;TOTAL # OF CLIENTS: &quot; + clients.size() + &quot;&amp;1001&quot;);</span>
+<span class="nc" id="L515">            	}</span>
+                //update online list (server side)
+<span class="nc" id="L517">		updateWhoIsOnline();</span>
+					
+		//send online notification to the clients
+<span class="nc bnc" id="L520" title="All 2 branches missed.">		for(int i = 0; i &lt; clients.size(); i++){</span>
+<span class="nc" id="L521">			Client c = clients.get(i);</span>
+<span class="nc bnc" id="L522" title="All 2 branches missed.">			if(!c.getUser().getName().equals(currentUser.getNickname()))</span>
+<span class="nc" id="L523">			    c.sendMsg(currentUser.getNickname() + &quot;&amp;1002&quot;);</span>
+		}
+	
+				
+<span class="nc bnc" id="L527" title="All 6 branches missed.">		while(isClientConnect &amp;&amp; isServerStart &amp;&amp; isAuthorized){</span>
+			//readUTF always waiting unless there is something has been inputed
+<span class="nc" id="L529">			String msg = dis.readUTF();</span>
+<span class="nc bnc" id="L530" title="All 2 branches missed.">			if (!isServerStart)</span>
+<span class="nc" id="L531">				throw new Exception();</span>
+<span class="nc" id="L532">			clientMsgPrefix = &quot;[Client@&quot;+ip.toString()+&quot; ]&quot;;</span>
+<span class="nc" id="L533">			controller.displayMsg(clientMsgPrefix + msg + '\n');</span>
+<span class="nc" id="L534">			String[] strs = parseMsg(msg);</span>
+						
+			//client going offline
+<span class="nc bnc" id="L537" title="All 2 branches missed.">			if(strs[2].equals(&quot;1003&quot;)){</span>
+<span class="nc" id="L538">				controller.displayMsg(serverMsgPrefix + currentUser.getName() + &quot; (&quot; </span>
+<span class="nc" id="L539">					+currentUser.getNickname() + </span>
+					&quot;) is trying to logoff and disconnect with the server\n&quot;);
+<span class="nc" id="L541">				broadcast2all(strs);</span>
+<span class="nc" id="L542">				currentUser.setOnline(false);</span>
+			}
+			
+			//client chatting in chatroom
+<span class="nc bnc" id="L546" title="All 2 branches missed.">			if(strs[2].equals(&quot;1010&quot;)){</span>
+<span class="nc" id="L547">				broadcast2room(strs[0], Double.parseDouble(strs[1]));</span>
+			}
+
+			//client registering a new chatroom
+<span class="nc bnc" id="L551" title="All 2 branches missed.">			if(strs[1].equals(&quot;1009&quot;)){</span>
+<span class="nc" id="L552">				registerChatRoom(Arrays.asList(strs));	</span>
+			}		
+			//cient offline and window will auto change to the status of waiting for new login 
+<span class="nc bnc" id="L555" title="All 2 branches missed.">			if(strs[2].equals(&quot;1008&quot;)){</span>
+<span class="nc" id="L556">			    connect = false;</span>
+<span class="nc" id="L557">			    controller.displayMsg(serverMsgPrefix + currentUser.getName() + &quot; (&quot; </span>
+<span class="nc" id="L558">						  +currentUser.getNickname() + </span>
+						  &quot;) has successfully logoffed and disconnected with the server\n&quot;);
+<span class="nc" id="L560">			    broadcast2all(strs);</span>
+<span class="nc" id="L561">			    currentUser.setOnline(false);</span>
+			    
+			    
+<span class="nc" id="L564">			    clients.remove(this);</span>
+<span class="nc" id="L565">			    controller.displayMsg(serverMsgPrefix +&quot;Server is waiting for a new client connection\n&quot;);</span>
+<span class="nc bnc" id="L566" title="All 2 branches missed.">			    for(Client c : clients){</span>
+<span class="nc bnc" id="L567" title="All 2 branches missed.">				if(!c.getUser().getNickname().equals(currentUser.getNickname()))</span>
+<span class="nc" id="L568">				    c.sendMsg(currentUser.getNickname() + &quot;&amp;1003&quot;);</span>
+<span class="nc" id="L569">			    }</span>
+			    
+<span class="nc" id="L571">			    updateWhoIsOnline();</span>
+			}
+			//client doing regular chatting
+			else{
+			//if the client doing broadcasting
+<span class="nc bnc" id="L576" title="All 2 branches missed.">			if(strs[1].equals(&quot;Broadcast&quot;)){</span>
+<span class="nc" id="L577">				broadcast2all(strs);</span>
+			}
+			//the user is requesting a nickname change
+<span class="nc bnc" id="L580" title="All 2 branches missed.">			else if(strs[1].equals(&quot;NAME_CHANGE&quot;)){</span>
+<span class="nc" id="L581">				changeNickname(strs);</span>
+			}
+			//the user has deleted someone from their contact list
+<span class="nc bnc" id="L584" title="All 2 branches missed.">			else if(strs[1].equals(&quot;DELETE&quot;)){</span>
+<span class="nc" id="L585">				currentUser.deleteContact(strs[2]);</span>
+			}
+			else{
+<span class="nc" id="L588">				broadcast2one(strs[0],strs[1]);					</span>
+			}
+			}			
+<span class="nc" id="L591">		}	</span>
+
+	}
+<span class="nc" id="L594">	catch(UserExistException uee){</span>
+<span class="nc" id="L595">		this.sendMsg(&quot;This user has logged in already&quot;);</span>
+<span class="nc" id="L596">		clients.remove(this);</span>
+<span class="nc" id="L597">		controller.displayMsg(serverMsgPrefix + &quot;User has logged in already!\n&quot;);</span>
+	}
+<span class="nc" id="L599">	catch(BlankNameException bl){</span>
+<span class="nc" id="L600">		this.sendMsg(&quot;No name was entered&quot;);</span>
+<span class="nc" id="L601">		clients.remove(this);</span>
+<span class="nc" id="L602">		controller.displayMsg(serverMsgPrefix + &quot;User Login error!\n&quot;);	</span>
+
+	}
+<span class="nc" id="L605">	catch(Exception e){</span>
+	//remove the current client from the list on server
+<span class="nc bnc" id="L607" title="All 2 branches missed.">	if(!isServerStart)</span>
+<span class="nc" id="L608">		clients.clear();</span>
+<span class="nc bnc" id="L609" title="All 2 branches missed.">	if(connect == true){</span>
+	}
+	else{
+<span class="nc" id="L612">		clients.remove(this);</span>
+<span class="nc" id="L613">		controller.displayMsg(serverMsgPrefix + currentUser.getName() + &quot; (&quot; + currentUser.getNickname() + &quot;) has successfully disconnected\n&quot;);</span>
+<span class="nc bnc" id="L614" title="All 2 branches missed.">		for(Client c : clients){</span>
+<span class="nc bnc" id="L615" title="All 2 branches missed.">			if(!c.getUser().getNickname().equals(currentUser.getNickname()))</span>
+<span class="nc" id="L616">				c.sendMsg(currentUser.getNickname() + &quot;&amp;1003&quot;);</span>
+<span class="nc" id="L617">		}</span>
+	}
+<span class="nc" id="L619">	updateWhoIsOnline();</span>
+				
+	}
+	finally{
+		try {
+<span class="nc bnc" id="L624" title="All 2 branches missed.">		    if(dos != null)</span>
+<span class="nc" id="L625">			dos.close();</span>
+<span class="nc bnc" id="L626" title="All 2 branches missed.">		    if(dis != null)</span>
+<span class="nc" id="L627">			dis.close();</span>
+<span class="nc bnc" id="L628" title="All 2 branches missed.">		    if(s != null)</span>
+<span class="nc" id="L629">			s.close();	</span>
+	
+<span class="nc" id="L631">		} catch (IOException e1) {</span>
+<span class="nc" id="L632">		    controller.displayMsg(&quot;Server is down\n&quot;);</span>
+<span class="nc" id="L633">		}</span>
+	}
+<span class="nc" id="L635">	}</span>
+}
+	
+	
+    /**
+     * Connection class is used for listening new client connections
+     * on a separate thread
+     * @author Peng Wang with Andro Stotts
+     * @version 0.4
+     */
+<span class="fc" id="L645">    class Connection implements Runnable{</span>
+	public void run() {
+<span class="pc bpc" id="L647" title="1 of 2 branches missed.">	    while(isServerStart){</span>
+		try {
+<span class="nc" id="L649">		    Socket s = ss.accept();</span>
+<span class="nc" id="L650">		    Client client = new Client(s);</span>
+<span class="nc" id="L651">		    clients.add(client);</span>
+<span class="nc" id="L652">		    new Thread(client).start();</span>
+<span class="nc" id="L653">		} catch (IOException e) {</span>
+<span class="nc" id="L654">		    serverMsg = &quot;Connection failed\n&quot;;</span>
+<span class="nc" id="L655">		}</span>
+	    }
+<span class="nc" id="L657">	}</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>

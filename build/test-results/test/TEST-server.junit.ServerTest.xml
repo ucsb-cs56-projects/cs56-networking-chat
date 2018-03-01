@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="server.junit.ServerTest" tests="5" skipped="0" failures="4" errors="0" timestamp="2018-03-01T04:28:14" hostname="Chis-MBP" time="0.036">
+<testsuite name="server.junit.ServerTest" tests="5" skipped="0" failures="4" errors="0" timestamp="2018-03-01T04:49:17" hostname="Chis-MBP" time="0.045">
   <properties/>
-  <testcase name="testClose" classname="server.junit.ServerTest" time="0.008">
+  <testcase name="testClose" classname="server.junit.ServerTest" time="0.007">
     <failure message="java.lang.NullPointerException" type="java.lang.NullPointerException">java.lang.NullPointerException
 	at server.model.Server.close(Server.java:174)
 	at server.junit.ServerTest.testClose(ServerTest.java:41)
@@ -53,7 +53,7 @@
 	at java.base/java.lang.Thread.run(Thread.java:844)
 </failure>
   </testcase>
-  <testcase name="testStart" classname="server.junit.ServerTest" time="0.025">
+  <testcase name="testStart" classname="server.junit.ServerTest" time="0.036">
     <failure message="org.junit.ComparisonFailure: expected:&lt;...rrently have a FAKE [database with only the users listed below:]     &#10;              ...&gt; but was:&lt;...rrently have a FAKE [users with only the users listed below:    ]     &#10;              ...&gt;" type="org.junit.ComparisonFailure">org.junit.ComparisonFailure: expected:&lt;...rrently have a FAKE [database with only the users listed below:]     
               ...&gt; but was:&lt;...rrently have a FAKE [users with only the users listed below:    ]     
               ...&gt;

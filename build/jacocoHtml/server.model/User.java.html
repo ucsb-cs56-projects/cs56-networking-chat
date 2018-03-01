@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">cs56-networking-chat</a> &gt; <a href="index.source.html" class="el_package">server.model</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package server.model;
+
+import java.util.ArrayList;
+
+/**
+ * User class represent a regular user
+ * @author Peng Wang, Andro Stotts, Max Hinson, and Bryce Filler
+ * @version 0.5
+ */
+public class User {
+    private String name;
+    private String nickname;
+    private String password;
+    private ArrayList&lt;User&gt; contactList;
+	private boolean isOnline;	
+    /**
+     * Constructor that takes username and password
+     * @param name
+     * @param nickname
+     * @param password
+     */
+<span class="fc" id="L22">    public User(String name, String nickname, String password){</span>
+<span class="fc" id="L23">	isOnline=false;</span>
+<span class="fc" id="L24">	setName(name);</span>
+<span class="fc" id="L25">	setNickname(nickname);</span>
+<span class="fc" id="L26">	setPassword(password);</span>
+<span class="fc" id="L27">	contactList = new ArrayList&lt;User&gt;();</span>
+<span class="fc" id="L28">    }</span>
+	
+    /**
+     * Sets contact list
+     * @param list contact list
+     */
+    public void setContactList(ArrayList&lt;User&gt; list){
+<span class="nc" id="L35">	contactList = list;</span>
+<span class="nc" id="L36">    }</span>
+	
+    /**
+     * Add user to the contact list
+     * @param u a User object
+     */
+    public void addToContactList(User u){
+<span class="fc" id="L43">	contactList.add(u);</span>
+<span class="fc" id="L44">    }</span>
+	
+    /**
+     * Gets the contact list
+     * @return contact list
+     */
+    public ArrayList&lt;User&gt; getContactList(){
+<span class="fc" id="L51">	return contactList;</span>
+    }
+	
+    /**
+     * Gets the name of the user
+     * @return user's name
+     */
+    public String getName() {
+<span class="fc" id="L59">	return name;</span>
+    }
+	
+    /**
+     * Sets the user's name
+     * @param name user's name
+     */
+    public void setName(String name) {
+<span class="fc" id="L67">	this.name = name;</span>
+<span class="fc" id="L68">    }</span>
+	
+    /**
+     * Gets the user's nickname
+     * @return user's nickname
+     */
+    public String getNickname() {
+<span class="fc" id="L75">	return nickname;</span>
+    }
+	
+    /**
+     * Sets the user's nickname
+     * @param nickname user's new nickname
+     */
+    public void setNickname(String nickname) {
+<span class="fc" id="L83">	this.nickname = nickname;</span>
+<span class="fc" id="L84">    }</span>
+
+    /**
+     * Gets the user's password
+     * @return user's password
+     */
+    public String getPassword() {
+<span class="fc" id="L91">	return password;</span>
+    }
+	
+    /**
+     * Sets the user's password
+     * @param password user's passwrod
+     */
+    public void setPassword(String password) {
+<span class="fc" id="L99">	this.password = password;</span>
+<span class="fc" id="L100">    }</span>
+	/**
+ 	* method to delete contact based on nickname
+ 	* @param nickname the nickname to be deleted
+ 	*/
+ 
+	public void deleteContact(String nickname){
+<span class="nc bnc" id="L107" title="All 2 branches missed.">		for(int i=0; i&lt;contactList.size(); i++){</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">			if(contactList.get(i).getNickname().equals(nickname))</span>
+<span class="nc" id="L109">				contactList.remove(i);</span>
+		}
+<span class="nc" id="L111">	}</span>
+	
+	/**
+	 * returns online status of the User
+	 * @author jleeong
+	 */
+	public boolean isOnline(){
+<span class="nc" id="L118">		return isOnline;</span>
+	}
+
+	/**
+ 	* sets online status
+ 	* @param status the new online status of current user
+ 	* @author jleeong
+ 	*/
+	public void setOnline(boolean status){
+<span class="nc" id="L127">		isOnline=status;</span>
+<span class="nc" id="L128">	}</span>
+
+	/**Overriden .equals() inherited from Object. Will evaluate to true if the 'name' matches on both objects
+	*@param o Object to be compared to
+	*@author jleeong
+	*@version F16	
+	*/
+	@Override
+	public boolean equals(Object o){
+<span class="nc bnc" id="L137" title="All 2 branches missed.">	if(o==null) return false;</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">		if(o instanceof User){</span>
+<span class="nc" id="L139">			User u = (User) o;</span>
+<span class="nc" id="L140">			return name.equals(u.getName());</span>
+		}
+<span class="nc" id="L142">		else return false;	</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.0.201801022044</span></div></body></html>
