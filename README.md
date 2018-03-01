@@ -19,10 +19,8 @@ YES | mastergberry | ericchen94 | A chat application that uses a client and a se
  gradle build
  ```
 
-* The server needs to be started first (including pressing "Start server" on the server GUI window).   <del>The following ant target will accomplish that:
-
-
-<del>$ ant server  
+* The server needs to be started first (including pressing "Start server" on the server GUI window).   <del>The following ant target will accomplish that:  
+ <del>$ ant server  
  
  You should rather do
  ```
