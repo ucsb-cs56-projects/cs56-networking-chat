@@ -14,12 +14,12 @@ YES | mastergberry | ericchen94 | A chat application that uses a client and a se
 ```
 
 ## Basic Usage (updated W18)
-In order to build the environment first, you need 
+* In order to build the environment first, you need 
  ```
  gradle build
  ```
 
-The server needs to be started first (including pressing "Start server" on the server GUI window).   <del>The following ant target will accomplish that:
+* The server needs to be started first (including pressing "Start server" on the server GUI window).   <del>The following ant target will accomplish that:
 
 
 <del>$ ant server  
@@ -29,7 +29,7 @@ The server needs to be started first (including pressing "Start server" on the s
  gradle server
  ```
 
-To start a client use:   
+* To start a client use:   
 <del>$ ant client
 
 You should rather do
@@ -37,22 +37,22 @@ You should rather do
 $ gradle client
 ```
 
-In order to create server jar
+* In order to create server jar
 ```
 $ gradle jar
 ```
-and then create client jar
+* and then create client jar
 ```
 $ gradle clientJar
 ```
-In order to use jacocoTestReport
+* In order to use jacocoTestReport
 ```
 $ gradle jacocoTestReport
 ```
 Then go to build/jacocoHtml/index.html for results
 
 
-For more help on tasks, you can 
+* For more help on tasks, you can 
 ```
 $ gradle tasks
 ```
