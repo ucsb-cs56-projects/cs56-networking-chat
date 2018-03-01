@@ -4,7 +4,8 @@ This is a basic "chatroom" program--a barebones implementation of something simi
 
 The code is divided into MVC (model, view controller) portions. It uses Swing GUIs, Threads, Sockets, and the client has code the illustrates playing sounds.
 
-The system is updated by GRADLE, the instruction is as following.(W18)
+The system is updated by GRADLE, the instruction is as following.(W18)  
+javadoc link:   https://chiisalrdytaken.github.io/cs56-networking-chat/javadoc
 
 project history
 ===============
