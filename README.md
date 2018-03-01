@@ -4,6 +4,8 @@ This is a basic "chatroom" program--a barebones implementation of something simi
 
 The code is divided into MVC (model, view controller) portions. It uses Swing GUIs, Threads, Sockets, and the client has code the illustrates playing sounds.
 
+The system is updated by GRADLE, the instruction is as following.(W18)
+
 project history
 ===============
 ```
@@ -11,18 +13,48 @@ YES | mastergberry | ericchen94 | A chat application that uses a client and a se
  W14 | jcneally 4pm | ericchen94 | A chat application that uses a client and a server
 ```
 
-## Basic Usage
+## Basic Usage (updated W18)
+In order to build the environment first, you need 
+ ```
+ gradle build
+ ```
 
-The server needs to be started first (including pressing "Start server" on the server GUI window).   The following ant target will accomplish that:
+The server needs to be started first (including pressing "Start server" on the server GUI window).   <del>The following ant target will accomplish that:
 
+
+<del>$ ant server  
+ 
+ You should rather do
+ ```
+ gradle server
+ ```
+
+To start a client use:   
+<del>$ ant client
+
+You should rather do
 ```
-$ ant server
+$ gradle client
 ```
 
-To start a client use: 
-
+In order to create server jar
 ```
-$ ant client
+$ gradle jar
+```
+and then create client jar
+```
+$ gradle clientJar
+```
+In order to use jacocoTestReport
+```
+$ gradle jacocoTestReport
+```
+Then go to build/jacocoHtml/index.html for results
+
+
+For more help on tasks, you can 
+```
+$ gradle tasks
 ```
 
 If the client is running on the same machine as the server, you can just use 127.0.0.1 (the standard IP address that means "this same machine", sometimes also called the 'loopback' address) as the IP address.
@@ -93,10 +125,6 @@ The first version of this code pre-dates the use of github for CS56 projects.   
 * Send to offline user with an error displayed to the sender
 * Able to delete a contact from the ClientWindow for a specific User and have that change be persistent in the Server
 
-### Bugs
-* The Chatroom implementation leaves much to desire. it is very basic and only allows the creator of the chatroom to actually talk in the chatroom. Furthermore there can be improvements to the list of Chatrooms(i.e. names of chatrooms). Furthermore, sending to the chatroom displays a user offline error even if the message goes through.
-* The ChangeNickname button is not working due to refactor of online status of users
-* Using the delete user button for a chat room does not properly work and may cause errors
 
 ### Notes about project
 * Currently the server and client communicate with a set of service codes that convey information about the message being sent. This set of codes is somewhat inconsistently implemented throughout the project and must be re-evaluated and documented. See Issue 51
