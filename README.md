@@ -43,7 +43,7 @@ $ gradle build
 ```
 $ gradle server
 ```
-* To start a server
+* To start a client
 ```
 $ gradle client
 ```
