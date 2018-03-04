@@ -4,7 +4,7 @@ This is a basic "chatroom" program--a barebones implementation of something simi
 
 The code is divided into MVC (model, view controller) portions. It uses Swing GUIs, Threads, Sockets, and the client has code the illustrates playing sounds.
 
-The system is updated by GRADLE, the instruction is as following.(W18)
+The system is updated by GRADLE support, the instruction is as following.(W18)
 
 project history
 ===============
@@ -14,45 +14,14 @@ YES | mastergberry | ericchen94 | A chat application that uses a client and a se
 ```
 
 ## Basic Usage (updated W18)
-* In order to build the environment first, you need 
- ```
- gradle build
- ```
 
-* The server needs to be started first (including pressing "Start server" on the server GUI window).   <del>The following ant target will accomplish that:  
- <del>$ ant server  
- 
- You should rather do
- ```
- gradle server
- ```
-
+* The server needs to be started first (including pressing "Start server" on the server GUI window).The following ant target will accomplish that:
+```
+$ ant server
+```
 * To start a client use:   
-<del>$ ant client
-
-You should rather do
 ```
-$ gradle client
-```
-
-* In order to create server jar
-```
-$ gradle jar
-```
-* and then create client jar
-```
-$ gradle clientJar
-```
-* In order to use jacocoTestReport
-```
-$ gradle jacocoTestReport
-```
-Then go to build/jacocoHtml/index.html for results
-
-
-* For more help on tasks, you can 
-```
-$ gradle tasks
+$ ant client
 ```
 
 If the client is running on the same machine as the server, you can just use 127.0.0.1 (the standard IP address that means "this same machine", sometimes also called the 'loopback' address) as the IP address.
@@ -63,6 +32,33 @@ Start the client and input one of the names and passwords from the server window
 
 Note that the "Username", not the "nickname" should be entered in the client login panel.
 
+Updated GRADLE support  
+* Firstly build the environment 
+```
+$ gradle build
+```
+* To start a server
+```
+$ gradle server
+```
+* To start a server
+```
+$ gradle client
+```
+* To clean
+```
+$ gradle clean
+```
+* To use jacocoTestReport
+```
+$ gradle jacocoTestReport
+```
+Then go to build/jacocoHtml/index.html for results
+
+* For more help on tasks
+```
+$ gradle tasks --all
+```
 ## Features
 * Contact list of people you want to show as online when they are online and be able to talk directly too (not Broadcast)
 * Peer2peer-type chatting
