@@ -262,7 +262,7 @@ public class ClientWindow extends JFrame{
 	soundbox.addItemListener(new CheckListener());
 	soundbox.setSelected(true);
 	Timer timer = new Timer();
-	timer.schedule(new timerThread(),0,1000);
+	timer.schedule(new timerThread(),0,2000);
 		
     }
 
