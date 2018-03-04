@@ -97,3 +97,5 @@ atlassian-ide-plugin.xml
 .gradletasknamecache
 
 *.~lock*
+bin
+lock
