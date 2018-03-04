@@ -29,7 +29,7 @@ apply plugin: "java"
 
 
 jar {
-
+    description = "make Server.jar"
     archiveName = "Server.jar"
 
     from {
@@ -51,6 +51,7 @@ jar {
 }
 
 task clientJar(type:Jar, dependsOn:jar){
+    description = "make Client.jar"
     from sourceSets.main.output
     archiveName = "Client.jar"
     from{
@@ -73,11 +74,13 @@ task clientJar(type:Jar, dependsOn:jar){
 
 
 task client(type: JavaExec, dependsOn: classes) {
+    description = "run client"
     main = 'client.controller.RunClient'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task server(type: JavaExec, dependsOn: classes) {
+    description = "run server"
     main = 'server.controller.RunServer'
     classpath = sourceSets.main.runtimeClasspath
 }
