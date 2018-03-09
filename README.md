@@ -7,6 +7,9 @@ The code is divided into MVC (model, view controller) portions. It uses Swing GU
 
 The system is updated by GRADLE support, the instruction is as following.(W18)
 
+# Javadoc
+
+http://ucsb-cs56-projects.github.io/cs56-networking-chat/javadoc/
 
 project history
 ===============
