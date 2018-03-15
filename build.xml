@@ -21,11 +21,16 @@
   <pathelement location="build"/>
   <pathelement location="lib/junit-4.8.2.jar"/>
 </path>
+<path id="addtional.project.class.path">
+  <pathelement location="build"/>
+  <pathelement location="lib/sqlite-jdbc-3.21.0.jar"/>
+</path>
 
   <target name="compile" description="compile the code">
     <mkdir dir="build" />
     <javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source" includeantruntime="false">
       <classpath refid="project.class.path" />
+      <classpath refid="addtional.project.class.path" />
     </javac>
     <copy todir="build/resources">
       <fileset dir="resources"/>
@@ -86,8 +91,9 @@
     </jar>
     <jar destfile="dist/${server}.jar" basedir="build" includes="server/**" excludes="**/client" >
       <manifest>                                                                 
-	<attribute name="Main-Class" value="${mainClassServer}"/>                 
-      </manifest>                                                                
+	<attribute name="Main-Class" value="${mainClassServer}"/>
+      </manifest>
+      <zipgroupfileset dir="lib" includes="**/*.jar"/>
     </jar>
     <chmod dir="dist" perm="755" type="file" includes="**/*"/>
   </target>  
