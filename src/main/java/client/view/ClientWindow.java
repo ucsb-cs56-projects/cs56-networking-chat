@@ -57,6 +57,7 @@ public class ClientWindow extends JFrame{
     private JButton btChangeFont;
     private JButton onlineCountUpdate;
     private JButton btAccept;
+    private JButton send;
     private static ClientWindow window;
     private ClientController controller;
     private String name;
@@ -65,9 +66,7 @@ public class ClientWindow extends JFrame{
     private String password;
     private JFrame nicknameWindow;
     private JFrame registrant;
-    //    private JFrame editWindow;
-    private int roomUsers;
-    private int count;
+    
     
  
     //Pre-determined color to randomly use
@@ -108,6 +107,7 @@ public class ClientWindow extends JFrame{
 	onlineCountText = new JLabel("Online Count: ");
 	onlineCountNum = new JLabel("ERROR");
 	onlineCountUpdate = new JButton("Refresh");
+	onlineCountUpdate.setModel(new FixedStateButtonModel());
 	onlineCountNum.setText("");
 	lblLoginError = new JLabel("");
 	tfUsername = new JTextField(20);
@@ -116,7 +116,7 @@ public class ClientWindow extends JFrame{
 	tfChatRoomParticipants = new JTextField(20);
 	pfPassword = new JPasswordField(20);
 	btAccept = new JButton("Accept");
-
+	send = new JButton ("send");
 	//default connection
 	tfServerIp.setText("127.0.0.1");
 	soundbox = new JCheckBox("Play Sounds");
@@ -170,13 +170,24 @@ public class ClientWindow extends JFrame{
      * It will be invoked from the LoginListener
      */
     public void launchChatWindow(){
-	//add window listener for closing window
+	//revise window listener for closing window
 	//which tells the server to broadcast the message
 	//that this client is going offline
+	//and will automatically log out the user instead of exiting the system
 	this.addWindowListener(new WindowAdapter(){
 		public void windowClosing(WindowEvent we){
-		    controller.sendMsg2Server(name + "&Broadcast:1003");
-		    System.exit(0);
+		    
+		    
+		    int confirm = JOptionPane.showOptionDialog(null, "Are You Sure to Logout?","Logout Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+		    if (confirm == 0) {
+			window.repaint();
+			
+			controller.sendMsg2Server(name+"&Broadcast:1003");
+			window.dispose();
+		    }else{
+			window.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		    }
+		    
 		}
 	    });
 	
@@ -187,6 +198,7 @@ public class ClientWindow extends JFrame{
 	JPanel leftPanel = new JPanel();
 	JPanel rightPanel = new JPanel();
 	JPanel menuPanel = new JPanel();
+	JFrame newFrame = new  JFrame();
 
 	menuPanel.add(onlineCountUpdate, BorderLayout.WEST);
 	menuPanel.add(onlineCountText, BorderLayout.WEST);
@@ -195,9 +207,6 @@ public class ClientWindow extends JFrame{
 	menuPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	menuPanel.setLayout(new FlowLayout());
 	menuPanel.add(soundbox, BorderLayout.EAST);
-	
-
-	
 
 	
 	FontCellRenderer fontCellRender = new FontCellRenderer();
@@ -227,6 +236,7 @@ public class ClientWindow extends JFrame{
 	rightPanel.setLayout(new BorderLayout());
 	rightPanel.add(spScrollPane, BorderLayout.CENTER);
 	rightPanel.add(tfInput, BorderLayout.SOUTH);
+
 		
 	leftPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 	leftPanel.setLayout(new BorderLayout());
@@ -235,11 +245,10 @@ public class ClientWindow extends JFrame{
 
 	JButton nickName = new JButton("Change nickname");
 	JButton chatRoom = new JButton("Chat Room");
-
-	//new
-	JButton editRoom = new JButton("Edit my room");
-        
-	menuPanel.add(editRoom, BorderLayout.EAST);
+	
+        Container c = newFrame.getContentPane();
+	send = new JButton("send");
+	c.add(send, BorderLayout.SOUTH);
 	
 	leftPanel.add(nickName, BorderLayout.SOUTH);
 	leftPanel.add(chatRoom, BorderLayout.NORTH);
@@ -252,11 +261,13 @@ public class ClientWindow extends JFrame{
 	this.getContentPane().add(leftPanel, BorderLayout.WEST);
 	this.getContentPane().add(rightPanel, BorderLayout.CENTER);
 	this.getContentPane().add(menuPanel, BorderLayout.NORTH);
+	this.getContentPane().add(c, BorderLayout.EAST);
 	this.repaint();
 	tfInput.addActionListener(new InputListener());
+	send.addActionListener(new InputListener());
 	chatRoom.addActionListener(new RegisterChatRoomListener());
 	nickName.addActionListener(new LaunchChangeWindowListener());
-	//editRoom.addActionListener(new ChatroomListener());
+
 	fontList.addActionListener(new FontListener());
 	colorList.addActionListener(new ColorListener());
 	soundbox.addItemListener(new CheckListener());
@@ -276,7 +287,7 @@ public class ClientWindow extends JFrame{
 	nicknameWindow = new JFrame();
 	nicknameWindow.setLocation(100, 100);
 	nicknameWindow.setSize(300, 125);
-	nicknameWindow.setDefaultCloseOperation(EXIT_ON_CLOSE);
+	nicknameWindow.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	nicknameWindow.setTitle("Set Nickname");
 	nicknameWindow.setLayout(new FlowLayout());
 	nicknameWindow.getContentPane().add(lblNickName);
@@ -297,7 +308,7 @@ public class ClientWindow extends JFrame{
 		registrant = new JFrame();
 		registrant.setLocation(100, 100);
 		registrant.setSize(300, 125);
-		registrant.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		registrant.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		registrant.setTitle("Set Nickname");
 		registrant.setLayout(new FlowLayout());
 		registrant.getContentPane().add(new JLabel("Enter participant nicknames. Separate nicknames with commas, no spaces."));
@@ -508,9 +519,7 @@ public class ClientWindow extends JFrame{
 			}
 		    }
 		    onlineCountNum.setText(String.valueOf(count));
-		    //revised
-		    // menuPanel.add(logout,BorderLayout.EAST);
-		    // launchChatWindow lCW = new lauchChatWindow();
+        
 		    
 		}
 		
@@ -602,9 +611,7 @@ public class ClientWindow extends JFrame{
 			sendRegistration();
 		}
 		private void sendRegistration(){
-			String reg = tfChatRoomParticipants.getText().trim();
-			//	String [] arr = reg.split(",");
-			//	roomUsers = arr.length;
+		    String reg = tfChatRoomParticipants.getText().trim();
 			controller.sendChatRoomRegistration(reg);
 			registrant.dispose();
 		}
@@ -683,6 +690,21 @@ public class ClientWindow extends JFrame{
 	    onlineCountUpdate.addActionListener(new OnlineCountUpdateButtonListener());
 	    onlineCountUpdate.doClick();
     	}
+    }
+    class FixedStateButtonModel extends DefaultButtonModel    {
+
+        @Override
+        public boolean isPressed() {
+            return false;
+        }
+
+        @Override
+        public boolean isRollover() {
+            return false;
+        }
+
+        
+
     }
     
 }
