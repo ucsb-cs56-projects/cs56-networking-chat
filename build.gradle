@@ -13,7 +13,7 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
-    compile 'org.xerial:sqlite-jdbc:3.21.0'
+
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -45,7 +45,6 @@ jar {
 
     manifest {
         attributes 'Main-Class': 'server.controller.RunServer'
-        attributes "Class-Path" : '.:sqlite-jdbc-3.21.0.jar'
     }
 
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
