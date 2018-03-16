@@ -136,7 +136,6 @@ The first version of this code pre-dates the use of github for CS56 projects.   
 
 ## State of the Program:
 * Able to run the program with gradle build
-* Able to run the program on a real databse
 * Get a reminder when close the client window if want to logout or no
 * Can normally close sub-windows 
 * Automatically refresh the number of online
@@ -148,9 +147,16 @@ The first version of this code pre-dates the use of github for CS56 projects.   
 * The ChangeNickname button is not working due to refactor of online status of users
 * Using the delete user button for a chat room does not properly work and may cause errors
 * The server sometimes says the wrong number of log in even if the same user log out then log in
-* Can only use the databse with gradle build
+
 
 ### Notes about project
 * Currently we add the support for a real database (with support of gradle) and support of gradle and
 * The Chatroom implementation is very basic and lacks a lot of functionality of a full chat room including: adding users, responding to a group message, removing users, chatroom display name.
-* We strongly recommend you that before start this project, go through codes and also the knowledge of socket connection between server and client (see the book).
+* We strongly recommend you that before start this project, go through codes and also the knowledge of socket connection between server and client (see the book). Additionally, we think it would be the best way if you learn some knowledge for database and server run. Most of the functions are completed, so it means that it may require you a lot of new things to implement. Debugging in this program also may take some time.
+
+
+### Furture implementation
+* You may implement a real database.
+* You can add functions with sending images or even videos.
+* Add function of sending emojis.
+* Try to fix some main bugs.
