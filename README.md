@@ -137,7 +137,11 @@ The first version of this code pre-dates the use of github for CS56 projects.   
 ## State of the Program:
 * Able to run the program with gradle build
 * Get a reminder when close the client window if want to logout or no
+<<<<<<< HEAD
 * Can normally close sub-windows
+=======
+* Can normally close sub-windows 
+>>>>>>> e68ffd12a75ecd900514f0bfe7ab6e971331e19e
 * Automatically refresh the number of online
 * Able to use jacoco and see the coverage
 
@@ -160,4 +164,7 @@ The first version of this code pre-dates the use of github for CS56 projects.   
 * You can add functions with sending images or even videos.
 * Add function of sending emojis.
 * Try to fix some main bugs.
+<<<<<<< HEAD
 
+=======
+>>>>>>> e68ffd12a75ecd900514f0bfe7ab6e971331e19e
