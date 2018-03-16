@@ -13,13 +13,6 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-
 /*
  *SPECIAL CODE used by system to indicate the type of message
  *   MESSAGE FORMAT (everything inside <> is variable)
@@ -103,57 +96,47 @@ public class Server{
 	clients = new ArrayList<Client>();
 	rooms = new ArrayList<ChatRoom>();
 	
-    users = new ArrayList<User>();
-    this.readDB(users);
-    
-    
-	users.get(0).addToContactList(users.get(1));
-	users.get(0).addToContactList(users.get(2));
-	users.get(0).addToContactList(users.get(4));
-	users.get(0).addToContactList(users.get(3));
-	users.get(0).addToContactList(users.get(0));
-	users.get(0).addToContactList(users.get(3));
-	users.get(0).addToContactList(users.get(5));
-	users.get(2).addToContactList(users.get(0));
-	users.get(2).addToContactList(users.get(1));
-	users.get(2).addToContactList(users.get(6));
-	users.get(4).addToContactList(users.get(5));
-	users.get(4).addToContactList(users.get(3));
-	users.get(4).addToContactList(users.get(6));
-	users.get(6).addToContactList(users.get(0));
-	users.get(6).addToContactList(users.get(1));
-	users.get(6).addToContactList(users.get(2));
-	users.get(6).addToContactList(users.get(3));
-	users.get(6).addToContactList(users.get(4));
-	users.get(6).addToContactList(users.get(5));
-	users.get(6).addToContactList(users.get(7));
-	users.get(7).addToContactList(users.get(6));
+	//make our own fake users
+	users = new ArrayList<User>();
+	User peng = new User("Peng Wang", "peng", "123abc");		
+	User andro = new User("Andro Stotts", "andro", "abc123");
+	User philp = new User("Phillip Conrad", "phill", "9876543");
+	User bill = new User("Bill Gates", "billy", "idu?e3e");
+	User steve = new User("Steve Jobs", "steven", "2as134");
+	User orange = new User("Orange Juice ", "oj", "orangejuice");
+	User max = new User("Max Hinson", "max", "password");
+	User bryce = new User("Bryce Filler", "bry", "bryce");
+	peng.addToContactList(andro);
+	peng.addToContactList(philp);
+	peng.addToContactList(steve);
+	peng.addToContactList(bill);
+	andro.addToContactList(peng);
+	andro.addToContactList(bill);
+	andro.addToContactList(orange);
+	philp.addToContactList(peng);
+	philp.addToContactList(andro);
+	philp.addToContactList(max);
+	steve.addToContactList(orange);
+	steve.addToContactList(bill);
+	steve.addToContactList(max);
+	max.addToContactList(peng);
+	max.addToContactList(andro);
+	max.addToContactList(philp);
+	max.addToContactList(bill);
+	max.addToContactList(steve);
+	max.addToContactList(orange);
+	max.addToContactList(bryce);
+	bryce.addToContactList(max);
+	users.add(peng);
+	users.add(andro);
+	users.add(philp);
+	users.add(bill);
+	users.add(steve);
+	users.add(orange);
+	users.add(max);
+	users.add(bryce);	
     }
-    
-    //connect to signin.db database
-    public void readDB(ArrayList arr){
-        java.sql.Connection c = null;
-        Statement stmt = null;
-        try{
-            Class.forName("org.sqlite.JDBC");
-            c =DriverManager.getConnection("jdbc:sqlite:signin.db");
-            c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
-            stmt = c.createStatement();
-            //select all rows in the account table
-            String sql = "SELECT username, nickname, password FROM account";
-            ResultSet rs    = stmt.executeQuery(sql);
-            while (rs.next()) {
-                
-                    arr.add (new User(rs.getString("username"),rs.getString("nickname"),rs.getString("password")));
-                
-                }
-        }catch ( Exception e ) {
-         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-         System.exit(0);
-      }
-      
-    }
+	
     /**
      * Gets the server object
      * @return the server object

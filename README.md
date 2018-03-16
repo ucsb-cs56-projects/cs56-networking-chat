@@ -21,7 +21,7 @@ YES | mastergberry | ericchen94 | A chat application that uses a client and a se
 ```
 $ ant server
 ```
-* To start a client use:   
+* To start a client use:
 ```
 $ ant client
 ```
@@ -34,8 +34,8 @@ Start the client and input one of the names and passwords from the server window
 
 Note that the "Username", not the "nickname" should be entered in the client login panel.
 
-Updated GRADLE support  
-* Firstly build the environment 
+Updated GRADLE support
+* Firstly build the environment
 ```
 $ gradle build
 ```
@@ -71,11 +71,11 @@ $ gradle tasks --all
 * Check box to enable sound effects
 
 ## Possible future improvements
-* Font/Color Features - Add new fonts and colors for the text between users. For example different font types such as serif and sans-serif could be added. 
+* Font/Color Features - Add new fonts and colors for the text between users. For example different font types such as serif and sans-serif could be added.
 * Private Chat Rooms - Add functionality to allow users to create private chat rooms and invite multiple contacts to join
 
 
-## Ancient History 
+## Ancient History
 
 The first version of this code pre-dates the use of github for CS56 projects.   Here are links to those older versions:
 
@@ -131,3 +131,33 @@ The first version of this code pre-dates the use of github for CS56 projects.   
 * The Chatroom implementation is very basic and lacks a lot of functionality of a full chat room including: adding users, responding to a group message, removing users, chatroom display name.
 * The way the server processes closing windows and a user logging out needs fixing up. Originally the Server depended on a message exception being thrown by a badly formed message when the ClientWindow is closed. Now with the log-out button implemented, there exists a proper service code to tell the Server that the ClientWindow is closing and so closing the ClientWindow should now send a properly formed service code to the Server.
 * The best way of understanding the way that both the Server and Client work and interact is to really understand the respective Controller classes. The Controller contains an instance of a Client/Server as well as a Window to display them. It therefore has ways of altering the state of both Client/Server and their respective window. This is the proper place to put methods to change the state in a centralized class. Because of it's composition of Server/Client and Window Objects, the Controller is the place to do message parsing and creating properly formed messages. Server/Client objects only need the relevant information, parsed from the raw message received by the Controller.
+
+##W18 final remarks / future improvements
+
+## State of the Program:
+* Able to run the program with gradle build
+* Get a reminder when close the client window if want to logout or no
+* Can normally close sub-windows
+* Automatically refresh the number of online
+* Able to use jacoco and see the coverage
+
+
+### Bugs
+* The Chatroom implementation leaves much to desire. it is very basic and only allows the creator of the chatroom to actually talk in the chatroom. Furthermore there can be improvements to the list of Chatrooms(i.e. names of chatrooms). Furthermore, sending to the chatroom displays a user offline error even if the message goes through.
+* The ChangeNickname button is not working due to refactor of online status of users
+* Using the delete user button for a chat room does not properly work and may cause errors
+* The server sometimes says the wrong number of log in even if the same user log out then log in
+
+
+### Notes about project
+* Currently we add the support for a real database (with support of gradle) and support of gradle and
+* The Chatroom implementation is very basic and lacks a lot of functionality of a full chat room including: adding users, responding to a group message, removing users, chatroom display name.
+* We strongly recommend you that before start this project, go through codes and also the knowledge of socket connection between server and client (see the book). Additionally, we think it would be the best way if you learn some knowledge for database and server run. Most of the functions are completed, so it means that it may require you a lot of new things to implement. Debugging in this program also may take some time.
+
+
+### Furture implementation
+* You may implement a real database.
+* You can add functions with sending images or even videos.
+* Add function of sending emojis.
+* Try to fix some main bugs.
+
